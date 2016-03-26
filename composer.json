@@ -20,5 +20,6 @@
 		"psr-4": {
 			"IndieTorrent\\AudioManipulator\\": "src/"
 		}
-	}
+	},
+	"minimum-stability": "dev"
 }
