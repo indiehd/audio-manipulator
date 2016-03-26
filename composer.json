@@ -1,0 +1,24 @@
+{
+	"name": "indietorrent/audio-manipulator",
+	"type": "library",
+	"description": "Library for manipulating audio files (validating, transcoding, and tagging)",
+	"keywords": ["audio","flac","mp3"],
+	"homepage": "https://github.com/indietorrent/audio-manipulator",
+	"license": "Copyright 2005-2016 indieTorrent.org, LLC",
+	"authors": [
+		{
+			"name": "Ben Johnson",
+			"email": "ben@indietorrent.org",
+			"homepage": "https://indietorrent.org",
+			"role": "Lead Developer & Creator"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"IndieTorrent\\AudioManipulator\\": "src/"
+		}
+	}
+}
