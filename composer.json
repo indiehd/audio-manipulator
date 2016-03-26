@@ -4,7 +4,7 @@
 	"description": "Library for manipulating audio files (validating, transcoding, and tagging)",
 	"keywords": ["audio","flac","mp3"],
 	"homepage": "https://github.com/indietorrent/audio-manipulator",
-	"license": "Copyright 2005-2016 indieTorrent.org, LLC",
+	"license": "Copyright 2005-2016 indieTorrent.org LLC",
 	"authors": [
 		{
 			"name": "Ben Johnson",
