@@ -32,7 +32,7 @@ function tagMp3File($file, $tagData, $coverFile = NULL) {
 		return array('result' => FALSE, 'error' => $error);
 	}
 	
-	$gid3 = new \getID3();
+	$gid3 = new getID3;
 	
 	if (!is_object($gid3)) {
 		$error = 'The getID3 object could not be instantiated';
@@ -263,7 +263,7 @@ function tagFlacFile($file, $tagData, $allowBlank = FALSE, $coverFile = NULL)
 	}
 	
 	//Instantiate the getID3 object.
-	$gid3 = new \getID3;
+	$gid3 = new getID3;
 	
 	if (!is_object($gid3)) {
 		$error = 'The getID3 object could not be instantiated';
