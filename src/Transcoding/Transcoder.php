@@ -225,7 +225,7 @@ function convertWavToFlac($inputFile, $outputFile)
 	
 	//Grab the file extension to determine the implicit audio format of the
 	//output file.
-	$fileExt = Utility::getFileExt($outputFile);
+	$fileExt = \Utility::getFileExt($outputFile);
 	$outputFormat = $fileExt;
 	
 	//First, we'll see if the file was output successfully.
@@ -243,7 +243,7 @@ function convertWavToFlac($inputFile, $outputFile)
 	
 	//Grab the file extension to determine the implicit audio format of the
 	//input file.
-	$fileExt = Utility::getFileExt($outputFile);
+	$fileExt = \Utility::getFileExt($outputFile);
 	$outputFormat = $fileExt;
 	
 	$fileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);

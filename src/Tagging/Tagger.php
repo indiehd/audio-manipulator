@@ -441,7 +441,7 @@ function prepareCoverImageForTag($imageFile)
 			return array('result' => $apicData, 'error' => NULL);
 		}
 		else {
-			$error = 'Invalid image format (only GIF, JPEG, and PNG are supported)';
+			$error = 'Invalid image format (with APIC image type ID ' . $apicImageTypeId . ') (only GIF, JPEG, and PNG are supported)';
 			return array('result' => FALSE, 'error' => $error);
 		}
 	}
@@ -468,7 +468,7 @@ function embedFlacArt($imageFile, $audioFile)
 			return array('result' => TRUE, 'error' => NULL);
 		}
 		else {
-			return array('result' => FALSE, 'error' => 'The call to `metaflac` produced output, which indicates an error condition: ' . Utility::varToString($res));
+			return array('result' => FALSE, 'error' => 'The call to `metaflac` produced output, which indicates an error condition: ' . \Utility::varToString($res));
 		}
 	}
 	else {
@@ -492,7 +492,7 @@ function removeArtwork($file)
 			return array('result' => TRUE, 'error' => NULL);
 		}
 		else {
-			return array('result' => FALSE, 'error' => 'The call to `metaflac` produced output, which indicates an error condition: ' . Utility::varToString($res));
+			return array('result' => FALSE, 'error' => 'The call to `metaflac` produced output, which indicates an error condition: ' . \Utility::varToString($res));
 		}
 	}
 	else {
