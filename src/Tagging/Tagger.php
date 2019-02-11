@@ -40,7 +40,7 @@ function tagMp3File($file, $tagData, $coverFile = NULL) {
 	}
 	
 	//XXX This is commented-out because we're using UTF-8 (where's that code?).
-	#$gid3->setOption(array('encoding'=>'ISO-8859-1'));
+	$gid3->setOption(array('encoding'=>'UTF-8'));
 	
 	//Analyze the input file in order to determine which tag types
 	//are supported for the audio file.
@@ -110,7 +110,7 @@ function tagMp3File($file, $tagData, $coverFile = NULL) {
 	$tagData['comment'][0] = $tagData['description'][0];
 	unset($tagData['description']);
 	if (!empty($tagData['date'][0]) && $tagData['date'][0] !== 'Unknown') {
-		$tagData['year'][0] = $tagData['date'][0];
+		$tagData['recording_time'][0] = $tagData['date'][0];
 	}
 	unset($tagData['date']);
 	$tagData['part_of_a_set'][0] = $tagData['discnumber'][0];
@@ -119,14 +119,14 @@ function tagMp3File($file, $tagData, $coverFile = NULL) {
 	$tagWriter = $this->writeTags;
 	
 	$tagWriter->filename = $file;
-	$tagWriter->tagformats = array('id3v2.3');
+	$tagWriter->tagformats = array('id3v2.4');
 	$tagWriter->overwrite_tags = TRUE;
 	//Certain applications cannot read UTF-8 tags,
 	//such as the Explorer shell in Windows Vista.
-	#$tagWriter->tag_encoding = 'UTF-8';
+	$tagWriter->tag_encoding = 'UTF-8';
 	//We'll use ISO-8859-1' instead (required for
 	//the ID3v1 spec, even though we're writing v2 tags).
-	$tagWriter->tag_encoding = 'ISO-8859-1';
+	#$tagWriter->tag_encoding = 'ISO-8859-1';
 	$tagWriter->remove_other_tags = TRUE;
 	
 	//It's important that this comes before we handle the cover art, because
@@ -158,7 +158,7 @@ function tagMp3File($file, $tagData, $coverFile = NULL) {
 	}
 	
 	$tagWriter->tag_data = $tagData;
-	
+
 	if (!$tagWriter->WriteTags()) {
 		/*
 		echo '<pre>';
@@ -171,7 +171,7 @@ function tagMp3File($file, $tagData, $coverFile = NULL) {
 	//Re-read the file to ensure that the new ID3 tag values
 	//match the supplied input values.
 	$fileDetails = $gid3->analyze($file);
-	
+
 	$prefix = 'getID3\'s analyze() method';
 	
 	if (!is_array($fileDetails)) {
@@ -297,10 +297,9 @@ function tagFlacFile($file, $tagData, $allowBlank = FALSE, $coverFile = NULL)
 	//--remove-all-tags option; using the deprecated option will cause the
 	//command to fail on systems on which the option is not supported.
 	//Changed to --remove-all because cover art was not being removed. -CBJ 2011.01.18
-	$cmd = 'metaflac --remove-all "' . $file . '"';
-	
-	//XXX This call should be updated to use GlobalMethods::openProcess().
-	$output = shell_exec($cmd);
+	$cmd = 'metaflac --remove-all ' . escapeshellarg($file);
+
+	$res = \GlobalMethods::openProcess($cmd);
 	
 	//Attempt to acquire the audio file's properties, again, now that
 	//we've attempted to remove any existing tags.
@@ -344,15 +343,20 @@ function tagFlacFile($file, $tagData, $allowBlank = FALSE, $coverFile = NULL)
 	
 	foreach ($tagData as $fieldName => $fieldDataArray) {
 		foreach ($fieldDataArray as $numericIndex => $fieldValue) {
+			// If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+			setlocale(LC_CTYPE, 'en_US.UTF-8');
+
 			//IMPORTANT: The --set-vc-field option is deprecated in favor of the
 			//--set-tag option; using the deprecated option will cause the command to
 			//fail on systems on which the option is not supported.
 			
-			$cmd = 'metaflac --set-tag=' . ucfirst($fieldName) . '="' . $fieldValue . '" "' . $file . '"';
-			
-			//XXX This call should be updated to use GlobalMethods::openProcess().
-			$output = shell_exec($cmd);
-			
+			$cmd = 'metaflac --set-tag=' . escapeshellarg(ucfirst($fieldName)) . '=' . escapeshellarg($fieldValue) . ' ' . escapeshellarg($file);
+
+			// If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+			$res = \GlobalMethods::openProcess($cmd, null, ['LC_ALL' => 'en_US.utf8']);
+
 			$numWritesAttempted++;
 		}
 	}
