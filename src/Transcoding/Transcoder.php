@@ -80,8 +80,12 @@ function transcode(
 	if ($this->singleThreaded === TRUE) {
 		$cmd .= ' --single-threaded';
 	}
-	
-	$cmd .= ' -V4 "' . $inputFile . '" --channels 2 "' . $outputFile . '"';
+
+	// If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+	setlocale(LC_CTYPE, 'en_US.UTF-8');
+
+	$cmd .= ' -V4 ' . escapeshellarg($inputFile) . ' --channels 2 ' . escapeshellarg($outputFile);
 	
 	if ($performTrim !== FALSE) {
 		$cmd .= ' trim ' . $trackPreviewStart . ' ' . $clipLength;
@@ -102,8 +106,12 @@ function transcode(
 			$cmd .= ' ' . $clipLength . ' ' . $fadeOutLength;
 		}
 	}
-	
-	$res = shell_exec($cmd);
+
+	// If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+	$env = ['LC_ALL' => 'en_US.utf8'];
+
+	$res = \GlobalMethods::openProcess($cmd, NULL, $env);
 	
 	$this->commandHistory[] = $cmd . PHP_EOL . PHP_EOL . $res;
 	
@@ -186,10 +194,18 @@ function wavToMp3($inputFile, $outputFile, $encodingMethod, $quality, $frequency
 		$error = 'A valid encoding method was not specified';
 		return array('result' => FALSE, 'error' => $error);
 	}
-	
-	$cmd .= ' "' . $inputFile . '" "' . $outputFile . '"';
-	
-	$res = \GlobalMethods::openProcess($cmd);
+
+	// If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+	setlocale(LC_CTYPE, 'en_US.UTF-8');
+
+	$cmd .= escapeshellarg($inputFile) . ' ' . escapeshellarg($outputFile);
+
+	// If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+	$env = ['LC_ALL' => 'en_US.utf8'];
+
+	$res = \GlobalMethods::openProcess($cmd, NULL, $env);
 	
 	$this->commandHistory[] = $cmd . PHP_EOL . PHP_EOL . print_r($res, TRUE);
 	
@@ -216,10 +232,18 @@ function convertWavToFlac($inputFile, $outputFile)
 	if ($this->singleThreaded === TRUE) {
 		$cmd .= ' --single-threaded';
 	}
-	
-	$cmd .= ' "' . $inputFile . '" "' . $outputFile . '"';
-	
-	$res = shell_exec($cmd);
+
+	// If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+	setlocale(LC_CTYPE, 'en_US.UTF-8');
+
+	$cmd .= escapeshellarg($inputFile) . ' ' . escapeshellarg($outputFile);
+
+	// If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+	$env = ['LC_ALL' => 'en_US.utf8'];
+
+	$res = \GlobalMethods::openProcess($cmd, NULL, $env);
 	
 	$this->commandHistory[] = $cmd . PHP_EOL . PHP_EOL . $res;
 	
@@ -267,7 +291,7 @@ function convertWavToFlac($inputFile, $outputFile)
  */
 function transcodeFlacToAlac($file, $tagData = array(), $allowBlank = FALSE, $coverFile = NULL)
 {
-	//In avconv version 9.16 (and possibly earlier), embedded artwork with a
+	//In avconv/ffmpeg version 9.16 (and possibly earlier), embedded artwork with a
 	//width or height that is not divisible by 2 will cause a failure, e.g.:
 	//"width not divisible by 2 (1419x1419)". So, we must strip any "odd" artwork.
 	//It's entirely possible that artwork was not copied in earlier versions, so
@@ -275,17 +299,25 @@ function transcodeFlacToAlac($file, $tagData = array(), $allowBlank = FALSE, $co
 	
 	$r = $this->tagger->removeArtwork($file);
 	
-	$cmd1 = 'avconv -i';
+	$cmd1 = 'ffmpeg -i';
 	
 	//Tag data is copied automatically. Nice!!!
 	
 	$pathParts = pathinfo($file);
 	
 	$outfile = $pathParts['dirname'] . DIRECTORY_SEPARATOR . $pathParts['filename'] . '.m4a';
-	
-	$cmd1 .= ' "' . $file . '" -acodec alac "' . $outfile . '"';
-	
-	$r1 = \GlobalMethods::openProcess($cmd1);
+
+	// If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+	setlocale(LC_CTYPE, 'en_US.UTF-8');
+
+	$cmd1 .= ' ' . escapeshellarg($file) . ' -acodec alac ' . escapeshellarg($outfile);
+
+	// If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+	$env = ['LC_ALL' => 'en_US.utf8'];
+
+	$r1 = \GlobalMethods::openProcess($cmd1, NULL, $env);
 	
 	if ($r1['exitCode'] == 0) {
 		//Write the cover artwork into the file, and fail gracefully.
@@ -294,9 +326,10 @@ function transcodeFlacToAlac($file, $tagData = array(), $allowBlank = FALSE, $co
 		//(which are indeed case-sensitive).
 		
 		if (is_string($coverFile) && strlen($coverFile) > 0) {
-			$cmd2 = 'AtomicParsley "' . $outfile . '" --artwork "' . $coverFile . '" --overWrite';
+
+			$cmd2 = 'AtomicParsley ' . escapeshellarg($outfile) . ' --artwork ' . escapeshellarg($coverFile) . ' --overWrite';
 			
-			$r2 = \GlobalMethods::openProcess($cmd2);
+			$r2 = \GlobalMethods::openProcess($cmd2, NULL, $env);
 			
 			if ($r2['exitCode'] != 0) {
 				$e = 'The FLAC file was transcoded to an ALAC file successfully, but the album artwork could not be embedded; the command was: "' . $cmd2 . '"';

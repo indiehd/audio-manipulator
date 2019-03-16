@@ -297,9 +297,18 @@ function tagFlacFile($file, $tagData, $allowBlank = FALSE, $coverFile = NULL)
 	//--remove-all-tags option; using the deprecated option will cause the
 	//command to fail on systems on which the option is not supported.
 	//Changed to --remove-all because cover art was not being removed. -CBJ 2011.01.18
+
+    // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+    setlocale(LC_CTYPE, 'en_US.UTF-8');
+
 	$cmd = 'metaflac --remove-all ' . escapeshellarg($file);
 
-	$res = \GlobalMethods::openProcess($cmd);
+    // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+    $env = ['LC_ALL' => 'en_US.utf8'];
+
+	$res = \GlobalMethods::openProcess($cmd, NULL, $env);
 	
 	//Attempt to acquire the audio file's properties, again, now that
 	//we've attempted to remove any existing tags.
@@ -355,7 +364,9 @@ function tagFlacFile($file, $tagData, $allowBlank = FALSE, $coverFile = NULL)
 
 			// If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
 
-			$res = \GlobalMethods::openProcess($cmd, null, ['LC_ALL' => 'en_US.utf8']);
+            $env = ['LC_ALL' => 'en_US.utf8'];
+
+			$res = \GlobalMethods::openProcess($cmd, null, $env);
 
 			$numWritesAttempted++;
 		}
@@ -458,9 +469,17 @@ function prepareCoverImageForTag($imageFile)
 
 function embedFlacArt($imageFile, $audioFile)
 {
-	$cmd = 'metaflac --import-picture-from="' . $imageFile . '" "' . $audioFile . '"';
-	
-	$res = \GlobalMethods::openProcess($cmd);
+    // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+    setlocale(LC_CTYPE, 'en_US.UTF-8');
+
+    $cmd = 'metaflac --import-picture-from=' . escapeshellarg($imageFile) . ' ' . escapeshellarg($audioFile);
+
+    // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+    $env = ['LC_ALL' => 'en_US.utf8'];
+
+	$res = \GlobalMethods::openProcess($cmd, NULL, $env);
 	
 	if ($res !== FALSE) {
 		//As of this writing, metaflac returns an exit status of
@@ -482,9 +501,17 @@ function embedFlacArt($imageFile, $audioFile)
 
 function removeArtwork($file)
 {
-	$cmd = 'metaflac --remove --block-type=PICTURE "' . $file . '"';
-	
-	$res = \GlobalMethods::openProcess($cmd);
+    // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+    setlocale(LC_CTYPE, 'en_US.UTF-8');
+
+    $cmd = 'metaflac --remove --block-type=PICTURE ' . escapeshellarg($file);
+
+    // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+
+    $env = ['LC_ALL' => 'en_US.utf8'];
+
+	$res = \GlobalMethods::openProcess($cmd, NULL, $env);
 	
 	if ($res !== FALSE) {
 		//As of this writing, metaflac returns an exit status of
