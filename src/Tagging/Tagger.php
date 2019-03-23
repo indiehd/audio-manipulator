@@ -1,4 +1,6 @@
-<?php namespace IndieTorrent\AudioManipulator\Tagging;
+<?php
+
+namespace IndieHD\AudioManipulator\Tagging;
 
 use \getID3;
 use \getid3_writetags;
@@ -336,7 +338,7 @@ function tagFlacFile($file, $tagData, $allowBlank = FALSE, $coverFile = NULL)
 		$res = $this->embedFlacArt($coverFile, $file);
 		
 		if ($res['result'] !== FALSE) {
-			
+		
 		}
 		else {
 			$error = 'Embedding cover art in FLAC file "' . $file . '" failed; ' . $res['error'];

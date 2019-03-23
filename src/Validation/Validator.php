@@ -1,4 +1,6 @@
-<?php namespace Indietorrent\AudioManipulator\Validation;
+<?php
+
+namespace IndieHD\AudioManipulator\Validation;
 
 class Validator
 {
@@ -9,7 +11,7 @@ function validateAudioFile($file, $type)
 {
 	if (!file_exists($file)) {
 		trigger_error('The input file appears not to exist', E_USER_WARNING);
-		return FALSE;	
+		return FALSE;
 	}
 	
 	if ($type != 'wav' && $type != 'flac' && $type != 'mp3') {
