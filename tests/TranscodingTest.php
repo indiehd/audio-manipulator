@@ -50,6 +50,11 @@ class TranscodingTest extends TestCase
 
     public function testTranscodingFlacToMp3Succeeds()
     {
-        $this->assertTrue($this->transcoder->transcode('foo.flac', 'bar.mp3')['result']);
+        $testDir = __DIR__ . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR;
+
+        $this->assertTrue($this->transcoder->transcode(
+            $testDir . 'foo.flac',
+            $testDir . 'foo.mp3'
+        )['result']);
     }
 }
