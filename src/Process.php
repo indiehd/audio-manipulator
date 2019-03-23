@@ -7,12 +7,42 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class Process implements ProcessInterface
 {
-    public function run(array $command)
+    protected $process;
+    protected $timeout;
+
+    public function setProcess($process)
     {
-        $p = new SymfonyProcess($command);
+        $this->process = $process;
+    }
+
+    public function getProcess()
+    {
+        return $this->process;
+    }
+
+    public function run(string $command)
+    {
+        $this->process = new SymfonyProcess($command);
+
+        $this->process->setTimeout($this->timeout);
+
+        $this->process->run();
         
-        $p->run();
-        
-        return $p;
+        return $this->process;
+    }
+
+    public function setTimeout(int $seconds)
+    {
+        $this->timeout = $seconds;
+    }
+
+    public function isSuccessful()
+    {
+        return $this->process->isSuccessful();
+    }
+
+    public function getOutput()
+    {
+       return $this->process->getOutput();
     }
 }
