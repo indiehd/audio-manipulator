@@ -43,6 +43,11 @@ class Process implements ProcessInterface
 
     public function getOutput()
     {
-       return $this->process->getOutput();
+        return $this->process->getOutput();
+    }
+    
+    public function getErrorOutput()
+    {
+        return $this->process->getErrorOutput();
     }
 }

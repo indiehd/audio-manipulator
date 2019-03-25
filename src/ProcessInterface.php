@@ -11,4 +11,6 @@ interface ProcessInterface
     public function isSuccessful();
 
     public function getOutput();
+    
+    public function getErrorOutput();
 }
