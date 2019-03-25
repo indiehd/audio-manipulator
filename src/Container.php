@@ -19,17 +19,21 @@ class Container
     {
         $containerBuilder = new ContainerBuilder();
     
-        $containerBuilder->setParameter('tagger.getid3', new getID3);
-        $containerBuilder->setParameter('tagger.getid3_tag_writer', new getid3_writetags);
-    
-        $containerBuilder->register('tagger', Tagger::class)
-            ->addArgument('%tagger.getid3%')
-            ->addArgument('%tagger.getid3_tag_writer%');
-    
         $containerBuilder->setParameter('logger.monolog', 'general');
     
         $containerBuilder->register('logger', Logger::class)
             ->addArgument('%logger.monolog%');
+        
+        $containerBuilder->setParameter('tagger.getid3', new getID3);
+        $containerBuilder->setParameter('tagger.getid3_tag_writer', new getid3_writetags);
+        $containerBuilder->setParameter('tagger.process', new Process());
+        $containerBuilder->setParameter('tagger.logger', $containerBuilder->get('logger'));
+    
+        $containerBuilder->register('tagger', Tagger::class)
+            ->addArgument('%tagger.getid3%')
+            ->addArgument('%tagger.getid3_tag_writer%')
+            ->addArgument('%tagger.process%')
+            ->addArgument('%tagger.logger%');
     
         $containerBuilder->setParameter('transcoder.validator', new Validator());
         $containerBuilder->setParameter('transcoder.tagger', $containerBuilder->get('tagger'));
