@@ -147,17 +147,15 @@ class Transcoder
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $process = $this->process;
+        $this->process->setTimeout(600);
+    
+        $this->process->run($cmd, null, $env);
 
-        $process->setTimeout(600);
-
-        $process->run($cmd);
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+        if (!$this->process->isSuccessful()) {
+            throw new ProcessFailedException($this->process);
         }
 
-        $this->logger->info($cmd . PHP_EOL . PHP_EOL . $process->getOutput());
+        $this->logger->info($cmd . PHP_EOL . PHP_EOL . $this->process->getOutput());
 
         // Grab the file extension to determine the implicit audio format of the
         // output file.

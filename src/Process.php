@@ -20,13 +20,13 @@ class Process implements ProcessInterface
         return $this->process;
     }
 
-    public function run(string $command)
+    public function run(string $command, callable $callback = null, $env = [])
     {
         $this->process = new SymfonyProcess($command);
 
         $this->process->setTimeout($this->timeout);
 
-        $this->process->run();
+        $this->process->run($callback, $env);
         
         return $this->process;
     }
