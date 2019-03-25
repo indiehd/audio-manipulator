@@ -28,7 +28,7 @@ class TranscodingTest extends TestCase
     
     public function testConvertingWavToFlacSucceeds()
     {
-        $this->assertTrue($this->transcoder->convertWavToFlac(
+        $this->assertIsArray($this->transcoder->convertWavToFlac(
             $this->testDir . 'foo.wav',
             $this->testDir . 'foo.flac'
         )['result']);
