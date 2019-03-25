@@ -22,8 +22,7 @@ class Transcoder
         Tagger $tagger,
         Process $process,
         Logger $logger
-    )
-    {
+    ) {
         $this->validator = $validator;
         $this->tagger = $tagger;
         $this->process = $process;
@@ -31,23 +30,26 @@ class Transcoder
 
         // TODO Make the log location configurable.
 
-        $fileHandler = new StreamHandler('storage' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'transcoder.log', Logger::INFO);
+        $fileHandler = new StreamHandler(
+            'storage' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR
+            . 'transcoder.log',
+            Logger::INFO
+        );
 
         $this->logger->pushHandler($fileHandler);
     }
 
-    function transcode(
+    public function transcode(
         $inputFile,
         $outputFile,
         $trackPreviewStart = 0,
-        $performTrim = FALSE,
+        $performTrim = false,
         $clipLength = 90,
-        $fadeIn = FALSE,
+        $fadeIn = false,
         $fadeInLength = 6,
-        $fadeOut = FALSE,
+        $fadeOut = false,
         $fadeOutLength = 6
-    )
-    {
+    ) {
         if (!file_exists($inputFile)) {
             throw new \RuntimeException('The input file "' . $inputFile . '" appears not to exist');
         }
@@ -62,7 +64,7 @@ class Transcoder
 
         $valRes = $this->validator->validateAudioFile($inputFile, $inputFormat);
 
-        if ($valRes === FALSE) {
+        if ($valRes === false) {
             throw new \RuntimeException('The input file does not validate as a ' . strtoupper($inputFormat) . ' file');
         }
 
@@ -80,9 +82,9 @@ class Transcoder
             // No trim or fades are necessary if the play-time
             // is less than the specified clip length.
 
-            $performTrim = FALSE;
-            $fadeIn = FALSE;
-            $fadeOut = FALSE;
+            $performTrim = false;
+            $fadeIn = false;
+            $fadeOut = false;
         }
 
         // This block prevents problems from a track preview start
@@ -99,7 +101,7 @@ class Transcoder
 
         // Convert the clip length from seconds to hh:mm:ss format.
 
-        $clipLength = Utility::sec2hms($clipLength, FALSE, FALSE);
+        $clipLength = Utility::sec2hms($clipLength, false, false);
 
         $cmd = '';
 
@@ -107,7 +109,7 @@ class Transcoder
 
         $cmd .= 'sox';
 
-        if ($this->singleThreaded === TRUE) {
+        if ($this->singleThreaded === true) {
             $cmd .= ' --single-threaded';
         }
 
@@ -120,14 +122,14 @@ class Transcoder
         $cmd .= ' --channels 2';
         $cmd .= ' ' . escapeshellarg($outputFile);
 
-        if ($performTrim !== FALSE) {
+        if ($performTrim !== false) {
             $cmd .= ' trim ' . escapeshellarg($trackPreviewStart) . ' ' . escapeshellarg($clipLength);
         }
 
-        if ($fadeIn !== FALSE || $fadeOut !== FALSE) {
+        if ($fadeIn !== false || $fadeOut !== false) {
             $cmd .= ' fade q ';
 
-            if ($fadeIn === FALSE) {
+            if ($fadeIn === false) {
                 // Setting a fade-in length of zero in SoX is the
                 // same as having no fade-in at all.
 
@@ -136,14 +138,12 @@ class Transcoder
 
             $cmd .= escapeshellarg($fadeInLength);
 
-            if ($fadeOut !== FALSE) {
+            if ($fadeOut !== false) {
                 $cmd .= ' ' . escapeshellarg($clipLength) . ' ' . escapeshellarg($fadeOutLength);
             }
         }
 
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
-
-        // TODO We're not yet using this $env in this implementation; fix that.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
@@ -167,7 +167,8 @@ class Transcoder
         // First, we'll see if the file was output successfully.
 
         if (!file_exists($outputFile)) {
-            throw new \RuntimeException('The ' . strtoupper($outputFormat) . ' file appears not to have been created');
+            throw new \RuntimeException('The ' . strtoupper($outputFormat)
+                . ' file appears not to have been created');
         }
 
         // On the Windows platform, SoX's exit status is not preserved, thus
@@ -185,27 +186,30 @@ class Transcoder
         $outputFormat = $fileExt;
 
         if (!$this->validator->validateAudioFile($outputFile, $outputFormat)) {
-            throw new \RuntimeException('The ' . strtoupper($outputFormat) . ' file appears to have been created, but does not validate as such; ensure that the determined audio format (e.g., MP1, MP2, etc.) is in the array of allowable formats');
+            throw new \RuntimeException('The ' . strtoupper($outputFormat)
+                . ' file appears to have been created, but does not validate as'
+                . ' such; ensure that the determined audio format (e.g., MP1,'
+                . ' MP2, etc.) is in the array of allowable formats');
         }
 
-        return ['result' => TRUE, 'error' => NULL];
+        return ['result' => true, 'error' => null];
     }
 
     //Accepts a WAV file as input and converts the audio data to
     //an MP3 file per the specified attributes.
 
-    function wavToMp3($inputFile, $outputFile, $encodingMethod, $quality, $frequency = NULL, $bitWidth = NULL)
+    public function wavToMp3($inputFile, $outputFile, $encodingMethod, $quality, $frequency = null, $bitWidth = null)
     {
         if (!file_exists($inputFile)) {
             $error = 'The input file appears not to exist';
-            return array('result' => FALSE, 'error' => $error);
+            return array('result' => false, 'error' => $error);
         }
 
         //The AUDIO DATA format will be 'wav' if everything is functioning as expected.
 
         if (!$this->validator->validateAudioFile($inputFile, 'wav')) {
             $error = 'The input file does not validate as a WAV file';
-            return array('result' => FALSE, 'error' => $error);
+            return array('result' => false, 'error' => $error);
         }
 
         //Attempt to convert the WAV file to an MP3 file.
@@ -225,14 +229,12 @@ class Transcoder
             // e.g., 128 (kbps).
 
             $cmd .= '--cbr -b ' . $quality;
-        }
-        elseif ($encodingMethod == 'abr') {
+        } elseif ($encodingMethod == 'abr') {
             // If the bitrate mode is abr, $quality should be an actual bitrate,
             // e.g., 128 (kbps).
 
             $cmd .= '--abr ' . $quality;
-        }
-        elseif ($encodingMethod == 'vbr') {
+        } elseif ($encodingMethod == 'vbr') {
             // If the bitrate mode is vbr, $quality should be an integer between
             // 0 and 9 (0 being the highest quality, 9 being the lowest quality).
 
@@ -240,10 +242,9 @@ class Transcoder
             // instead of --vbr-old, which was the behavior prior to 3.97.
 
             $cmd .= '--vbr-new -V ' . $quality;
-        }
-        else {
+        } else {
             $error = 'A valid encoding method was not specified';
-            return array('result' => FALSE, 'error' => $error);
+            return array('result' => false, 'error' => $error);
         }
 
         // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
@@ -255,33 +256,38 @@ class Transcoder
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
-
-        $res = \GlobalMethods::openProcess($cmd, NULL, $env);
-
-        $this->commandHistory[] = $cmd . PHP_EOL . PHP_EOL . print_r($res, TRUE);
+    
+        $this->process->setTimeout(600);
+    
+        $this->process->run($cmd, null, $env);
+    
+        $this->logger->info($cmd . PHP_EOL . PHP_EOL . $this->process->getOutput());
 
         // First, we'll see if the file was output successfully.
 
         if (!file_exists($outputFile)) {
-            $error = 'The MP3 file appears not to have been created; the command history was *****' . print_r($this->commandHistory, TRUE) . '*****';
-            return array('result' => FALSE, 'error' => $error);
+            $error = 'The MP3 file appears not to have been created; the command'
+                . ' history was *****' . print_r($this->commandHistory, true) . '*****';
+            
+            return array('result' => false, 'error' => $error);
         }
 
-        //We'll use a validation function to analyze the resultant file and ensure that the
-        //file meets our expectations.
+        // We'll use a validation function to analyze the resultant file and ensure that the
+        // file meets our expectations.
+        
         if (!$this->validator->validateAudioFile($outputFile, 'mp3')) {
             $error = 'The MP3 file appears to have been created, but does not validate as such';
-            return array('result' => FALSE, 'error' => $error);
+            return array('result' => false, 'error' => $error);
         }
 
-        return array('result' => TRUE, 'error' => NULL);
+        return array('result' => true, 'error' => null);
     }
 
-    function convertWavToFlac($inputFile, $outputFile)
+    public function convertWavToFlac($inputFile, $outputFile)
     {
         $cmd = 'sox';
 
-        if ($this->singleThreaded === TRUE) {
+        if ($this->singleThreaded === true) {
             $cmd .= ' --single-threaded';
         }
 
@@ -294,42 +300,56 @@ class Transcoder
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
+    
+        $this->process->setTimeout(600);
+    
+        $this->process->run($cmd, null, $env);
+    
+        $this->logger->info($cmd . PHP_EOL . PHP_EOL . $this->process->getOutput());
 
-        $res = \GlobalMethods::openProcess($cmd, NULL, $env);
-
-        $this->commandHistory[] = $cmd . PHP_EOL . PHP_EOL . $res;
-
-        //Grab the file extension to determine the implicit audio format of the
-        //output file.
-        $fileExt = Utility::getFileExt($outputFile);
+        // Grab the file extension to determine the implicit audio format of the
+        // output file.
+        
+        $fileExt = pathinfo($outputFile, PATHINFO_EXTENSION);
+        
         $outputFormat = $fileExt;
 
-        //First, we'll see if the file was output successfully.
+        // First, we'll see if the file was output successfully.
+        
         if (!file_exists($outputFile)) {
-            $error = 'The ' . strtoupper($outputFormat) . ' file appears not to have been created; the command history was *****' . print_r($this->commandHistory, TRUE) . '*****';
-            return array('result' => FALSE, 'error' => $error);
+            $error = 'The ' . strtoupper($outputFormat) . ' file appears not to'
+                . ' have been created; the command history was *****'
+                . print_r($this->commandHistory, true) . '*****';
+            
+            return array('result' => false, 'error' => $error);
         }
 
-        //On the Windows platform, SoX's exit status is not preserved, thus
-        //we must confirm that the operation was completed successfully by
-        //other means.
-        //
-        //We'll use a validation function to analyze the resultant file and ensure that the
-        //file meets our expectations.
+        // On the Windows platform, SoX's exit status is not preserved, thus
+        // we must confirm that the operation was completed successfully by
+        // other means.
+        
+        // We'll use a validation function to analyze the resultant file and ensure that the
+        // file meets our expectations.
 
-        //Grab the file extension to determine the implicit audio format of the
-        //input file.
-        $fileExt = Utility::getFileExt($outputFile);
+        // Grab the file extension to determine the implicit audio format of the
+        // input file.
+        
+        $fileExt = pathinfo($outputFile, PATHINFO_EXTENSION);
+        
         $outputFormat = $fileExt;
 
         $fileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);
 
-        if ($fileDetails === FALSE) {
-            $error = 'The ' . strtoupper($outputFormat) . ' file appears to have been created, but does not validate as such; ensure that the determined audio format (e.g., MP1, MP2, etc.) is in the array of allowable formats';
-            return array('result' => FALSE, 'error' => $error);
+        if ($fileDetails === false) {
+            $error = 'The ' . strtoupper($outputFormat) . ' file appears to have'
+                . ' been created, but does not validate as such; ensure that the'
+                . ' determined audio format (e.g., MP1, MP2, etc.) is in the'
+                . ' array of allowable formats';
+            
+            return array('result' => false, 'error' => $error);
         }
 
-        return array('result' => $fileDetails, 'error' => NULL);
+        return array('result' => $fileDetails, 'error' => null);
     }
 
     /**
@@ -341,7 +361,7 @@ class Transcoder
      * @param string $coverFile
      * @return multitype:boolean string |multitype:boolean NULL
      */
-    function transcodeFlacToAlac($file, $tagData = array(), $allowBlank = FALSE, $coverFile = NULL)
+    public function transcodeFlacToAlac($file, $tagData = array(), $allowBlank = false, $coverFile = null)
     {
         //In avconv/ffmpeg version 9.16 (and possibly earlier), embedded artwork with a
         //width or height that is not divisible by 2 will cause a failure, e.g.:
@@ -369,7 +389,7 @@ class Transcoder
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $r1 = \GlobalMethods::openProcess($cmd1, NULL, $env);
+        $r1 = \GlobalMethods::openProcess($cmd1, null, $env);
 
         if ($r1['exitCode'] == 0) {
             //Write the cover artwork into the file, and fail gracefully.
@@ -378,23 +398,23 @@ class Transcoder
             //(which are indeed case-sensitive).
 
             if (is_string($coverFile) && strlen($coverFile) > 0) {
+                $cmd2 = 'AtomicParsley ' . escapeshellarg($outfile) . ' --artwork '
+                    . escapeshellarg($coverFile) . ' --overWrite';
 
-                $cmd2 = 'AtomicParsley ' . escapeshellarg($outfile) . ' --artwork ' . escapeshellarg($coverFile) . ' --overWrite';
-
-                $r2 = \GlobalMethods::openProcess($cmd2, NULL, $env);
+                $r2 = \GlobalMethods::openProcess($cmd2, null, $env);
 
                 if ($r2['exitCode'] != 0) {
-                    $e = 'The FLAC file was transcoded to an ALAC file successfully, but the album artwork could not be embedded; the command was: "' . $cmd2 . '"';
+                    $e = 'The FLAC file was transcoded to an ALAC file successfully,
+                        but the album artwork could not be embedded; the command was: "' . $cmd2 . '"';
 
                     \GlobalMethods::logCriticalError($e);
                 }
             }
-        }
-        else {
+        } else {
             $error = 'The FLAC file could not be transcoded to an ALAC file; the command was: "' . $cmd1 . '"';
-            return array('result' => FALSE, 'error' => $error);
+            return array('result' => false, 'error' => $error);
         }
 
-        return array('result' => TRUE, 'error' => NULL);
+        return array('result' => true, 'error' => null);
     }
 }
