@@ -25,4 +25,29 @@ class TranscodingTest extends TestCase
             $this->testDir . 'foo.mp3'
         )['result']);
     }
+    
+    public function testConvertingWavToFlacSucceeds()
+    {
+        $this->assertTrue($this->transcoder->convertWavToFlac(
+            $this->testDir . 'foo.wav',
+            $this->testDir . 'foo.flac'
+        )['result']);
+    }
+    
+    public function testTranscodingWavToMp3Succeeds()
+    {
+        $this->assertTrue($this->transcoder->wavToMp3(
+            $this->testDir . 'foo.wav',
+            $this->testDir . 'foo.mp3',
+            'cbr',
+            128
+        )['result']);
+    }
+    
+    public function testConvertingFlacToAlacSucceeds()
+    {
+        $this->assertTrue($this->transcoder->transcodeFlacToAlac(
+            $this->testDir . 'foo.flac'
+        )['result']);
+    }
 }
