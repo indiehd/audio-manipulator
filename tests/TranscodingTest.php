@@ -36,6 +36,11 @@ class TranscodingTest extends TestCase
     
     public function testTranscodingWavToMp3Succeeds()
     {
+        $this->assertTrue($this->transcoder->transcode(
+            $this->testDir . 'foo.flac',
+            $this->testDir . 'foo.wav'
+        )['result']);
+        
         $this->assertTrue($this->transcoder->wavToMp3(
             $this->testDir . 'foo.wav',
             $this->testDir . 'foo.mp3',
