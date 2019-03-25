@@ -8,7 +8,7 @@ use Monolog\Handler\StreamHandler;
 use IndieHD\AudioManipulator\Utility;
 use IndieHD\AudioManipulator\Validation\Validator;
 use IndieHD\AudioManipulator\Tagging\Tagger;
-use IndieHD\AudioManipulator\Process;
+use IndieHD\AudioManipulator\ProcessInterface;
 use IndieHD\AudioManipulator\ProcessFailedException;
 
 class Transcoder
@@ -20,7 +20,7 @@ class Transcoder
     public function __construct(
         Validator $validator,
         Tagger $tagger,
-        Process $process,
+        ProcessInterface $process,
         Logger $logger
     ) {
         $this->validator = $validator;
@@ -148,7 +148,7 @@ class Transcoder
         $env = ['LC_ALL' => 'en_US.utf8'];
 
         $this->process->setTimeout(600);
-    
+
         $this->process->run($cmd, null, $env);
 
         if (!$this->process->isSuccessful()) {
@@ -256,11 +256,11 @@ class Transcoder
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
-    
+
         $this->process->setTimeout(600);
-    
+
         $this->process->run($cmd, null, $env);
-    
+
         $this->logger->info($cmd . PHP_EOL . PHP_EOL . $this->process->getOutput());
 
         // First, we'll see if the file was output successfully.
@@ -268,13 +268,13 @@ class Transcoder
         if (!file_exists($outputFile)) {
             $error = 'The MP3 file appears not to have been created; the command'
                 . ' history was *****' . print_r($this->commandHistory, true) . '*****';
-            
+
             return array('result' => false, 'error' => $error);
         }
 
         // We'll use a validation function to analyze the resultant file and ensure that the
         // file meets our expectations.
-        
+
         if (!$this->validator->validateAudioFile($outputFile, 'mp3')) {
             $error = 'The MP3 file appears to have been created, but does not validate as such';
             return array('result' => false, 'error' => $error);
@@ -300,42 +300,42 @@ class Transcoder
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
-    
+
         $this->process->setTimeout(600);
-    
+
         $this->process->run($cmd, null, $env);
-    
+
         $this->logger->info($cmd . PHP_EOL . PHP_EOL . $this->process->getOutput());
 
         // Grab the file extension to determine the implicit audio format of the
         // output file.
-        
+
         $fileExt = pathinfo($outputFile, PATHINFO_EXTENSION);
-        
+
         $outputFormat = $fileExt;
 
         // First, we'll see if the file was output successfully.
-        
+
         if (!file_exists($outputFile)) {
             $error = 'The ' . strtoupper($outputFormat) . ' file appears not to'
                 . ' have been created; the command history was *****'
                 . print_r($this->commandHistory, true) . '*****';
-            
+
             return array('result' => false, 'error' => $error);
         }
 
         // On the Windows platform, SoX's exit status is not preserved, thus
         // we must confirm that the operation was completed successfully by
         // other means.
-        
+
         // We'll use a validation function to analyze the resultant file and ensure that the
         // file meets our expectations.
 
         // Grab the file extension to determine the implicit audio format of the
         // input file.
-        
+
         $fileExt = pathinfo($outputFile, PATHINFO_EXTENSION);
-        
+
         $outputFormat = $fileExt;
 
         $fileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);
@@ -345,7 +345,7 @@ class Transcoder
                 . ' been created, but does not validate as such; ensure that the'
                 . ' determined audio format (e.g., MP1, MP2, etc.) is in the'
                 . ' array of allowable formats';
-            
+
             return array('result' => false, 'error' => $error);
         }
 
@@ -371,7 +371,9 @@ class Transcoder
 
         $r = $this->tagger->removeArtwork($file);
 
-        $cmd1 = 'ffmpeg -i';
+        // The "-y" switch forces overwriting.
+
+        $cmd1 = 'ffmpeg -y -i';
 
         //Tag data is copied automatically. Nice!!!
 
@@ -389,9 +391,13 @@ class Transcoder
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $r1 = \GlobalMethods::openProcess($cmd1, null, $env);
+        $this->process->setTimeout(600);
 
-        if ($r1['exitCode'] == 0) {
+        $this->process->run($cmd1, null, $env);
+
+        $this->logger->info($cmd1 . PHP_EOL . PHP_EOL . $this->process->getOutput());
+
+        if ($this->process->isSuccessful()) {
             //Write the cover artwork into the file, and fail gracefully.
 
             //Note the unconventional letter-case of the executable name and its options
@@ -401,13 +407,18 @@ class Transcoder
                 $cmd2 = 'AtomicParsley ' . escapeshellarg($outfile) . ' --artwork '
                     . escapeshellarg($coverFile) . ' --overWrite';
 
-                $r2 = \GlobalMethods::openProcess($cmd2, null, $env);
+                $this->process->setTimeout(600);
 
-                if ($r2['exitCode'] != 0) {
+                $this->process->run($cmd2, null, $env);
+
+                if (!$this->process->isSuccessful()) {
                     $e = 'The FLAC file was transcoded to an ALAC file successfully,
                         but the album artwork could not be embedded; the command was: "' . $cmd2 . '"';
 
-                    \GlobalMethods::logCriticalError($e);
+                    $this->logger->error(
+                        $e . PHP_EOL . PHP_EOL . '(stdout) ' . $this->process->getOutput()
+                        . ' (stderr)' . $this->process->getErrorOutput()
+                    );
                 }
             }
         } else {
