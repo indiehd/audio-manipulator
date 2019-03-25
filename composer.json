@@ -20,7 +20,8 @@
 		"php": ">=7.1.0",
 		"symfony/process": "^4.2",
 		"symfony/dependency-injection": "^4.2",
-		"james-heinrich/getid3": "^1.9"
+		"james-heinrich/getid3": "^1.9",
+		"monolog/monolog": "^1.24"
 	},
 	"autoload": {
 		"psr-4": {

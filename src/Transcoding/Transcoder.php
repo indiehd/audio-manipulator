@@ -2,6 +2,9 @@
 
 namespace IndieHD\AudioManipulator\Transcoding;
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 use IndieHD\AudioManipulator\Utility;
 use IndieHD\AudioManipulator\Validation\Validator;
 use IndieHD\AudioManipulator\Tagging\Tagger;
@@ -17,12 +20,20 @@ class Transcoder
     public function __construct(
         Validator $validator,
         Tagger $tagger,
-        Process $process
+        Process $process,
+        Logger $logger
     )
     {
         $this->validator = $validator;
         $this->tagger = $tagger;
         $this->process = $process;
+        $this->logger = $logger;
+
+        // TODO Make the log location configurable.
+
+        $fileHandler = new StreamHandler('storage' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'transcoder.log', Logger::INFO);
+
+        $this->logger->pushHandler($fileHandler);
     }
 
     function transcode(
@@ -52,8 +63,7 @@ class Transcoder
         $valRes = $this->validator->validateAudioFile($inputFile, $inputFormat);
 
         if ($valRes === FALSE) {
-            $error = 'The input file does not validate as a ' . strtoupper($inputFormat) . ' file';
-            return array('result' => FALSE, 'error' => $error);
+            throw new \RuntimeException('The input file does not validate as a ' . strtoupper($inputFormat) . ' file');
         }
 
         // The audio type validation function returns the audio file's
@@ -147,7 +157,7 @@ class Transcoder
             throw new ProcessFailedException($process);
         }
 
-        $this->commandHistory[] = $cmd . PHP_EOL . PHP_EOL . $process->getOutput();
+        $this->logger->info($cmd . PHP_EOL . PHP_EOL . $process->getOutput());
 
         // Grab the file extension to determine the implicit audio format of the
         // output file.
@@ -159,8 +169,7 @@ class Transcoder
         // First, we'll see if the file was output successfully.
 
         if (!file_exists($outputFile)) {
-            $error = 'The ' . strtoupper($outputFormat) . ' file appears not to have been created; the command history was *****' . print_r($this->commandHistory, TRUE) . '*****';
-            return array('result' => FALSE, 'error' => $error);
+            throw new \RuntimeException('The ' . strtoupper($outputFormat) . ' file appears not to have been created');
         }
 
         // On the Windows platform, SoX's exit status is not preserved, thus
@@ -178,9 +187,7 @@ class Transcoder
         $outputFormat = $fileExt;
 
         if (!$this->validator->validateAudioFile($outputFile, $outputFormat)) {
-            $error = 'The ' . strtoupper($outputFormat) . ' file appears to have been created, but does not validate as such; ensure that the determined audio format (e.g., MP1, MP2, etc.) is in the array of allowable formats';
-
-            return ['result' => FALSE, 'error' => $error];
+            throw new \RuntimeException('The ' . strtoupper($outputFormat) . ' file appears to have been created, but does not validate as such; ensure that the determined audio format (e.g., MP1, MP2, etc.) is in the array of allowable formats');
         }
 
         return ['result' => TRUE, 'error' => NULL];

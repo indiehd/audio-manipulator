@@ -2,10 +2,9 @@
 
 namespace IndieHD\AudioManipulator;
 
-#require_once __DIR__.'/../vendor/autoload.php';
-
 use IndieHD\AudioManipulator\Validation\Validator;
 use IndieHD\AudioManipulator\Tagging\Tagger;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 #use IndieHD\AudioManipulator\ContainerBuilder;
@@ -34,17 +33,24 @@ class TranscodingTest extends TestCase
         $containerBuilder->register('tagger', Tagger::class)
             ->addArgument('%tagger.getid3%')
             ->addArgument('%tagger.getid3_tag_writer%');
-        
+
+        $containerBuilder->setParameter('logger.monolog', 'general');
+
+        $containerBuilder->register('logger', Logger::class)
+            ->addArgument('%logger.monolog%');
+
         $containerBuilder->setParameter('transcoder.validator', new Validator());
         $containerBuilder->setParameter('transcoder.tagger', $containerBuilder->get('tagger'));
         $containerBuilder->setParameter('transcoder.process', new Process());
-        
+        $containerBuilder->setParameter('transcoder.logger', $containerBuilder->get('logger'));
+
         $containerBuilder
             ->register('transcoder', Transcoder::class)
             ->addArgument('%transcoder.validator%')
             ->addArgument('%transcoder.tagger%')
-            ->addArgument('%transcoder.process%');
-        
+            ->addArgument('%transcoder.process%')
+            ->addArgument('%transcoder.logger%');
+
         $this->transcoder = $containerBuilder->get('transcoder');
     }
 
