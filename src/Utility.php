@@ -20,7 +20,6 @@ class Utility
         $hours = intval(intval($sec) / 3600);
 
         if ($hours > 0 || ($hours == 0 && $hideHoursIfNone !== true)) {
-
             // Append to $hms, with a leading 0, if the optional parameter is TRUE.
 
             $hms .= ($padValues)
@@ -67,8 +66,7 @@ class Utility
         $secondsDecimal = substr($sec, strrpos($sec, '.'));
 
         if ($sec != $secondsDecimal) {
-
-            //This line will only be excecuted if fractions of a second were
+            //This line will only be executed if fractions of a second were
             //contained in the input value.
 
             $hms .= $secondsDecimal;
