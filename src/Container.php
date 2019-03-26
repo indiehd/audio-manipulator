@@ -11,7 +11,7 @@ use \getid3_writetags;
 use IndieHD\AudioManipulator\Validation\Validator;
 use IndieHD\AudioManipulator\Tagging\Tagger;
 use IndieHD\AudioManipulator\Transcoding\Transcoder;
-use IndieHD\AudioManipulator\Process;
+use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\MediaParsing\MediaParser;
 
 class Container

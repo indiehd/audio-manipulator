@@ -1,9 +1,11 @@
 <?php
 
-namespace IndieHD\AudioManipulator;
+namespace IndieHD\AudioManipulator\Processing;
 
 use Symfony\Component\Process\Process as SymfonyProcess;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+
+use IndieHD\AudioManipulator\Processing\ProcessInterface;
 
 class Process implements ProcessInterface
 {
@@ -27,7 +29,7 @@ class Process implements ProcessInterface
         $this->process->setTimeout($this->timeout);
 
         $this->process->run($callback, $env);
-        
+
         return $this->process;
     }
 
@@ -45,7 +47,7 @@ class Process implements ProcessInterface
     {
         return $this->process->getOutput();
     }
-    
+
     public function getErrorOutput()
     {
         return $this->process->getErrorOutput();

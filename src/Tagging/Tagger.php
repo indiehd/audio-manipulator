@@ -8,8 +8,8 @@ use \getid3_writetags;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-use IndieHD\AudioManipulator\ProcessInterface;
-use IndieHD\AudioManipulator\ProcessFailedException;
+use IndieHD\AudioManipulator\Processing\ProcessInterface;
+use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
 class Tagger
 {

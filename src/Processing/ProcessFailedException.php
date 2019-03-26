@@ -1,10 +1,10 @@
 <?php
 
-namespace IndieHD\AudioManipulator;
+namespace IndieHD\AudioManipulator\Processing;
 
 use Symfony\Component\Process\Exception\ProcessFailedException as SymfonyProcessFailedException;
 
-use IndieHD\AudioManipulator\ProcessInterface;
+use IndieHD\AudioManipulator\Processing\ProcessInterface;
 
 class ProcessFailedException extends SymfonyProcessFailedException
 {

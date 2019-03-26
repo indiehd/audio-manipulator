@@ -12,8 +12,8 @@ use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
 use IndieHD\AudioManipulator\Utility;
 use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Tagging\Tagger;
-use IndieHD\AudioManipulator\ProcessInterface;
-use IndieHD\AudioManipulator\ProcessFailedException;
+use IndieHD\AudioManipulator\Processing\ProcessInterface;
+use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
 class Transcoder implements TranscoderInterface
 {

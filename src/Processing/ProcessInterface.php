@@ -1,6 +1,6 @@
 <?php
 
-namespace IndieHD\AudioManipulator;
+namespace IndieHD\AudioManipulator\Processing;
 
 interface ProcessInterface
 {
@@ -11,6 +11,6 @@ interface ProcessInterface
     public function isSuccessful();
 
     public function getOutput();
-    
+
     public function getErrorOutput();
 }
