@@ -79,4 +79,26 @@ class TranscodingTest extends TestCase
             $this->testDir . 'foo.wav'
         );
     }
+
+    public function testWhenTrimStartTimeSpecifiedAudioIsTrimmed()
+    {
+        // TODO Make the test less brittle by using this data to calculate what
+        // the new track length should be, dynamically.
+
+        $oldFileDetails = $this->transcoder
+            ->validator
+            ->mediaParser
+            ->analyze($this->testDir . 'foo.flac');
+
+        $clipLength = 1;
+
+        $newFileDetails = $this->transcoder->transcode(
+            $this->testDir . 'foo.flac',
+            $this->testDir . 'baz.flac',
+            0,
+            $clipLength
+        );
+
+        $this->assertTrue($newFileDetails['playtime_string'] === '0:01');
+    }
 }
