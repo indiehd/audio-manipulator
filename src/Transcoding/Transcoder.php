@@ -2,23 +2,27 @@
 
 namespace IndieHD\AudioManipulator\Transcoding;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use IndieHD\AudioManipulator\Transcoding\TranscoderInterface;
+use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
 use IndieHD\AudioManipulator\Utility;
-use IndieHD\AudioManipulator\Validation\Validator;
+use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Tagging\Tagger;
 use IndieHD\AudioManipulator\ProcessInterface;
 use IndieHD\AudioManipulator\ProcessFailedException;
 
-class Transcoder
+class Transcoder implements TranscoderInterface
 {
     public $process;
 
     private $singleThreaded = true;
 
     public function __construct(
-        Validator $validator,
+        ValidatorInterface $validator,
         Tagger $tagger,
         ProcessInterface $process,
         Logger $logger
@@ -39,19 +43,19 @@ class Transcoder
         $this->logger->pushHandler($fileHandler);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function transcode(
-        $inputFile,
-        $outputFile,
-        $trackPreviewStart = 0,
-        $performTrim = false,
-        $clipLength = 90,
-        $fadeIn = false,
-        $fadeInLength = 6,
-        $fadeOut = false,
-        $fadeOutLength = 6
+        string $inputFile,
+        string $outputFile,
+        float $trimStartTime = 0,
+        float $clipLength = 90,
+        float $fadeInLength = 0,
+        float $fadeOutLength = 0
     ) {
         if (!file_exists($inputFile)) {
-            throw new \RuntimeException('The input file "' . $inputFile . '" appears not to exist');
+            throw new FileNotFoundException('The input file "' . $inputFile . '" appears not to exist');
         }
 
         // Grab the file extension to determine the implicit audio format of the
@@ -62,17 +66,18 @@ class Transcoder
 
         // Attempt to validate the input file according to its implied file type.
 
-        $valRes = $this->validator->validateAudioFile($inputFile, $inputFormat);
-
-        if ($valRes === false) {
-            throw new \RuntimeException('The input file does not validate as a ' . strtoupper($inputFormat) . ' file');
-        }
-
         // The audio type validation function returns the audio file's
         // details if the validation succeeds. We may as well leverage that
         // for the next step.
 
-        $fileDetails = &$valRes;
+        $fileDetails = $this->validator->validateAudioFile($inputFile, $inputFormat);
+
+        // These toggles default to true, but may be changed hereafter, depending
+        // on the totality of the inputs supplied.
+
+        $performTrim = true;
+        $canFadeIn = true;
+        $canFadeOut = true;
 
         // Determine whether or not the audio file is actually shorter than
         // the specified clip length. This is done to prevent the resultant
@@ -83,20 +88,20 @@ class Transcoder
             // is less than the specified clip length.
 
             $performTrim = false;
-            $fadeIn = false;
-            $fadeOut = false;
+            $canFadeIn = false;
+            $canFadeOut = false;
         }
 
         // This block prevents problems from a track preview start
-        // time that is too far into the track to allow for a 90-second
-        // preview clip.
+        // time that is too far into the track to allow for a preview clip of
+        // the specified length.
 
-        if (($fileDetails['playtime_seconds'] - $trackPreviewStart) < 90) {
-            // We'll force the track preview to start exactly 90 seconds
-            // before the end of the track, thus forcing a 90-second preview
+        if (($fileDetails['playtime_seconds'] - $trimStartTime) < $clipLength) {
+            // We'll force the track preview to start exactly $clipLength seconds
+            // before the end of the track, thus forcing a $clipLength-second preview
             // clip length.
 
-            $trackPreviewStart = $fileDetails['playtime_seconds'] - 90;
+            $trimStartTime = $fileDetails['playtime_seconds'] - $clipLength;
         }
 
         // Convert the clip length from seconds to hh:mm:ss format.
@@ -105,7 +110,7 @@ class Transcoder
 
         $cmd = '';
 
-        //Attempt to create a preview clip.
+        // Attempt to perform the transcoding operation.
 
         $cmd .= 'sox';
 
@@ -123,13 +128,13 @@ class Transcoder
         $cmd .= ' ' . escapeshellarg($outputFile);
 
         if ($performTrim !== false) {
-            $cmd .= ' trim ' . escapeshellarg($trackPreviewStart) . ' ' . escapeshellarg($clipLength);
+            $cmd .= ' trim ' . escapeshellarg($trimStartTime) . ' ' . escapeshellarg($clipLength);
         }
 
-        if ($fadeIn !== false || $fadeOut !== false) {
+        if ($canFadeIn !== false || $canFadeOut !== false) {
             $cmd .= ' fade q ';
 
-            if ($fadeIn === false) {
+            if ($canFadeIn === false) {
                 // Setting a fade-in length of zero in SoX is the
                 // same as having no fade-in at all.
 
@@ -138,7 +143,7 @@ class Transcoder
 
             $cmd .= escapeshellarg($fadeInLength);
 
-            if ($fadeOut !== false) {
+            if ($canFadeOut !== false) {
                 $cmd .= ' ' . escapeshellarg($clipLength) . ' ' . escapeshellarg($fadeOutLength);
             }
         }
@@ -185,14 +190,16 @@ class Transcoder
 
         $outputFormat = $fileExt;
 
-        if (!$this->validator->validateAudioFile($outputFile, $outputFormat)) {
-            throw new \RuntimeException('The ' . strtoupper($outputFormat)
+        $newFileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);
+
+        if (!$newFileDetails) {
+            throw new InvalidAudioFileException('The ' . strtoupper($outputFormat)
                 . ' file appears to have been created, but does not validate as'
                 . ' such; ensure that the determined audio format (e.g., MP1,'
                 . ' MP2, etc.) is in the array of allowable formats');
         }
 
-        return ['result' => true, 'error' => null];
+        return $newFileDetails;
     }
 
     //Accepts a WAV file as input and converts the audio data to
