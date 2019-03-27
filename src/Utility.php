@@ -78,4 +78,21 @@ class Utility
 
         return $hms;
     }
+
+    /**
+     * Converts hours:minutes:seconds to seconds format.
+     *
+     * @see http://snipplr.com/view/16089/convert-hhmmss-to-seconds/
+     * @param $hms
+     * @return float|int
+     */
+    public static function hms2sec($hms)
+    {
+        list($h, $m, $s) = explode(":", $hms);
+        $seconds = 0;
+        $seconds += (intval($h) * 3600);
+        $seconds += (intval($m) * 60);
+        $seconds += (intval($s));
+        return $seconds;
+    }
 }
