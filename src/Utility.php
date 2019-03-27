@@ -4,9 +4,15 @@ namespace IndieHD\AudioManipulator;
 
 class Utility
 {
-    /*
-     * Convert seconds to hours:minutes:seconds format.
+    /**
+     * Converts seconds to hours:minutes:seconds format.
+     *
      * @see: http://www.laughing-buddha.net/jon/php/sec2hms/
+     * @param $sec
+     * @param bool $hideHoursIfNone
+     * @param bool $padValues
+     * @param bool $useUnits
+     * @return string
      */
     public static function sec2hms($sec, $hideHoursIfNone = true, $padValues = false, $useUnits = false)
     {
@@ -83,7 +89,7 @@ class Utility
      * Converts hours:minutes:seconds to seconds format.
      *
      * @see http://snipplr.com/view/16089/convert-hhmmss-to-seconds/
-     * @param $hms
+     * @param string $hms
      * @return float|int
      */
     public static function hms2sec($hms)
