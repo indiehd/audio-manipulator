@@ -20,6 +20,11 @@ class TranscodingTest extends TestCase
         $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR;
     }
 
+    /**
+     * Ensure that a FLAC file can be transcoded to an MP3 file.
+     *
+     * @return void
+     */
     public function testTranscodingFlacToMp3Succeeds()
     {
         $this->testDir =
@@ -30,6 +35,11 @@ class TranscodingTest extends TestCase
         ));
     }
 
+    /**
+     * Ensure that a WAV file can be coverted to a FLAC file.
+     *
+     * @return void
+     */
     public function testConvertingWavToFlacSucceeds()
     {
         $this->assertIsArray($this->transcoder->convertWavToFlac(
@@ -38,6 +48,11 @@ class TranscodingTest extends TestCase
         )['result']);
     }
 
+    /**
+     * Ensure that a WAV file can be transcoded to an MP3 file.
+     *
+     * @return void
+     */
     public function testTranscodingWavToMp3Succeeds()
     {
         $this->assertIsArray($this->transcoder->transcode(
@@ -53,6 +68,11 @@ class TranscodingTest extends TestCase
         )['result']);
     }
 
+    /**
+     * Ensure that a FLAC file can be converted to an ALAC file.
+     *
+     * @return void
+     */
     public function testConvertingFlacToAlacSucceeds()
     {
         $this->assertTrue($this->transcoder->transcodeFlacToAlac(
@@ -80,17 +100,19 @@ class TranscodingTest extends TestCase
         );
     }
 
-    public function testWhenTrimStartTimeSpecifiedAudioIsTrimmed()
+    public function testWhenClipLengthIsSpecifiedAudioIsTrimmed()
     {
-        // TODO Make the test less brittle by using this data to calculate what
-        // the new track length should be, dynamically.
+        $clipLength = 1;
 
         $oldFileDetails = $this->transcoder
             ->validator
             ->mediaParser
             ->analyze($this->testDir . 'foo.flac');
 
-        $clipLength = 1;
+        // This test requires that the specified clip-length is less than the
+        // input track length.
+
+        $this->assertLessThan($oldFileDetails['playtime_seconds'], $clipLength);
 
         $newFileDetails = $this->transcoder->transcode(
             $this->testDir . 'foo.flac',
@@ -99,6 +121,8 @@ class TranscodingTest extends TestCase
             $clipLength
         );
 
-        $this->assertTrue($newFileDetails['playtime_string'] === '0:01');
+        // The playtime in seconds should equal the specified clip-length.
+
+        $this->assertTrue($newFileDetails['playtime_seconds'] === 1);
     }
 }
