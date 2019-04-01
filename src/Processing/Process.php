@@ -10,11 +10,12 @@ use IndieHD\AudioManipulator\Processing\ProcessInterface;
 class Process implements ProcessInterface
 {
     protected $process;
+    protected $command;
     protected $timeout;
 
-    public function setProcess($process)
+    public function setProcess(array $command)
     {
-        $this->process = $process;
+        $this->process = new SymfonyProcess(join(' ', $command));
     }
 
     public function getProcess()
@@ -22,10 +23,20 @@ class Process implements ProcessInterface
         return $this->process;
     }
 
-    public function run(string $command, callable $callback = null, $env = [])
+    public function setCommand(array $command)
     {
-        $this->process = new SymfonyProcess($command);
+        $this->command = $command;
 
+        $this->setProcess($command);
+    }
+
+    public function getCommand()
+    {
+        return $this->command;
+    }
+
+    public function run(callable $callback = null, $env = [])
+    {
         $this->process->setTimeout($this->timeout);
 
         $this->process->run($callback, $env);
