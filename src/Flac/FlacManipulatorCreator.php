@@ -5,7 +5,7 @@ namespace IndieHD\AudioManipulator\Flac;
 use IndieHD\AudioManipulator\Converting\ConverterInterface;
 use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 
-class FlacManipulatorCreator
+class FlacManipulatorCreator implements FlacManipulatorCreatorInterface
 {
     public function __construct(
         ConverterInterface $converter,
