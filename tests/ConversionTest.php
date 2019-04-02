@@ -8,16 +8,18 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
 
-class TranscodingTest extends TestCase
+class ConversionTest extends TestCase
 {
     /**
      * @inheritdoc
      */
     public function setUp(): void
     {
-        $this->transcoder = app()->builder->get('transcoder');
-
         $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR;
+
+        $this->flacManipulatorCreator = app()->builder->get('flac_manipulator_creator');
+
+        $this->flacManipulator = $this->flacManipulatorCreator->create($this->testDir . 'foo.flac');
     }
 
     /**
@@ -27,16 +29,16 @@ class TranscodingTest extends TestCase
      */
     public function testTranscodingFlacToMp3Succeeds()
     {
-        $this->testDir =
-
-        $this->assertIsArray($this->transcoder->transcode(
-            $this->testDir . 'foo.flac',
-            $this->testDir . 'foo.mp3'
-        ));
+        $this->assertIsArray(
+            $this->flacManipulator->converter->writeFile(
+                $this->flacManipulator->getFile(),
+                $this->testDir . 'foo.mp3'
+            )
+        );
     }
 
     /**
-     * Ensure that a WAV file can be coverted to a FLAC file.
+     * Ensure that a WAV file can be converted to a FLAC file.
      *
      * @return void
      */
@@ -75,9 +77,10 @@ class TranscodingTest extends TestCase
      */
     public function testConvertingFlacToAlacSucceeds()
     {
-        $this->assertTrue($this->transcoder->transcodeFlacToAlac(
-            $this->testDir . 'foo.flac'
-        )['result']);
+        $this->assertIsArray($this->flacManipulator->converter->writeFile(
+            $this->flacManipulator->getFile(),
+            $this->testDir . 'foo.mp3'
+        ));
     }
 
     public function testExceptionIsThrownWhenInputFileDoesNotExist()
