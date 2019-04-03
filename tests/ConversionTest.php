@@ -30,7 +30,7 @@ class ConversionTest extends TestCase
     public function testTranscodingFlacToMp3Succeeds()
     {
         $this->assertIsArray(
-            $this->flacManipulator->converter->writeFile(
+            $this->flacManipulator->converter->toMp3(
                 $this->flacManipulator->getFile(),
                 $this->testDir . 'foo.mp3'
             )
@@ -77,10 +77,12 @@ class ConversionTest extends TestCase
      */
     public function testConvertingFlacToAlacSucceeds()
     {
-        $this->assertIsArray($this->flacManipulator->converter->writeFile(
-            $this->flacManipulator->getFile(),
-            $this->testDir . 'foo.mp3'
-        ));
+        $this->assertIsArray(
+            $this->flacManipulator->converter->toAlac(
+                $this->flacManipulator->getFile(),
+                $this->testDir . 'foo.m4a'
+            )
+        );
     }
 
     public function testExceptionIsThrownWhenInputFileDoesNotExist()
