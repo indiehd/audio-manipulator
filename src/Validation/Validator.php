@@ -28,7 +28,8 @@ class Validator implements ValidatorInterface
         $validTypes = [
             'wav',
             'flac',
-            'mp3'
+            'mp3',
+            'm4a',
         ];
 
         if (!in_array($type, $validTypes)) {
