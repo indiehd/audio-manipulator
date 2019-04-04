@@ -10,8 +10,13 @@ use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Mp3\Mp3WriterInterface;
 use IndieHD\AudioManipulator\Alac\AlacWriterInterface;
+use IndieHD\AudioManipulator\Wav\WavWriterInterface;
 
-class FlacConverter implements ConverterInterface, Mp3WriterInterface, AlacWriterInterface
+class FlacConverter implements
+    ConverterInterface,
+    Mp3WriterInterface,
+    AlacWriterInterface,
+    WavWriterInterface
 {
     private $validator;
     private $process;
@@ -277,6 +282,11 @@ class FlacConverter implements ConverterInterface, Mp3WriterInterface, AlacWrite
         }
 
         return $newFileDetails;
+    }
+
+    public function toWav(string $inputFile, string $outputFile): array
+    {
+        return $this->writeFile($inputFile, $outputFile);
     }
 
     public function applyEffect($effect): bool
