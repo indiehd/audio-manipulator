@@ -138,6 +138,8 @@ class FlacTagger implements TaggerInterface
             return array('result' => false, 'error' => $error);
         }
 
+        $tagData = $this->generateGetid3Tag($tagData);
+
         if (empty($tagData['date'][0]) || $tagData['date'][0] === 'Unknown') {
             unset($tagData['date']);
         }
@@ -348,9 +350,9 @@ class FlacTagger implements TaggerInterface
      * @param $musicStoreId
      * @return array|bool
      */
-    public function generateGetid3Tag($musicStoreId)
+    public function generateGetid3Tag(array $tagData): array
     {
-        $songDetails = $this->getSongDetails($musicStoreId);
+        $songDetails = $tagData;
 
         if ($songDetails === false) {
             return false;
@@ -410,22 +412,6 @@ class FlacTagger implements TaggerInterface
         $tagData['genre'][0] = $this->getGenreText($songDetails['genre']);
 
         return $tagData;
-    }
-
-    public function getSongDetails()
-    {
-        return [
-            'songId' => 1,
-            'name' => 'Test Song',
-            'songOrder' => 1,
-            'trackPreviewStart' => 0,
-            'moniker' => 'Foobius Barius',
-            'title' => 'Test Title',
-            'year' => '1981',
-            'genre' => 1,
-            'albumId' => 1,
-            'license' => 'All rights reserved.',
-        ];
     }
 
     public function sanitizeFilenameComponent($string)
