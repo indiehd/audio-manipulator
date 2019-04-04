@@ -8,9 +8,11 @@ use Monolog\Logger;
 use \getID3;
 use \getid3_writetags;
 
-use IndieHD\AudioManipulator\Flac\FlacConverter;
 use IndieHD\AudioManipulator\Flac\FlacManipulatorCreator;
+use IndieHD\AudioManipulator\Flac\FlacConverter;
 use IndieHD\AudioManipulator\Flac\FlacTagger;
+use IndieHD\AudioManipulator\Wav\WavManipulatorCreator;
+use IndieHD\AudioManipulator\Wav\WavConverter;
 use IndieHD\AudioManipulator\Mp3\Mp3ManipulatorCreator;
 use IndieHD\AudioManipulator\Mp3\Mp3Converter;
 use IndieHD\AudioManipulator\Mp3\Mp3Tagger;
@@ -110,6 +112,26 @@ class Container
             ->register('mp3_manipulator_creator', Mp3ManipulatorCreator::class)
             ->addArgument('%mp3_manipulator_creator.converter%')
             ->addArgument('%mp3_manipulator_creator.tagger%');
+
+        // WAV Converter.
+
+        $containerBuilder->setParameter('wav_converter.validator', $containerBuilder->get('validator'));
+        $containerBuilder->setParameter('wav_converter.process', new Process());
+        $containerBuilder->setParameter('wav_converter.logger', $containerBuilder->get('logger'));
+
+        $containerBuilder
+            ->register('wav_converter', WavConverter::class)
+            ->addArgument('%wav_converter.validator%')
+            ->addArgument('%wav_converter.process%')
+            ->addArgument('%wav_converter.logger%');
+
+        // WAV Manipulator.
+
+        $containerBuilder->setParameter('wav_manipulator_creator.converter', $containerBuilder->get('wav_converter'));
+
+        $containerBuilder
+            ->register('wav_manipulator_creator', WavManipulatorCreator::class)
+            ->addArgument('%wav_manipulator_creator.converter%');
 
         //
 
