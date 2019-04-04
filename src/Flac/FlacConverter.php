@@ -115,6 +115,8 @@ class FlacConverter implements
 
         $cmd[] = 'sox';
 
+        // TODO Deal with this.
+
         #if ($this->singleThreaded === true) {
             $cmd[] = ' --single-threaded';
         #}
@@ -127,6 +129,8 @@ class FlacConverter implements
         $cmd[] = ' ' . escapeshellarg($inputFile);
         $cmd[] = ' --channels 2';
         $cmd[] = ' ' . escapeshellarg($outputFile);
+
+        // TODO Deal with this.
 
         /*
         if ($performTrim !== false) {
