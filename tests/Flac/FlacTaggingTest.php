@@ -31,7 +31,18 @@ class FlacTaggingTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->tagger->writeTags(
                 $this->flacManipulator->getFile(),
-                $this->flacManipulator->tagger->generateGetid3Tag(1)
+                [
+                    'songId' => 1,
+                    'name' => 'Test Song',
+                    'songOrder' => 1,
+                    'trackPreviewStart' => 0,
+                    'moniker' => 'Foobius Barius',
+                    'title' => 'Test Title',
+                    'year' => '1981',
+                    'genre' => 1,
+                    'albumId' => 1,
+                    'license' => 'All rights reserved.',
+                ]
             )
         );
     }
