@@ -1,6 +1,6 @@
 <?php
 
-namespace IndieHD\AudioManipulator;
+namespace IndieHD\AudioManipulator\Tests\Flac;
 
 use PHPUnit\Framework\TestCase;
 
@@ -11,10 +11,10 @@ class FlacTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR
-            . 'samples' . DIRECTORY_SEPARATOR;
+        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
+            . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR;
 
-        $this->flacManipulatorCreator = app()->builder
+        $this->flacManipulatorCreator = \IndieHD\AudioManipulator\app()->builder
             ->get('flac_manipulator_creator');
 
         $this->flacManipulator = $this->flacManipulatorCreator
