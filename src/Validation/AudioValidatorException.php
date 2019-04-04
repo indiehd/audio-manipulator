@@ -1,6 +1,6 @@
 <?php
 
-namespace IndieHD\AudioManipulator\Exceptions;
+namespace IndieHD\AudioManipulator\Validation;
 
 class AudioValidatorException extends \Exception
 {

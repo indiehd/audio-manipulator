@@ -11,8 +11,8 @@ use Monolog\Handler\StreamHandler;
 
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 
-use IndieHD\AudioManipulator\Exceptions\AudioTaggerException;
-use IndieHD\AudioManipulator\Exceptions\AudioValidatorException;
+use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
+use IndieHD\AudioManipulator\Validation\AudioValidatorException;
 
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;

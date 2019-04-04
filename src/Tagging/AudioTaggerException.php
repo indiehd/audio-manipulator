@@ -1,6 +1,6 @@
 <?php
 
-namespace IndieHD\AudioManipulator\Exceptions;
+namespace IndieHD\AudioManipulator\Tagging;
 
 class AudioTaggerException extends \Exception
 {
