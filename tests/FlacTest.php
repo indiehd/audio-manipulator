@@ -50,4 +50,19 @@ class FlacTest extends TestCase
             )
         );
     }
+
+    /**
+     * Ensure that a FLAC file can be converted to an ALAC file.
+     *
+     * @return void
+     */
+    public function testFlacManipulatorCanConvertToAlac()
+    {
+        $this->assertIsArray(
+            $this->flacManipulator->converter->toAlac(
+                $this->flacManipulator->getFile(),
+                $this->testDir . 'foo.m4a'
+            )
+        );
+    }
 }

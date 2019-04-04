@@ -23,21 +23,6 @@ class ConversionTest extends TestCase
     }
 
     /**
-     * Ensure that a FLAC file can be transcoded to an MP3 file.
-     *
-     * @return void
-     */
-    public function testTranscodingFlacToMp3Succeeds()
-    {
-        $this->assertIsArray(
-            $this->flacManipulator->converter->toMp3(
-                $this->flacManipulator->getFile(),
-                $this->testDir . 'foo.mp3'
-            )
-        );
-    }
-
-    /**
      * Ensure that a WAV file can be converted to a FLAC file.
      *
      * @return void
@@ -68,21 +53,6 @@ class ConversionTest extends TestCase
             'cbr',
             128
         )['result']);
-    }
-
-    /**
-     * Ensure that a FLAC file can be converted to an ALAC file.
-     *
-     * @return void
-     */
-    public function testConvertingFlacToAlacSucceeds()
-    {
-        $this->assertIsArray(
-            $this->flacManipulator->converter->toAlac(
-                $this->flacManipulator->getFile(),
-                $this->testDir . 'foo.m4a'
-            )
-        );
     }
 
     public function testExceptionIsThrownWhenInputFileDoesNotExist()
