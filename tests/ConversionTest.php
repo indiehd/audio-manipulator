@@ -22,39 +22,6 @@ class ConversionTest extends TestCase
         $this->flacManipulator = $this->flacManipulatorCreator->create($this->testDir . 'foo.flac');
     }
 
-    /**
-     * Ensure that a WAV file can be converted to a FLAC file.
-     *
-     * @return void
-     */
-    public function testConvertingWavToFlacSucceeds()
-    {
-        $this->assertIsArray($this->transcoder->convertWavToFlac(
-            $this->testDir . 'foo.wav',
-            $this->testDir . 'foo.flac'
-        )['result']);
-    }
-
-    /**
-     * Ensure that a WAV file can be transcoded to an MP3 file.
-     *
-     * @return void
-     */
-    public function testTranscodingWavToMp3Succeeds()
-    {
-        $this->assertIsArray($this->transcoder->transcode(
-            $this->testDir . 'foo.flac',
-            $this->testDir . 'foo.wav'
-        ));
-
-        $this->assertTrue($this->transcoder->wavToMp3(
-            $this->testDir . 'foo.wav',
-            $this->testDir . 'foo.mp3',
-            'cbr',
-            128
-        )['result']);
-    }
-
     public function testExceptionIsThrownWhenInputFileDoesNotExist()
     {
         $this->expectException(FileNotFoundException::class);
