@@ -22,26 +22,6 @@ class ConversionTest extends TestCase
         $this->flacManipulator = $this->flacManipulatorCreator->create($this->testDir . 'foo.flac');
     }
 
-    public function testExceptionIsThrownWhenInputFileDoesNotExist()
-    {
-        $this->expectException(FileNotFoundException::class);
-
-        $this->transcoder->transcode(
-            $this->testDir . 'bar.flac',
-            $this->testDir . 'bar.wav'
-        );
-    }
-
-    public function testExceptionIsThrownWhenInputFileTypeIsInvalid()
-    {
-        $this->expectException(InvalidAudioFileException::class);
-
-        $this->transcoder->transcode(
-            $this->testDir . 'foo.txt',
-            $this->testDir . 'foo.wav'
-        );
-    }
-
     public function testWhenClipLengthIsSpecifiedAudioIsTrimmed()
     {
         $clipLength = 1;

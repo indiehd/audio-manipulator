@@ -27,7 +27,8 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"IndieHD\\AudioManipulator\\": "src/"
+			"IndieHD\\AudioManipulator\\": "src/",
+			"IndieHD\\AudioManipulator\\Tests\\": "tests/"
 		},
 		"files": ["src/Bootstrap.php"]
 	},
