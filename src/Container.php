@@ -8,6 +8,8 @@ use Monolog\Logger;
 use \getID3;
 use \getid3_writetags;
 
+use IndieHD\FilenameSanitizer\FilenameSanitizer;
+
 use IndieHD\AudioManipulator\Flac\FlacManipulatorCreator;
 use IndieHD\AudioManipulator\Flac\FlacConverter;
 use IndieHD\AudioManipulator\Flac\FlacTagger;
@@ -17,8 +19,6 @@ use IndieHD\AudioManipulator\Mp3\Mp3ManipulatorCreator;
 use IndieHD\AudioManipulator\Mp3\Mp3Converter;
 use IndieHD\AudioManipulator\Mp3\Mp3Tagger;
 use IndieHD\AudioManipulator\Validation\Validator;
-use IndieHD\AudioManipulator\Tagging\Tagger;
-use IndieHD\AudioManipulator\Transcoding\Transcoder;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\MediaParsing\MediaParser;
 
@@ -42,33 +42,6 @@ class Container
         $containerBuilder->register('validator', Validator::class)
             ->addArgument('%validator.media_parser%');
 
-        // Tagger.
-
-        $containerBuilder->setParameter('tagger.getid3', new getID3);
-        $containerBuilder->setParameter('tagger.getid3_tag_writer', new getid3_writetags);
-        $containerBuilder->setParameter('tagger.process', new Process());
-        $containerBuilder->setParameter('tagger.logger', $containerBuilder->get('logger'));
-
-        $containerBuilder->register('tagger', Tagger::class)
-            ->addArgument('%tagger.getid3%')
-            ->addArgument('%tagger.getid3_tag_writer%')
-            ->addArgument('%tagger.process%')
-            ->addArgument('%tagger.logger%');
-
-        // Transcoder.
-
-        $containerBuilder->setParameter('transcoder.validator', $containerBuilder->get('validator'));
-        $containerBuilder->setParameter('transcoder.tagger', $containerBuilder->get('tagger'));
-        $containerBuilder->setParameter('transcoder.process', new Process());
-        $containerBuilder->setParameter('transcoder.logger', $containerBuilder->get('logger'));
-
-        $containerBuilder
-            ->register('transcoder', Transcoder::class)
-            ->addArgument('%transcoder.validator%')
-            ->addArgument('%transcoder.tagger%')
-            ->addArgument('%transcoder.process%')
-            ->addArgument('%transcoder.logger%');
-
         // FLAC Converter.
 
         $containerBuilder->setParameter('flac_converter.validator', $containerBuilder->get('validator'));
@@ -81,10 +54,25 @@ class Container
             ->addArgument('%flac_converter.process%')
             ->addArgument('%flac_converter.logger%');
 
+        // FLAC Tagger.
+
+        $containerBuilder->setParameter('flac_tagger.getid3', new getID3);
+        $containerBuilder->setParameter('flac_tagger.getid3_tag_writer', new getid3_writetags);
+        $containerBuilder->setParameter('flac_tagger.process', new Process());
+        $containerBuilder->setParameter('flac_tagger.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('flac_tagger.filename_sanitizer', new FilenameSanitizer());
+
+        $containerBuilder->register('flac_tagger', FlacTagger::class)
+            ->addArgument('%flac_tagger.getid3%')
+            ->addArgument('%flac_tagger.getid3_tag_writer%')
+            ->addArgument('%flac_tagger.process%')
+            ->addArgument('%flac_tagger.logger%')
+            ->addArgument('%flac_tagger.filename_sanitizer%');
+
         // FLAC Manipulator.
 
         $containerBuilder->setParameter('flac_manipulator_creator.converter', $containerBuilder->get('flac_converter'));
-        $containerBuilder->setParameter('flac_manipulator_creator.tagger', new FlacTagger());
+        $containerBuilder->setParameter('flac_manipulator_creator.tagger', $containerBuilder->get('flac_tagger'));
 
         $containerBuilder
             ->register('flac_manipulator_creator', FlacManipulatorCreator::class)

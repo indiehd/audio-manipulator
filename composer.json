@@ -21,7 +21,9 @@
 		"symfony/process": "^4.2",
 		"symfony/dependency-injection": "^4.2",
 		"james-heinrich/getid3": "^1.9",
-		"monolog/monolog": "^1.24"
+		"monolog/monolog": "^1.24",
+		"league/flysystem": "^1.0",
+		"indiehd/filename-sanitizer": "^0.1.0"
 	},
 	"autoload": {
 		"psr-4": {

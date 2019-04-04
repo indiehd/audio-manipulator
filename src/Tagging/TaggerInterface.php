@@ -4,7 +4,7 @@ namespace IndieHD\AudioManipulator\Tagging;
 
 interface TaggerInterface
 {
-    public function writeTags(array $tagData);
+    public function writeTags(string $file, array $tagData, string $coverFile = null): array;
 
     public function removeTags(array $data);
 

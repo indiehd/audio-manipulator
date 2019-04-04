@@ -6,7 +6,14 @@ use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 
 class Mp3Tagger implements TaggerInterface
 {
-    public function writeTags(array $tagData)
+    /**
+     * Add a metadata tags to an MP3 file. The $tagData input value should
+     * be an array that was generated using Music::generateGetid3Tag().
+     * Note that a couple  of small tag manipulations must occur
+     * for the tag, which is created using the vorbiscomment standard,
+     * to be suitable for an MP3 file.
+     */
+    public function writeTags(string $file, array $tagData, string $coverFile = null): array
     {
         if (!file_exists($file)) {
             $error = 'The input file appears not to exist';
@@ -251,5 +258,41 @@ class Mp3Tagger implements TaggerInterface
     public function removeArtwork()
     {
         // TODO: Implement removeArtwork() method.
+    }
+
+    /**
+     * Largely from the getID3 Write demo.
+     *
+     * @param $imageFile
+     * @return array
+     */
+    protected function prepareCoverImageForTag($imageFile)
+    {
+        ob_start();
+
+        if ($fd = fopen($imageFile, 'rb')) {
+            ob_end_clean();
+
+            $apicData = fread($fd, filesize($imageFile));
+
+            fclose($fd);
+
+            list($APIC_width, $APIC_height, $apicImageTypeId) = getimagesize($imageFile);
+
+            $imageTypes = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
+
+            if (isset($imageTypes[$apicImageTypeId])) {
+                return array('result' => $apicData, 'error' => null);
+            } else {
+                $error = 'Invalid image format (with APIC image type ID '
+                    . $apicImageTypeId . ') (only GIF, JPEG, and PNG are supported)';
+
+                return array('result' => false, 'error' => $error);
+            }
+        } else {
+            ob_end_clean();
+            $error = 'Cannot open ' . $imageFile . ': ' . ob_get_contents();
+            return array('result' => false, 'error' => $error);
+        }
     }
 }
