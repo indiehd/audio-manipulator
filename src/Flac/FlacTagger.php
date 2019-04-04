@@ -11,6 +11,9 @@ use Monolog\Handler\StreamHandler;
 
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 
+use IndieHD\AudioManipulator\Exceptions\AudioTaggerException;
+use IndieHD\AudioManipulator\Exceptions\AudioValidatorException;
+
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
@@ -27,7 +30,7 @@ class FlacTagger implements TaggerInterface
         LoggerInterface $logger,
         FilenameSanitizerInterface $filenameSanitizer
     ) {
-        $this->getId3 = $getid3;
+        $this->getid3 = $getid3;
         $this->writeTags= $writeTags;
         $this->process = $process;
         $this->logger = $logger;
@@ -57,38 +60,22 @@ class FlacTagger implements TaggerInterface
     public function writeTags(string $file, array $tagData, string $coverFile = null): array
     {
         if (!file_exists($file)) {
-            $error = 'The input file appears not to exist';
-            return array('result' => false, 'error' => $error);
-        }
-
-        //Instantiate the getID3 object.
-
-        $gid3 = new getID3;
-
-        if (!is_object($gid3)) {
-            $error = 'The getID3 object could not be instantiated';
-            return array('result' => false, 'error' => $error);
+            throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
         }
 
         //Attempt to acquire the audio file's properties.
 
-        $fileDetails = $gid3->analyze($file);
-
-        if (!is_array($fileDetails)) {
-            $error = 'getID3\'s analyze() method did not return a usable array';
-            return array('result' => false, 'error' => $error);
-        }
+        $fileDetails = $this->getid3->analyze($file);
 
         // Ensure that the file on which we're attempting to operate is indeed
         // a FLAC file.
 
-        // Note: we could use the self::validateAudioFile() method, but there's
+        // Note: we could use our internal audio validation method, but there's
         // no reason to waste the time/memory required to call that function
         // when we have to call getID3's analyze() method again.
 
         if (!isset($fileDetails['fileformat']) || $fileDetails['fileformat'] != 'flac') {
-            $error = 'The audio file does not validate as a FLAC file';
-            return array('result' => false, 'error' => $error);
+            throw new AudioValidatorException('The audio file does not validate as a FLAC file');
         }
 
         //A counter to store the number of tags that we attempted to write.
@@ -96,7 +83,7 @@ class FlacTagger implements TaggerInterface
         $numWritesAttempted = 0;
 
         // TODO Removing all tags as a matter of course is problematic because
-        // the Artist may have added custom tags that they spend considerable
+        // the Artist may have added custom tags that he/she spent considerable
         // time creating, as in the case of normalization data. It should be
         // determined whether or not this is still necessary.
 
@@ -115,27 +102,21 @@ class FlacTagger implements TaggerInterface
 
         $cmd[] = '--remove-all';
 
-        $cmd[] =  escapeshellarg($file);
+        $cmd[] = escapeshellarg($file);
 
         $this->runProcess($cmd);
 
         // Attempt to acquire the audio file's properties, again, now that
         // we've attempted to remove any existing tags.
 
-        $fileDetails = $gid3->analyze($file);
-
-        if (!is_array($fileDetails)) {
-            $error = 'getID3\'s analyze() method did not return a usable array';
-            return array('result' => false, 'error' => $error);
-        }
+        $fileDetails = $this->getid3->analyze($file);
 
         // We attempted to remove all tags from the FLAC file; we can
         // determine whether or not we were successful in that effort by
         // checking to see if the vorbiscomment block is present in the file.
 
         if (isset($fileDetails['tags']['vorbiscomment'])) {
-            $error = 'The vorbiscomment block was not removed for some reason';
-            return array('result' => false, 'error' => $error);
+            throw new AudioTaggerException('The vorbiscomment block was not removed for some reason');
         }
 
         $tagData = $this->generateGetid3Tag($tagData);
@@ -181,14 +162,9 @@ class FlacTagger implements TaggerInterface
         // Attempt to acquire the audio file's properties, again, now that we've
         // attempted to write new tags.
 
-        $fileDetails = $gid3->analyze($file);
+        $fileDetails = $this->getid3->analyze($file);
 
         $prefix = 'getID3\'s analyze() method';
-
-        if (!is_array($fileDetails)) {
-            $error = $prefix . ' did not return a usable array';
-            return array('result' => false, 'error' => $error);
-        }
 
         // TODO Determine what this was used for and whether or not it needs to stay.
 

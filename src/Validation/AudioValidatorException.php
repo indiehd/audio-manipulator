@@ -2,7 +2,7 @@
 
 namespace IndieHD\AudioManipulator\Exceptions;
 
-class AudioManipulatorException extends \Exception
+class AudioValidatorException extends \Exception
 {
 
 
