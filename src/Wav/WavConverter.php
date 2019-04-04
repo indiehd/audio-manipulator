@@ -4,6 +4,8 @@ namespace IndieHD\AudioManipulator\Wav;
 
 use Psr\Log\LoggerInterface;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Converting\ConverterInterface;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
