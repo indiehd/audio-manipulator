@@ -31,7 +31,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toMp3(
                 $this->flacManipulator->getFile(),
-                'bar.mp3'
+                $this->testDir . 'bar.mp3'
             )
         );
     }
@@ -46,7 +46,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toWav(
                 $this->flacManipulator->getFile(),
-                'bar.wav'
+                $this->testDir . 'bar.wav'
             )
         );
     }
@@ -61,7 +61,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toAlac(
                 $this->flacManipulator->getFile(),
-                $this->testDir . 'foo.m4a'
+                $this->testDir . 'bar.m4a'
             )
         );
     }
