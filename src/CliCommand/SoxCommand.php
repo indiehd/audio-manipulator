@@ -6,6 +6,8 @@ use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
 
 class SoxCommand extends CliCommand implements SoxCommandInterface
 {
+    private $name = 'sox_command';
+
     protected $binary = 'sox';
 
     protected $parts = [
@@ -20,7 +22,7 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
 
     public function name(): string
     {
-        return 'sox_command';
+        return $this->name;
     }
 
     public function addPart(string $name, string $value): void
@@ -45,5 +47,30 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         }
 
         return $command;
+    }
+
+    public function singleThreaded(): void
+    {
+        $this->addPart('gopts', '--single-threaded');
+    }
+
+    public function verbosity(int $level): void
+    {
+        $this->addPart('gopts', '-V' . (string) $level);
+    }
+
+    public function input(string $inputFile): void
+    {
+        $this->addPart('infile', escapeshellarg($inputFile));
+    }
+
+    public function channels(int $channels): void
+    {
+        $this->addPart('fopts-in', '--channels ' . $channels);
+    }
+
+    public function output(string $outputFile): void
+    {
+        $this->addPart('outfile', escapeshellarg($outputFile));
     }
 }

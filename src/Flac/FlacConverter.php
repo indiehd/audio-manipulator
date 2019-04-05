@@ -11,7 +11,7 @@ use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Mp3\Mp3WriterInterface;
 use IndieHD\AudioManipulator\Alac\AlacWriterInterface;
 use IndieHD\AudioManipulator\Wav\WavWriterInterface;
-use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
+use IndieHD\AudioManipulator\Effects\EffectInterface;
 
 class FlacConverter implements
     ConverterInterface,
@@ -29,12 +29,12 @@ class FlacConverter implements
         ValidatorInterface $validator,
         ProcessInterface $process,
         LoggerInterface $logger,
-        SoxCommandInterface $soxCommand
+        EffectInterface $effect
     ) {
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
-        $this->soxCommand = $soxCommand;
+        $this->effect = $effect;
 
         $this->supportedOutputFormats = [
             'wav',
@@ -119,20 +119,20 @@ class FlacConverter implements
         // TODO Deal with this.
 
         #if ($this->singleThreaded === true) {
-            $this->soxCommand->addPart('gopts', '--single-threaded');
+            $this->effect->command->singleThreaded();
         #}
 
         // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
 
         setlocale(LC_CTYPE, 'en_US.UTF-8');
 
-        $this->soxCommand->addPart('gopts', '-V4');
+        $this->effect->command->verbosity(4);
 
-        $this->soxCommand->addPart('infile', escapeshellarg($inputFile));
+        $this->effect->command->input($inputFile);
 
-        $this->soxCommand->addPart('fopts-in', '--channels 2');
+        $this->effect->command->channels(2);
 
-        $this->soxCommand->addPart('outfile', escapeshellarg($outputFile));
+        $this->effect->command->output($outputFile);
 
         // TODO Deal with this.
 
@@ -163,7 +163,7 @@ class FlacConverter implements
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $this->process->setCommand($this->soxCommand->compose());
+        $this->process->setCommand($this->effect->getCommand()->compose());
 
         $this->process->setTimeout(600);
 
@@ -295,10 +295,5 @@ class FlacConverter implements
     public function toWav(string $inputFile, string $outputFile): array
     {
         return $this->writeFile($inputFile, $outputFile);
-    }
-
-    public function applyEffect($effect): bool
-    {
-        // TODO: Implement applyEffect() method.
     }
 }
