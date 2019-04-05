@@ -21,6 +21,7 @@ use IndieHD\AudioManipulator\Mp3\Mp3Tagger;
 use IndieHD\AudioManipulator\Validation\Validator;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\MediaParsing\MediaParser;
+use IndieHD\AudioManipulator\CliCommand\SoxCommand;
 
 class Container
 {
@@ -47,12 +48,14 @@ class Container
         $containerBuilder->setParameter('flac_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('flac_converter.process', new Process());
         $containerBuilder->setParameter('flac_converter.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('flac_converter.sox_command', new SoxCommand());
 
         $containerBuilder
             ->register('flac_converter', FlacConverter::class)
             ->addArgument('%flac_converter.validator%')
             ->addArgument('%flac_converter.process%')
-            ->addArgument('%flac_converter.logger%');
+            ->addArgument('%flac_converter.logger%')
+            ->addArgument('%flac_converter.sox_command%');
 
         // FLAC Tagger.
 
