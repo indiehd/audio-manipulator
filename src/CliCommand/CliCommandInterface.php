@@ -6,7 +6,7 @@ interface CliCommandInterface
 {
     public function name(): string;
 
-    public function addPart(string $name, string $value): void;
+    public function addArgument(string $name, string $value): void;
 
     public function compose(): array;
 }

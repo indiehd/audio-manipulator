@@ -6,7 +6,7 @@ use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
 
 class SoxCommand extends CliCommand implements SoxCommandInterface
 {
-    private $name = 'sox_command';
+    protected $name = 'sox_command';
 
     protected $binary = 'sox';
 
@@ -25,7 +25,7 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         return $this->name;
     }
 
-    public function addPart(string $name, string $value): void
+    public function addArgument(string $name, string $value): void
     {
         if (!array_key_exists($name, $this->parts)) {
             throw new \InvalidArgumentException(
@@ -51,26 +51,26 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
 
     public function singleThreaded(): void
     {
-        $this->addPart('gopts', '--single-threaded');
+        $this->addArgument('gopts', '--single-threaded');
     }
 
     public function verbosity(int $level): void
     {
-        $this->addPart('gopts', '-V' . (string) $level);
+        $this->addArgument('gopts', '-V' . (string) $level);
     }
 
     public function input(string $inputFile): void
     {
-        $this->addPart('infile', escapeshellarg($inputFile));
+        $this->addArgument('infile', escapeshellarg($inputFile));
     }
 
     public function channels(int $channels): void
     {
-        $this->addPart('fopts-in', '--channels ' . $channels);
+        $this->addArgument('fopts-in', '--channels ' . $channels);
     }
 
     public function output(string $outputFile): void
     {
-        $this->addPart('outfile', escapeshellarg($outputFile));
+        $this->addArgument('outfile', escapeshellarg($outputFile));
     }
 }
