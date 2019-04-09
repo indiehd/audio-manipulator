@@ -20,9 +20,19 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         'effopt' => [],     // Effect options
     ];
 
-    public function name(): string
+    public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getBinary(): string
+    {
+        return $this->binary;
+    }
+
+    public function getCommandParts(): array
+    {
+        return $this->parts;
     }
 
     public function addArgument(string $name, string $value): void
@@ -72,5 +82,30 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
     public function output(string $outputFile): void
     {
         $this->addArgument('outfile', escapeshellarg($outputFile));
+    }
+
+    public function fade(
+        string $type = null,
+        float $fadeInLength,
+        float $stopPosition = null,
+        float $fadeOutLength = null
+    ): void {
+        $effect = ['fade'];
+
+        if (!is_null($type)) {
+            $effect[] = $type;
+        }
+
+        $effect[] = $fadeInLength;
+
+        if (!is_null($stopPosition)) {
+            $effect[] = $stopPosition;
+
+            if (!is_null($fadeOutLength)) {
+                $effect[] = $fadeOutLength;
+            }
+        }
+
+        $this->addArgument('effopt', implode(' ', $effect));
     }
 }
