@@ -2,7 +2,7 @@
 	"name": "indiehd/audio-manipulator",
 	"type": "library",
 	"description": "Library for manipulating audio files (validating, transcoding, and tagging)",
-	"keywords": ["audio","flac","mp3"],
+	"keywords": ["audio","flac","mp3","wav","alac"],
 	"homepage": "https://github.com/indiehd/audio-manipulator",
 	"license": "MIT",
 	"authors": [
