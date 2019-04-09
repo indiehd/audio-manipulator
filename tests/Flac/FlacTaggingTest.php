@@ -6,19 +6,25 @@ use PHPUnit\Framework\TestCase;
 
 class FlacTaggingTest extends TestCase
 {
+    private $testDir;
+
+    private $tmpDir;
+
     /**
      * @inheritdoc
      */
     public function setUp(): void
     {
         $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
-            . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR;
+            . DIRECTORY_SEPARATOR;
+
+        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
 
         $this->flacManipulatorCreator = \IndieHD\AudioManipulator\app()->builder
             ->get('flac_manipulator_creator');
 
         $this->flacManipulator = $this->flacManipulatorCreator
-            ->create($this->testDir . 'foo.flac');
+            ->create($this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac');
     }
 
     /**

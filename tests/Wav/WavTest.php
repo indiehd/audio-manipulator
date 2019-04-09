@@ -11,14 +11,16 @@ class WavTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR
-            . 'samples' . DIRECTORY_SEPARATOR;
+        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
+            . DIRECTORY_SEPARATOR;
+
+        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
 
         $this->wavManipulatorCreator = app()->builder
             ->get('wav_manipulator_creator');
 
         $this->wavManipulator = $this->wavManipulatorCreator
-            ->create($this->testDir . 'foo.wav');
+            ->create($this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.wav');
     }
 
     /**

@@ -18,7 +18,7 @@ class CliCommandTest extends TestCase
 
     public function testCommandIsComposedCorrectly()
     {
-        $this->soxCommand->addPart('gopts', '--single-threaded');
+        $this->soxCommand->addArgument('gopts', '--single-threaded');
 
         $this->assertEquals('sox --single-threaded', implode(' ', $this->soxCommand->compose()));
     }

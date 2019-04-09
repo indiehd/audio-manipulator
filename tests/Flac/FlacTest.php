@@ -6,19 +6,25 @@ use PHPUnit\Framework\TestCase;
 
 class FlacTest extends TestCase
 {
+    private $testDir;
+
+    private $tmpDir;
+
     /**
      * @inheritdoc
      */
     public function setUp(): void
     {
         $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
-            . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR;
+            . DIRECTORY_SEPARATOR;
+
+        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
 
         $this->flacManipulatorCreator = \IndieHD\AudioManipulator\app()->builder
             ->get('flac_manipulator_creator');
 
         $this->flacManipulator = $this->flacManipulatorCreator
-            ->create($this->testDir . 'foo.flac');
+            ->create($this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac');
     }
 
     /**
@@ -31,7 +37,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toMp3(
                 $this->flacManipulator->getFile(),
-                $this->testDir . 'bar.mp3'
+                $this->tmpDir . 'foo.mp3'
             )
         );
     }
@@ -46,7 +52,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toWav(
                 $this->flacManipulator->getFile(),
-                $this->testDir . 'bar.wav'
+                $this->tmpDir . 'foo.wav'
             )
         );
     }
@@ -61,7 +67,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toAlac(
                 $this->flacManipulator->getFile(),
-                $this->testDir . 'bar.m4a'
+                $this->tmpDir . 'foo.m4a'
             )
         );
     }
