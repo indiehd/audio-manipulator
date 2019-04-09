@@ -10,6 +10,10 @@ class FlacTest extends TestCase
 
     private $tmpDir;
 
+    private $sampleFile;
+
+    private $tmpFile;
+
     /**
      * @inheritdoc
      */
@@ -20,11 +24,17 @@ class FlacTest extends TestCase
 
         $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
 
+        $this->sampleFile = $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac';
+
+        $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test.flac';
+
+        copy($this->sampleFile, $this->tmpFile);
+
         $this->flacManipulatorCreator = \IndieHD\AudioManipulator\app()->builder
             ->get('flac_manipulator_creator');
 
         $this->flacManipulator = $this->flacManipulatorCreator
-            ->create($this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac');
+            ->create($this->tmpFile);
     }
 
     /**

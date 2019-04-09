@@ -6,6 +6,14 @@ use PHPUnit\Framework\TestCase;
 
 class WavTest extends TestCase
 {
+    private $testDir;
+
+    private $tmpDir;
+
+    private $sampleFile;
+
+    private $tmpFile;
+
     /**
      * @inheritdoc
      */
@@ -16,11 +24,17 @@ class WavTest extends TestCase
 
         $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
 
+        $this->sampleFile = $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.wav';
+
+        $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test.wav';
+
+        copy($this->sampleFile, $this->tmpFile);
+
         $this->wavManipulatorCreator = app()->builder
             ->get('wav_manipulator_creator');
 
         $this->wavManipulator = $this->wavManipulatorCreator
-            ->create($this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.wav');
+            ->create($this->tmpFile);
     }
 
     /**
@@ -33,7 +47,7 @@ class WavTest extends TestCase
         $this->assertIsArray(
             $this->wavManipulator->converter->toMp3(
                 $this->wavManipulator->getFile(),
-                'bar.mp3'
+                $this->tmpDir . 'foo.mp3'
             )
         );
     }
@@ -48,7 +62,7 @@ class WavTest extends TestCase
         $this->assertIsArray(
             $this->wavManipulator->converter->toFlac(
                 $this->wavManipulator->getFile(),
-                'bar.flac'
+                $this->tmpDir . 'foo.flac'
             )
         );
     }
@@ -63,7 +77,7 @@ class WavTest extends TestCase
         $this->assertIsArray(
             $this->wavManipulator->converter->toAlac(
                 $this->wavManipulator->getFile(),
-                $this->testDir . 'foo.m4a'
+                $this->tmpDir . 'foo.m4a'
             )
         );
     }
