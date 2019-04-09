@@ -7,6 +7,9 @@ php:
 
 sudo: false
 
+before_install:
+  - sudo apt-get -y install sox libsox3 libsox-dev libsox-fmt-all flac lame ffmpeg atomicparsley
+
 before_script:
 - composer install --no-interaction
 
