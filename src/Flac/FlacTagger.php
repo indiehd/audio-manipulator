@@ -2,8 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Flac;
 
-use \getID3;
-use \getid3_writetags;
+use getID3;
+use getid3_writetags;
 
 use Psr\Log\LoggerInterface;
 use Monolog\Logger;
