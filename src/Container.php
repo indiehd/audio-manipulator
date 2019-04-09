@@ -68,7 +68,7 @@ class Container
 
         // FLAC Tagger.
 
-        $containerBuilder->setParameter('flac_tagger.getid3', new getID3);
+        $containerBuilder->setParameter('flac_tagger.getid3', new getID3());
         $containerBuilder->setParameter('flac_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('flac_tagger.process', new Process());
         $containerBuilder->setParameter('flac_tagger.logger', $containerBuilder->get('logger'));
@@ -103,10 +103,27 @@ class Container
             ->addArgument('%mp3_converter.process%')
             ->addArgument('%mp3_converter.logger%');
 
+        // MP3 Tagger.
+
+        $containerBuilder->setParameter('mp3_tagger.validator', $containerBuilder->get('validator'));
+        $containerBuilder->setParameter('mp3_tagger.getid3', new getID3());
+        $containerBuilder->setParameter('mp3_tagger.getid3_tag_writer', new getid3_writetags);
+        $containerBuilder->setParameter('mp3_tagger.process', new Process());
+        $containerBuilder->setParameter('mp3_tagger.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('mp3_tagger.filename_sanitizer', new FilenameSanitizer());
+
+        $containerBuilder->register('mp3_tagger', Mp3Tagger::class)
+            ->addArgument('%mp3_tagger.validator%')
+            ->addArgument('%mp3_tagger.getid3%')
+            ->addArgument('%mp3_tagger.getid3_tag_writer%')
+            ->addArgument('%mp3_tagger.process%')
+            ->addArgument('%mp3_tagger.logger%')
+            ->addArgument('%mp3_tagger.filename_sanitizer%');
+
         // MP3 Manipulator.
 
         $containerBuilder->setParameter('mp3_manipulator_creator.converter', $containerBuilder->get('mp3_converter'));
-        $containerBuilder->setParameter('mp3_manipulator_creator.tagger', new Mp3Tagger());
+        $containerBuilder->setParameter('mp3_manipulator_creator.tagger', $containerBuilder->get('mp3_tagger'));
 
         $containerBuilder
             ->register('mp3_manipulator_creator', Mp3ManipulatorCreator::class)
