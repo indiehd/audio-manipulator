@@ -19,7 +19,11 @@ abstract class CliCommand implements CliCommandInterface
 
     protected $parts;
 
-    abstract public function name(): string;
+    abstract public function getName(): string;
+
+    abstract public function getBinary(): string;
+
+    abstract public function getCommandParts(): array;
 
     abstract public function addArgument(string $name, string $value): void;
 }
