@@ -22,8 +22,8 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
 
     public function __construct()
     {
-        if (!empty($_ENV['SOX_BINARY'])) {
-            $this->binary = $_ENV['SOX_BINARY'];
+        if (!empty(getenv('SOX_BINARY'))) {
+            $this->binary = getenv('SOX_BINARY');
         }
     }
 

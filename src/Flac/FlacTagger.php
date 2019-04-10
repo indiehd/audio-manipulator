@@ -100,7 +100,7 @@ class FlacTagger implements TaggerInterface
 
         $cmd = [];
 
-        $cmd[] = !empty($_ENV['METAFLAC_BINARY']) ? $_ENV['METAFLAC_BINARY'] : 'metaflac';
+        $cmd[] = !empty(getenv('METAFLAC_BINARY')) ? getenv('METAFLAC_BINARY') : 'metaflac';
 
         $cmd[] = '--remove-all';
 
@@ -150,7 +150,7 @@ class FlacTagger implements TaggerInterface
 
                 $cmd = [];
 
-                $cmd[] = !empty($_ENV['METAFLAC_BINARY']) ? $_ENV['METAFLAC_BINARY'] : 'metaflac';
+                $cmd[] = !empty(getenv('METAFLAC_BINARY')) ? getenv('METAFLAC_BINARY') : 'metaflac';
 
                 $cmd[] = '--set-tag=' . escapeshellarg(ucfirst($fieldName))
                     . '=' . escapeshellarg($fieldValue);
