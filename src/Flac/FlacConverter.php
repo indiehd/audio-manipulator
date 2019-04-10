@@ -112,25 +112,23 @@ class FlacConverter implements
     }
 
     /**
-     * Important: NEVER call this function on a "master" file, as it removes the
-     * artwork from THAT file (and not a copy)!
      * @param string $inputFile
      * @param string $outputFile
      * @return array
      */
     public function toAlac(string $inputFile, string $outputFile): array
     {
-        $fileDetails = $this->validateFile($inputFile);
+        $this->validateFile($inputFile);
 
-        //In avconv/ffmpeg version 9.16 (and possibly earlier), embedded artwork with a
-        //width or height that is not divisible by 2 will cause a failure, e.g.:
-        //"width not divisible by 2 (1419x1419)". So, we must strip any "odd" artwork.
-        //It's entirely possible that artwork was not copied in earlier versions, so
-        //this error did not occur.
+        // In avconv/ffmpeg version 9.16 (and possibly earlier), embedded artwork with a
+        // width or height that is not divisible by 2 will cause a failure, e.g.:
+        // "width not divisible by 2 (1419x1419)". So, we must strip any "odd" artwork.
+        // It's entirely possible that artwork was not copied in earlier versions, so
+        // this error did not occur.
 
         // TODO Determine whether or not this is still necessary.
 
-        //$this->tagger->removeArtwork($inputFile);
+        #$this->tagger->removeArtwork($inputFile);
 
         $cmd = [];
 
