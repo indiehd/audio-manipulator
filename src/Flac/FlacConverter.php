@@ -234,7 +234,7 @@ class FlacConverter implements
 
         // The "-y" switch forces overwriting.
 
-        $cmd[] = 'ffmpeg';
+        $cmd[] = !empty($_ENV['FFMPEG_BINARY']) ? $_ENV['FFMPEG_BINARY'] : 'ffmpeg';
         $cmd[] = '-y';
         $cmd[] = '-i';
 

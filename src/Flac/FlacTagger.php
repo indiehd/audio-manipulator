@@ -98,7 +98,9 @@ class FlacTagger implements TaggerInterface
 
         setlocale(LC_CTYPE, 'en_US.UTF-8');
 
-        $cmd = ['metaflac'];
+        $cmd = [];
+
+        $cmd = !empty($_ENV['METAFLAC_BINARY']) ? $_ENV['METAFLAC_BINARY'] : 'metaflac';
 
         $cmd[] = '--remove-all';
 
@@ -146,7 +148,9 @@ class FlacTagger implements TaggerInterface
                 // --set-tag option; using the deprecated option will cause the command to
                 // fail on systems on which the option is not supported.
 
-                $cmd = ['metaflac'];
+                $cmd = [];
+
+                $cmd = !empty($_ENV['METAFLAC_BINARY']) ? $_ENV['METAFLAC_BINARY'] : 'metaflac';
 
                 $cmd[] = '--set-tag=' . escapeshellarg(ucfirst($fieldName))
                     . '=' . escapeshellarg($fieldValue);

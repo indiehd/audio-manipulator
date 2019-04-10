@@ -20,6 +20,13 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         'effopt' => [],     // Effect options
     ];
 
+    public function __construct()
+    {
+        if (!empty($_ENV['SOX_BINARY'])) {
+            $this->binary = $_ENV['SOX_BINARY'];
+        }
+    }
+
     public function getName(): string
     {
         return $this->name;
