@@ -7,6 +7,9 @@ php:
 
 sudo: false
 
+env:
+  - FFMPEG_BINARY=avconv
+
 before_install:
   - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac lame libav-tools atomicparsley
 
