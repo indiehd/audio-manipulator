@@ -19,11 +19,47 @@ abstract class CliCommand implements CliCommandInterface
 
     protected $parts;
 
-    abstract public function getName(): string;
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
-    abstract public function getBinary(): string;
+    public function getBinary(): string
+    {
+        return $this->binary;
+    }
 
-    abstract public function getCommandParts(): array;
+    public function getCommandParts(): array
+    {
+        return $this->parts;
+    }
 
-    abstract public function addArgument(string $name, string $value): void;
+    public function addArgument(string $name, string $value): void
+    {
+        if (!array_key_exists($name, $this->parts)) {
+            throw new \InvalidArgumentException(
+                'The "' . $this->binary . '" command does not contain a part named "' . $name . '"'
+            );
+        }
+
+        array_push($this->parts[$name], $value);
+    }
+
+    public function compose(): array
+    {
+        $command = [$this->binary];
+
+        foreach ($this->parts as $values) {
+            foreach ($values as $value) {
+                $command[] = $value;
+            }
+        }
+
+        return $command;
+    }
+
+    public function asString(): string
+    {
+        return implode(' ', $this->compose());
+    }
 }

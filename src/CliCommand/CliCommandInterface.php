@@ -13,4 +13,6 @@ interface CliCommandInterface
     public function addArgument(string $name, string $value): void;
 
     public function compose(): array;
+
+    public function asString(): string;
 }
