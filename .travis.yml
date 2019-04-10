@@ -1,0 +1,28 @@
+language: php
+
+php:
+  - '7.1'
+  - '7.2'
+  - '7.3'
+
+sudo: false
+
+env:
+  - FFMPEG_BINARY=avconv
+
+before_install:
+  - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac lame libav-tools atomicparsley
+
+before_script:
+- composer install --no-interaction
+
+script:
+  - mkdir -p build/logs
+  - vendor/bin/phpunit tests --coverage-clover build/logs/clover.xml
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls
+
+notifications:
+  email:
+    on_failure: change

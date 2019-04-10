@@ -1,4 +1,6 @@
-<?php namespace IndieTorrent\AudioManipulator\Exceptions;
+<?php
+
+namespace IndieHD\AudioManipulator\Exceptions;
 
 class AudioManipulatorException extends \Exception
 {
