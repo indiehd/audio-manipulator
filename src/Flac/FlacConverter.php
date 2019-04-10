@@ -51,115 +51,17 @@ class FlacConverter implements
 
     public function validateFile($inputFile): array
     {
-        if (!file_exists($inputFile)) {
-            throw new FileNotFoundException('The input file "' . $inputFile . '" appears not to exist');
-        }
-
-        // Grab the file extension to determine the implicit audio format of the
-        // input file.
-
-        $fileExt = pathinfo($inputFile, PATHINFO_EXTENSION);
-        $inputFormat = $fileExt;
-
-        // Attempt to validate the input file according to its implied file type.
-
-        // The audio type validation function returns the audio file's
-        // details if the validation succeeds. We may as well leverage that
-        // for the next step.
-
-        return $this->validator->validateAudioFile($inputFile, $inputFormat);
+        return $this->validator->validateAudioFile($inputFile, 'flac');
     }
 
     public function writeFile(string $inputFile, string $outputFile): array
     {
-        $fileDetails = $this->validateFile($inputFile);
-
-        /*
-        // These toggles default to true, but may be changed hereafter, depending
-        // on the totality of the inputs supplied.
-
-        $performTrim = true;
-        $canFadeIn = true;
-        $canFadeOut = true;
-
-        // Determine whether or not the audio file is actually shorter than
-        // the specified clip length. This is done to prevent the resultant
-        // file from being padded with silence.
-
-        if ($fileDetails['playtime_seconds'] < $clipLength) {
-            // No trim or fades are necessary if the play-time
-            // is less than the specified clip length.
-
-            $performTrim = false;
-            $canFadeIn = false;
-            $canFadeOut = false;
-        }
-
-        // This block prevents problems from a track preview start
-        // time that is too far into the track to allow for a preview clip of
-        // the specified length.
-
-        if (($fileDetails['playtime_seconds'] - $trimStartTime) < $clipLength) {
-            // We'll force the track preview to start exactly $clipLength seconds
-            // before the end of the track, thus forcing a $clipLength-second preview
-            // clip length.
-
-            $trimStartTime = $fileDetails['playtime_seconds'] - $clipLength;
-        }
-
-        // Convert the clip length from seconds to hh:mm:ss format.
-
-        $clipLength = Utility::sec2hms($clipLength, false, false);
-        */
-
-        $cmd = [];
-
-        // Attempt to perform the transcoding operation.
-
-        // TODO Deal with this.
-
-        #if ($this->singleThreaded === true) {
-            $this->effect->command->singleThreaded();
-        #}
-
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-        $this->effect->command->verbosity(4);
-
         $this->effect->command->input($inputFile);
-
-        $this->effect->command->channels(2);
 
         $this->effect->command->output($outputFile);
 
-        // TODO Deal with this.
-
-        /*
-        if ($performTrim !== false) {
-            $cmd[] = ' trim ' . escapeshellarg($trimStartTime) . ' ' . escapeshellarg($clipLength);
-        }
-
-        if ($canFadeIn !== false || $canFadeOut !== false) {
-            $cmd[] = ' fade q ';
-
-            if ($canFadeIn === false) {
-                // Setting a fade-in length of zero in SoX is the
-                // same as having no fade-in at all.
-
-                $fadeInLength = '0';
-            }
-
-            $cmd[] = escapeshellarg($fadeInLength);
-
-            if ($canFadeOut !== false) {
-                $cmd[] = ' ' . escapeshellarg($clipLength) . ' ' . escapeshellarg($fadeOutLength);
-            }
-        }
-        */
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
+        // character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
