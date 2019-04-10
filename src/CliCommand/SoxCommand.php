@@ -27,45 +27,6 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         }
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getBinary(): string
-    {
-        return $this->binary;
-    }
-
-    public function getCommandParts(): array
-    {
-        return $this->parts;
-    }
-
-    public function addArgument(string $name, string $value): void
-    {
-        if (!array_key_exists($name, $this->parts)) {
-            throw new \InvalidArgumentException(
-                'The "' . $this->binary . '" command does not contain a part named "' . $name . '"'
-            );
-        }
-
-        array_push($this->parts[$name], $value);
-    }
-
-    public function compose(): array
-    {
-        $command = [$this->binary];
-
-        foreach ($this->parts as $values) {
-            foreach ($values as $value) {
-                $command[] = $value;
-            }
-        }
-
-        return $command;
-    }
-
     public function singleThreaded(): void
     {
         $this->addArgument('gopts', '--single-threaded');
