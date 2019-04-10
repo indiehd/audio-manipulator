@@ -25,7 +25,7 @@ class SoxCommandTest extends TestCase
         $this->assertIsArray($this->soxCommand->getCommandParts());
     }
 
-    public function testCommandIsComposedCorrectly()
+    public function testItComposesCommandCorrectly()
     {
         // These commands are purposely placed in a non-sequential order to prove
         // that the composition order is not contingent upon the order in which
@@ -47,21 +47,67 @@ class SoxCommandTest extends TestCase
 
         $this->assertEquals(
             'sox --single-threaded --channels 2 test.flac --no-clobber test.wav fade q 0.5 1 0.5',
-            implode(' ', $this->soxCommand->compose())
+            $this->soxCommand->asString()
         );
     }
 
-    public function testFadeCommandIsComposedCorrectly()
+    public function testItComposesSingleThreadedCommandCorrectly()
     {
-        $this->soxCommand->addArgument('infile', 'test.flac');
+        $this->soxCommand->singleThreaded();
 
-        $this->soxCommand->addArgument('outfile', 'faded.flac');
+        $this->assertEquals(
+            'sox --single-threaded',
+            $this->soxCommand->asString()
+        );
+    }
 
+    public function testItComposesVerbosityCommandCorrectly()
+    {
+        $this->soxCommand->verbosity(4);
+
+        $this->assertEquals(
+            'sox -V4',
+            $this->soxCommand->asString()
+        );
+    }
+
+    public function testItComposesInputCommandCorrectly()
+    {
+        $this->soxCommand->input('test.flac');
+
+        $this->assertEquals(
+            "sox 'test.flac'",
+            $this->soxCommand->asString()
+        );
+    }
+
+    public function testItComposesChannelsCommandCorrectly()
+    {
+        $this->soxCommand->channels(2);
+
+        $this->assertEquals(
+            'sox --channels 2',
+            $this->soxCommand->asString()
+        );
+    }
+
+    public function testItComposesOutputCommandCorrectly()
+    {
+        $this->soxCommand->output('out.flac');
+
+        $this->assertEquals(
+            "sox 'out.flac'",
+            $this->soxCommand->asString()
+        );
+    }
+
+    public function testItComposesFadeCommandCorrectly()
+    {
         $this->soxCommand->fade('q', 0.5, 1, 0.5);
 
         $this->assertEquals(
-            'sox test.flac faded.flac fade q 0.5 1 0.5',
-            implode(' ', $this->soxCommand->compose())
+            'sox fade q 0.5 1 0.5',
+            $this->soxCommand->asString()
         );
     }
 }
