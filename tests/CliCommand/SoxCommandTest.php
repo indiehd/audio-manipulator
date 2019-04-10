@@ -25,6 +25,13 @@ class SoxCommandTest extends TestCase
         $this->assertIsArray($this->soxCommand->getCommandParts());
     }
 
+    public function testItThrowsInvalidArgumentExceptionWhenCommandPartIsInvalid()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->soxCommand->addArgument('foo', 'bar');
+    }
+
     public function testItComposesCommandCorrectly()
     {
         // These commands are purposely placed in a non-sequential order to prove
