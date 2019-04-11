@@ -2,6 +2,7 @@
 
 namespace IndieHD\AudioManipulator\Flac;
 
+use IndieHD\AudioManipulator\Effects\EffectInterface;
 use Psr\Log\LoggerInterface;
 
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
@@ -23,8 +24,7 @@ class FlacConverter implements
     private $validator;
     private $process;
     private $logger;
-    private $flacEffect;
-    private $alacEffect;
+    private $effect;
 
     protected $supportedOutputFormats;
 
@@ -32,14 +32,12 @@ class FlacConverter implements
         ValidatorInterface $validator,
         ProcessInterface $process,
         LoggerInterface $logger,
-        FlacEffectInterface $flacEffect,
-        AlacEffectInterface $alacEffect
+        EffectInterface $effect
     ) {
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
-        $this->flacEffect = $flacEffect;
-        $this->alacEffect = $alacEffect;
+        $this->effect = $effect;
 
         $this->supportedOutputFormats = [
             'wav',
@@ -61,16 +59,16 @@ class FlacConverter implements
 
     public function writeFile(string $inputFile, string $outputFile): array
     {
-        $this->flacEffect->command->input($inputFile);
+        $this->effect->flac()->command->input($inputFile);
 
-        $this->flacEffect->command->output($outputFile);
+        $this->effect->flac()->command->output($outputFile);
 
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
         // character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $this->process->setCommand($this->flacEffect->getCommand()->compose());
+        $this->process->setCommand($this->effect->flac()->command->compose());
 
         $this->process->setTimeout(600);
 
@@ -135,20 +133,20 @@ class FlacConverter implements
 
         #$this->tagger->removeArtwork($inputFile);
 
-        $this->alacEffect->command->input($inputFile);
+        $this->effect->alac()->command->input($inputFile);
 
-        $this->alacEffect->command->output($outputFile);
+        $this->effect->alac()->command->output($outputFile);
 
-        $this->alacEffect->command->overwriteOutput($outputFile);
+        $this->effect->alac()->command->overwriteOutput($outputFile);
 
-        $this->alacEffect->command->forceAudioCodec('alac');
+        $this->effect->alac()->command->forceAudioCodec('alac');
 
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
         // character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $this->process->setCommand($this->alacEffect->getCommand()->compose());
+        $this->process->setCommand($this->effect->alac()->command->compose());
 
         $this->process->setTimeout(600);
 
