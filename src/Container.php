@@ -25,6 +25,7 @@ use IndieHD\AudioManipulator\Flac\FlacEffects;
 use IndieHD\AudioManipulator\Alac\AlacEffects;
 use IndieHD\AudioManipulator\CliCommand\SoxCommand;
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommand;
+use IndieHD\AudioManipulator\CliCommand\MetaflacCommand;
 
 class Container
 {
@@ -85,13 +86,15 @@ class Container
         $containerBuilder->setParameter('flac_tagger.process', new Process());
         $containerBuilder->setParameter('flac_tagger.logger', $containerBuilder->get('logger'));
         $containerBuilder->setParameter('flac_tagger.filename_sanitizer', new FilenameSanitizer());
+        $containerBuilder->setParameter('flac_tagger.cli_command', new MetaflacCommand());
 
         $containerBuilder->register('flac_tagger', FlacTagger::class)
             ->addArgument('%flac_tagger.getid3%')
             ->addArgument('%flac_tagger.getid3_tag_writer%')
             ->addArgument('%flac_tagger.process%')
             ->addArgument('%flac_tagger.logger%')
-            ->addArgument('%flac_tagger.filename_sanitizer%');
+            ->addArgument('%flac_tagger.filename_sanitizer%')
+            ->addArgument('%flac_tagger.cli_command%');
 
         // FLAC Manipulator.
 
