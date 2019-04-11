@@ -11,7 +11,8 @@ use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Mp3\Mp3WriterInterface;
 use IndieHD\AudioManipulator\Alac\AlacWriterInterface;
 use IndieHD\AudioManipulator\Wav\WavWriterInterface;
-use IndieHD\AudioManipulator\Effects\EffectInterface;
+use IndieHD\AudioManipulator\Flac\FlacEffectInterface;
+use IndieHD\AudioManipulator\Alac\AlacEffectInterface;
 
 class FlacConverter implements
     ConverterInterface,
@@ -22,6 +23,8 @@ class FlacConverter implements
     private $validator;
     private $process;
     private $logger;
+    private $flacEffect;
+    private $alacEffect;
 
     protected $supportedOutputFormats;
 
@@ -29,12 +32,14 @@ class FlacConverter implements
         ValidatorInterface $validator,
         ProcessInterface $process,
         LoggerInterface $logger,
-        EffectInterface $effect
+        FlacEffectInterface $flacEffect,
+        AlacEffectInterface $alacEffect
     ) {
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
-        $this->effect = $effect;
+        $this->flacEffect = $flacEffect;
+        $this->alacEffect = $alacEffect;
 
         $this->supportedOutputFormats = [
             'wav',
@@ -56,16 +61,16 @@ class FlacConverter implements
 
     public function writeFile(string $inputFile, string $outputFile): array
     {
-        $this->effect->command->input($inputFile);
+        $this->flacEffect->command->input($inputFile);
 
-        $this->effect->command->output($outputFile);
+        $this->flacEffect->command->output($outputFile);
 
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
         // character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $this->process->setCommand($this->effect->getCommand()->compose());
+        $this->process->setCommand($this->flacEffect->getCommand()->compose());
 
         $this->process->setTimeout(600);
 
@@ -130,32 +135,20 @@ class FlacConverter implements
 
         #$this->tagger->removeArtwork($inputFile);
 
-        $cmd = [];
+        $this->alacEffect->command->input($inputFile);
 
-        // The "-y" switch forces overwriting.
+        $this->alacEffect->command->output($outputFile);
 
-        $cmd[] = !empty(getenv('FFMPEG_BINARY')) ? getenv('FFMPEG_BINARY') : 'ffmpeg';
-        $cmd[] = '-y';
-        $cmd[] = '-i';
+        $this->alacEffect->command->overwriteOutput($outputFile);
 
-        //Tag data is copied automatically. Nice!!!
+        $this->alacEffect->command->forceAudioCodec('alac');
 
-        $pathParts = pathinfo($inputFile);
-
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-        $cmd[] = escapeshellarg($inputFile);
-        $cmd[] = '-acodec';
-        $cmd[] = 'alac';
-        $cmd[] = escapeshellarg($outputFile);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
+        // character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $this->process->setCommand($cmd);
+        $this->process->setCommand($this->alacEffect->getCommand()->compose());
 
         $this->process->setTimeout(600);
 

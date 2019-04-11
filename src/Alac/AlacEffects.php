@@ -1,11 +1,11 @@
 <?php
 
-namespace IndieHD\AudioManipulator\Flac;
+namespace IndieHD\AudioManipulator\Alac;
 
-use IndieHD\AudioManipulator\Flac\FlacEffectInterface;
+use IndieHD\AudioManipulator\Alac\AlacEffectInterface;
 use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
 
-class FlacEffects implements FlacEffectInterface
+class AlacEffects implements AlacEffectInterface
 {
 
     protected $commandParts;
