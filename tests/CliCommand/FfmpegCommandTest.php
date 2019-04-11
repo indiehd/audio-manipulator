@@ -49,7 +49,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->addArgument('options', '-y');
 
         $this->assertEquals(
-            'ffmpeg -y -f flac -i test.flac -acodec alac test.alac',
+            $this->ffmpegCommand->getBinary() . ' -y -f flac -i test.flac -acodec alac test.alac',
             $this->ffmpegCommand->asString()
         );
     }
@@ -59,7 +59,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->input('test.flac');
 
         $this->assertEquals(
-            "ffmpeg -i 'test.flac'",
+            $this->ffmpegCommand->getBinary() . " -i 'test.flac'",
             $this->ffmpegCommand->asString()
         );
     }
@@ -69,7 +69,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->output('test.alac');
 
         $this->assertEquals(
-            "ffmpeg 'test.alac'",
+            $this->ffmpegCommand->getBinary() . " 'test.alac'",
             $this->ffmpegCommand->asString()
         );
     }
@@ -79,7 +79,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->overwriteOutput();
 
         $this->assertEquals(
-            'ffmpeg -y',
+            $this->ffmpegCommand->getBinary() . ' -y',
             $this->ffmpegCommand->asString()
         );
     }
@@ -89,7 +89,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->forceAudioCodec('alac');
 
         $this->assertEquals(
-            'ffmpeg -acodec alac',
+            $this->ffmpegCommand->getBinary() . ' -acodec alac',
             $this->ffmpegCommand->asString()
         );
     }
