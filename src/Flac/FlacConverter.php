@@ -2,7 +2,6 @@
 
 namespace IndieHD\AudioManipulator\Flac;
 
-use IndieHD\AudioManipulator\Effects\EffectInterface;
 use Psr\Log\LoggerInterface;
 
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
@@ -12,8 +11,8 @@ use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Mp3\Mp3WriterInterface;
 use IndieHD\AudioManipulator\Alac\AlacWriterInterface;
 use IndieHD\AudioManipulator\Wav\WavWriterInterface;
-use IndieHD\AudioManipulator\Flac\FlacEffectInterface;
-use IndieHD\AudioManipulator\Alac\AlacEffectInterface;
+use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
+use IndieHD\AudioManipulator\CliCommand\FfmpegCommandInterface;
 
 class FlacConverter implements
     ConverterInterface,
@@ -24,7 +23,8 @@ class FlacConverter implements
     private $validator;
     private $process;
     private $logger;
-    private $effect;
+    private $sox;
+    private $ffmpeg;
 
     protected $supportedOutputFormats;
 
@@ -32,12 +32,14 @@ class FlacConverter implements
         ValidatorInterface $validator,
         ProcessInterface $process,
         LoggerInterface $logger,
-        EffectInterface $effect
+        SoxCommandInterface $sox,
+        FfmpegCommandInterface $ffmpeg
     ) {
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
-        $this->effect = $effect;
+        $this->sox = $sox;
+        $this->ffmpeg = $ffmpeg;
 
         $this->supportedOutputFormats = [
             'wav',
@@ -59,16 +61,16 @@ class FlacConverter implements
 
     public function writeFile(string $inputFile, string $outputFile): array
     {
-        $this->effect->flac()->command->input($inputFile);
+        $this->sox->input($inputFile);
 
-        $this->effect->flac()->command->output($outputFile);
+        $this->sox->output($outputFile);
 
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
         // character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $this->process->setCommand($this->effect->flac()->command->compose());
+        $this->process->setCommand($this->sox->compose());
 
         $this->process->setTimeout(600);
 
@@ -133,20 +135,20 @@ class FlacConverter implements
 
         #$this->tagger->removeArtwork($inputFile);
 
-        $this->effect->alac()->command->input($inputFile);
+        $this->ffmpeg->input($inputFile);
 
-        $this->effect->alac()->command->output($outputFile);
+        $this->ffmpeg->output($outputFile);
 
-        $this->effect->alac()->command->overwriteOutput($outputFile);
+        $this->ffmpeg->overwriteOutput($outputFile);
 
-        $this->effect->alac()->command->forceAudioCodec('alac');
+        $this->ffmpeg->forceAudioCodec('alac');
 
         // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
         // character will appear as a "#" symbol.
 
         $env = ['LC_ALL' => 'en_US.utf8'];
 
-        $this->process->setCommand($this->effect->alac()->command->compose());
+        $this->process->setCommand($this->ffmpeg->compose());
 
         $this->process->setTimeout(600);
 

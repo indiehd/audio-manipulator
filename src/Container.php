@@ -74,14 +74,16 @@ class Container
         $containerBuilder->setParameter('flac_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('flac_converter.process', new Process());
         $containerBuilder->setParameter('flac_converter.logger', $containerBuilder->get('logger'));
-        $containerBuilder->setParameter('flac_converter.effects', $containerBuilder->get('effects'));
+        $containerBuilder->setParameter('flac_converter.sox', new SoxCommand());
+        $containerBuilder->setParameter('flac_converter.ffmpeg', new FfmpegCommand());
 
         $containerBuilder
             ->register('flac_converter', FlacConverter::class)
             ->addArgument('%flac_converter.validator%')
             ->addArgument('%flac_converter.process%')
             ->addArgument('%flac_converter.logger%')
-            ->addArgument('%flac_converter.effects%');
+            ->addArgument('%flac_converter.sox%')
+            ->addArgument('%flac_converter.ffmpeg%');
 
         // FLAC Tagger.
 
