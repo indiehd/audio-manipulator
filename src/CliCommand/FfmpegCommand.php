@@ -42,6 +42,6 @@ class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
 
     public function forceAudioCodec(string $codec): void
     {
-        $this->addArgument('acodec', $codec);
+        $this->addArgument('outfile-options', '-acodec ' . $codec);
     }
 }
