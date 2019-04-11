@@ -2,19 +2,14 @@
 
 namespace IndieHD\AudioManipulator\Alac;
 
+use IndieHD\AudioManipulator\Effects\Effects;
 use IndieHD\AudioManipulator\Alac\AlacEffectInterface;
 use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
-use IndieHD\AudioManipulator\CliCommand\FfmpegCommandInterface;
 
-class AlacEffects implements AlacEffectInterface
+class AlacEffects extends Effects implements AlacEffectInterface
 {
-    public function __construct(FfmpegCommandInterface $command)
+    public function __construct(CliCommandInterface $command)
     {
         $this->command = $command;
-    }
-
-    public function getCommand(): CliCommandInterface
-    {
-        return $this->command;
     }
 }

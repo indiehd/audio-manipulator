@@ -2,19 +2,14 @@
 
 namespace IndieHD\AudioManipulator\Flac;
 
-use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
+use IndieHD\AudioManipulator\Effects\Effects;
 use IndieHD\AudioManipulator\Flac\FlacEffectInterface;
 use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
 
-class FlacEffects implements FlacEffectInterface
+class FlacEffects extends Effects implements FlacEffectInterface
 {
-    public function __construct(SoxCommandInterface $command)
+    public function __construct(CliCommandInterface $command)
     {
         $this->command = $command;
-    }
-
-    public function getCommand(): CliCommandInterface
-    {
-        return $this->command;
     }
 }
