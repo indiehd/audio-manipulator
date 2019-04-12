@@ -31,4 +31,9 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
     {
         $this->addArgument('options', '--artwork ' . escapeshellarg($imageFile));
     }
+
+    public function overwrite(): void
+    {
+        $this->addArgument('options', '--overWrite');
+    }
 }
