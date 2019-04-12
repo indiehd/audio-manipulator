@@ -11,4 +11,12 @@
 			<directory suffix=".php">./src</directory>
 		</whitelist>
 	</filter>
+
+	<php>
+		<env name="SOX_BINARY" value="sox" force="true" />
+		<env name="METAFLAC_BINARY" value="metaflac" force="true" />
+		<env name="LAME_BINARY" value="lame" force="true" />
+		<env name="FFMPEG_BINARY" value="ffmpeg" force="true" />
+		<env name="ATOMIC_PARSLEY_BINARY" value="AtomicParsley" force="true" />
+	</php>
 </phpunit>
