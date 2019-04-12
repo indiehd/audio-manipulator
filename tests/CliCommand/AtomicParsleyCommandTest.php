@@ -57,4 +57,14 @@ class AtomicParsleyCommandTest extends TestCase
             $this->atomicParsleyCommand->asString()
         );
     }
+
+    public function testItComposesSetArtworkCommandCorrectly()
+    {
+        $this->atomicParsleyCommand->setArtwork('foo.jpg');
+
+        $this->assertEquals(
+            $this->atomicParsleyCommand->getBinary() . " --artwork 'foo.jpg'",
+            $this->atomicParsleyCommand->asString()
+        );
+    }
 }
