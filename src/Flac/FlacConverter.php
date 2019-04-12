@@ -41,12 +41,12 @@ class FlacConverter implements
         $this->sox = $sox;
         $this->ffmpeg = $ffmpeg;
 
-        $this->supportedOutputFormats = [
+        $this->setSupportedOutputFormats([
             'wav',
             'mp3',
             'm4a',
             'ogg',
-        ];
+        ]);
     }
 
     public function setSupportedOutputFormats(array $supportedOutputFormats): void
@@ -54,13 +54,10 @@ class FlacConverter implements
         $this->supportedOutputFormats = $supportedOutputFormats;
     }
 
-    public function validateFile($inputFile): array
+    private function writeFile(string $inputFile, string $outputFile): array
     {
-        return $this->validator->validateAudioFile($inputFile, 'flac');
-    }
+        $this->validator->validateAudioFile($inputFile, 'flac');
 
-    public function writeFile(string $inputFile, string $outputFile): array
-    {
         $this->sox->input($inputFile);
 
         $this->sox->output($outputFile);
@@ -99,16 +96,7 @@ class FlacConverter implements
 
         $outputFormat = $fileExt;
 
-        $newFileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);
-
-        if (!$newFileDetails) {
-            throw new InvalidAudioFileException('The ' . strtoupper($outputFormat)
-                . ' file appears to have been created, but does not validate as'
-                . ' such; ensure that the determined audio format (e.g., MP1,'
-                . ' MP2, etc.) is in the array of allowable formats');
-        }
-
-        return $newFileDetails;
+        return $this->validator->validateAudioFile($outputFile, $outputFormat);
     }
 
     public function toMp3(string $inputFile, string $outputFile): array
@@ -123,7 +111,7 @@ class FlacConverter implements
      */
     public function toAlac(string $inputFile, string $outputFile): array
     {
-        $this->validateFile($inputFile);
+        $this->validator->validateAudioFile($inputFile, 'flac');
 
         // In avconv/ffmpeg version 9.16 (and possibly earlier), embedded artwork with a
         // width or height that is not divisible by 2 will cause a failure, e.g.:
@@ -173,16 +161,7 @@ class FlacConverter implements
 
         $outputFormat = $fileExt;
 
-        $newFileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);
-
-        if (!$newFileDetails) {
-            throw new InvalidAudioFileException('The ' . strtoupper($outputFormat)
-                . ' file appears to have been created, but does not validate as'
-                . ' such; ensure that the determined audio format (e.g., MP1,'
-                . ' MP2, etc.) is in the array of allowable formats');
-        }
-
-        return $newFileDetails;
+        return $this->validator->validateAudioFile($outputFile, $outputFormat);
     }
 
     public function toWav(string $inputFile, string $outputFile): array
