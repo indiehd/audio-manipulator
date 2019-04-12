@@ -3,6 +3,7 @@
 namespace IndieHD\AudioManipulator;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Monolog\Logger;
 
 use \getID3;
@@ -21,8 +22,12 @@ use IndieHD\AudioManipulator\Mp3\Mp3Tagger;
 use IndieHD\AudioManipulator\Validation\Validator;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\MediaParsing\MediaParser;
+use IndieHD\AudioManipulator\Effects\Effects;
 use IndieHD\AudioManipulator\Flac\FlacEffects;
+use IndieHD\AudioManipulator\Alac\AlacEffects;
 use IndieHD\AudioManipulator\CliCommand\SoxCommand;
+use IndieHD\AudioManipulator\CliCommand\FfmpegCommand;
+use IndieHD\AudioManipulator\CliCommand\MetaflacCommand;
 
 class Container
 {
@@ -44,6 +49,14 @@ class Container
         $containerBuilder->register('validator', Validator::class)
             ->addArgument('%validator.media_parser%');
 
+        // ALAC Effects.
+
+        $containerBuilder->setParameter('alac_effects.cli_command', new FfmpegCommand());
+
+        $containerBuilder
+            ->register('alac_effects', AlacEffects::class)
+            ->addArgument('%alac_effects.cli_command%');
+
         // FLAC Effects.
 
         $containerBuilder->setParameter('flac_effects.cli_command', new SoxCommand());
@@ -52,19 +65,25 @@ class Container
             ->register('flac_effects', FlacEffects::class)
             ->addArgument('%flac_effects.cli_command%');
 
+        $containerBuilder->register('effects', Effects::class)
+            ->addMethodCall('setFlac', [new Reference('flac_effects')])
+            ->addMethodCall('setAlac', [new Reference('alac_effects')]);
+
         // FLAC Converter.
 
         $containerBuilder->setParameter('flac_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('flac_converter.process', new Process());
         $containerBuilder->setParameter('flac_converter.logger', $containerBuilder->get('logger'));
-        $containerBuilder->setParameter('flac_converter.effects', $containerBuilder->get('flac_effects'));
+        $containerBuilder->setParameter('flac_converter.sox', new SoxCommand());
+        $containerBuilder->setParameter('flac_converter.ffmpeg', new FfmpegCommand());
 
         $containerBuilder
             ->register('flac_converter', FlacConverter::class)
             ->addArgument('%flac_converter.validator%')
             ->addArgument('%flac_converter.process%')
             ->addArgument('%flac_converter.logger%')
-            ->addArgument('%flac_converter.effects%');
+            ->addArgument('%flac_converter.sox%')
+            ->addArgument('%flac_converter.ffmpeg%');
 
         // FLAC Tagger.
 
@@ -73,13 +92,15 @@ class Container
         $containerBuilder->setParameter('flac_tagger.process', new Process());
         $containerBuilder->setParameter('flac_tagger.logger', $containerBuilder->get('logger'));
         $containerBuilder->setParameter('flac_tagger.filename_sanitizer', new FilenameSanitizer());
+        $containerBuilder->setParameter('flac_tagger.cli_command', new MetaflacCommand());
 
         $containerBuilder->register('flac_tagger', FlacTagger::class)
             ->addArgument('%flac_tagger.getid3%')
             ->addArgument('%flac_tagger.getid3_tag_writer%')
             ->addArgument('%flac_tagger.process%')
             ->addArgument('%flac_tagger.logger%')
-            ->addArgument('%flac_tagger.filename_sanitizer%');
+            ->addArgument('%flac_tagger.filename_sanitizer%')
+            ->addArgument('%flac_tagger.cli_command%');
 
         // FLAC Manipulator.
 

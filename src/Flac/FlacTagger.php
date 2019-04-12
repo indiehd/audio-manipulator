@@ -18,6 +18,7 @@ use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
 use IndieHD\AudioManipulator\Tagging\TaggerInterface;
+use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
 
 class FlacTagger implements TaggerInterface
 {
@@ -28,13 +29,15 @@ class FlacTagger implements TaggerInterface
         getid3_writetags $writeTags,
         ProcessInterface $process,
         LoggerInterface $logger,
-        FilenameSanitizerInterface $filenameSanitizer
+        FilenameSanitizerInterface $filenameSanitizer,
+        MetaflacCommandInterface $command
     ) {
         $this->getid3 = $getid3;
         $this->writeTags= $writeTags;
         $this->process = $process;
         $this->logger = $logger;
         $this->filenameSanitizer = $filenameSanitizer;
+        $this->command = $command;
 
         // TODO Make the log location configurable.
 
@@ -50,11 +53,11 @@ class FlacTagger implements TaggerInterface
     }
 
     /**
-     * Adds tags to FLAC files. The $tagData input value should
-     * be an array that was generated using Music::generateGetid3Tag().
-     * The 'metaflac' binary must be available for this to work!
+     * Add metadata tags to FLAC files.
      *
+     * @param string $file
      * @param array $tagData
+     * @param string $coverFile
      * @return array
      */
     public function writeTags(string $file, array $tagData, string $coverFile = null): array
@@ -98,15 +101,27 @@ class FlacTagger implements TaggerInterface
 
         setlocale(LC_CTYPE, 'en_US.UTF-8');
 
-        $cmd = [];
+        $this->command->input($file);
 
-        $cmd[] = !empty(getenv('METAFLAC_BINARY')) ? getenv('METAFLAC_BINARY') : 'metaflac';
+        $this->command->removeAll();
 
-        $cmd[] = '--remove-all';
+        $this->process->setCommand($this->command->compose());
 
-        $cmd[] = escapeshellarg($file);
+        $this->process->setTimeout(600);
 
-        $this->runProcess($cmd);
+        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
+        // character will appear as a "#" symbol.
+
+        $this->process->run(null, $this->env);
+
+        if (!$this->process->isSuccessful()) {
+            throw new ProcessFailedException($this->process);
+        }
+
+        $this->logger->info(
+            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
+            . $this->process->getOutput()
+        );
 
         // Attempt to acquire the audio file's properties, again, now that
         // we've attempted to remove any existing tags.
@@ -120,8 +135,6 @@ class FlacTagger implements TaggerInterface
         if (isset($fileDetails['tags']['vorbiscomment'])) {
             throw new AudioTaggerException('The vorbiscomment block was not removed for some reason');
         }
-
-        $tagData = $this->generateGetid3Tag($tagData);
 
         if (empty($tagData['date'][0]) || $tagData['date'][0] === 'Unknown') {
             unset($tagData['date']);
@@ -137,6 +150,11 @@ class FlacTagger implements TaggerInterface
         // operation, we must compare the number of write attempts to the number
         // of tags that exist once we're done attempting to write.
 
+        // TODO Wouldn't it make more sense simply to compare the values
+        // that were attempted with the actual values? Then all tags could be
+        // written in a single command, rather than incur the overhead of
+        // starting an individual process for each field.
+
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
                 // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any
@@ -148,16 +166,29 @@ class FlacTagger implements TaggerInterface
                 // --set-tag option; using the deprecated option will cause the command to
                 // fail on systems on which the option is not supported.
 
-                $cmd = [];
+                $this->command->removeAllArguments();
 
-                $cmd[] = !empty(getenv('METAFLAC_BINARY')) ? getenv('METAFLAC_BINARY') : 'metaflac';
+                $this->command->input($file);
 
-                $cmd[] = '--set-tag=' . escapeshellarg(ucfirst($fieldName))
-                    . '=' . escapeshellarg($fieldValue);
+                $this->command->setTag($fieldName, $fieldValue);
 
-                $cmd[] = escapeshellarg($file);
+                $this->process->setCommand($this->command->compose());
 
-                $this->runProcess($cmd);
+                $this->process->setTimeout(600);
+
+                // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
+                // character will appear as a "#" symbol.
+
+                $this->process->run(null, $this->env);
+
+                if (!$this->process->isSuccessful()) {
+                    throw new ProcessFailedException($this->process);
+                }
+
+                $this->logger->info(
+                    $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
+                    . $this->process->getOutput()
+                );
 
                 $numWritesAttempted++;
             }
@@ -294,7 +325,7 @@ class FlacTagger implements TaggerInterface
         //far more reliable than the exit status.
 
         if ($this->process->getOutput() === '' && $this->process->getErrorOutput() === '') {
-            return array('result' => true, 'error' => null);
+            return ['result' => true, 'error' => null];
         } else {
             return [
                 'result' => false,
@@ -321,95 +352,5 @@ class FlacTagger implements TaggerInterface
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );
-    }
-
-    /**
-     * Returns an array that can be passed directly to the getID tagging
-     * functions.
-     *
-     * @param $musicStoreId
-     * @return array|bool
-     */
-    public function generateGetid3Tag(array $tagData): array
-    {
-        $songDetails = $tagData;
-
-        if ($songDetails === false) {
-            return false;
-        }
-
-        $songDetails['name'] = $this->sanitizeFilenameComponent($songDetails['name']);
-        $songDetails['moniker'] = $this->sanitizeFilenameComponent($songDetails['moniker']);
-        $songDetails['license'] = $this->sanitizeFilenameComponent($songDetails['license']);
-        $songDetails['title'] = $this->sanitizeFilenameComponent($songDetails['title']);
-
-        // An array in which to store tag data.
-
-        $tagData = [];
-
-        $title = $songDetails['name'];
-
-        if (isset($songDetails['altName'])) {
-            $title .= ' (' . $songDetails['altName'] . ')';
-        }
-
-        $tagData['title'][0] = $title;
-
-        $artist = $songDetails['moniker'];
-        if (isset($songDetails['altMoniker'])) {
-            $artist .= ' (' . $songDetails['altMoniker'] . ')';
-        }
-        $tagData['artist'][0] = $artist;
-
-        $tagData['date'][0] = $songDetails['year'];
-
-        if (!empty($songDetails['license'])) {
-            $tagData['description'][0] = $songDetails['license'];
-        } else {
-            $tagData['description'][0] = 'Purchased from ' . SITE_NAME
-                . '. (c) Copyright ' . $songDetails['year'] . ' ' . $artist
-                . ', All Rights Reserved.';
-        }
-
-        $album = $songDetails['title'];
-
-        if (isset($songDetails['altTitle'])) {
-            $album .= ' (' . $songDetails['altTitle'] . ')';
-        }
-
-        $tagData['album'][0] = $album;
-
-        $tagData['discnumber'][0] = '1/1';
-
-        // For generating something like "2/16" (track 2 of 16).
-
-        // TODO Make this dynamic.
-
-        $numSongsOnAlbum = 1;
-
-        $tagData['tracknumber'][0] =  $songDetails['songOrder'] . '/' . $numSongsOnAlbum;
-
-        $tagData['genre'][0] = $this->getGenreText($songDetails['genre']);
-
-        return $tagData;
-    }
-
-    public function sanitizeFilenameComponent($string)
-    {
-        return $this->filenameSanitizer
-            ->setFilename($string)
-            ->stripPhp()
-            ->stripRiskyCharacters()
-            ->stripIllegalFilesystemCharacters()
-            ->getFilename();
-    }
-
-    public function getGenreText($genreId)
-    {
-        $genres = [
-            1 => 'Rock'
-        ];
-
-        return $genres[$genreId];
     }
 }

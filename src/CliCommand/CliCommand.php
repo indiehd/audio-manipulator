@@ -19,6 +19,11 @@ abstract class CliCommand implements CliCommandInterface
 
     protected $parts;
 
+    public function setParts(array $parts): void
+    {
+        $this->parts = $parts;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -43,6 +48,13 @@ abstract class CliCommand implements CliCommandInterface
         }
 
         array_push($this->parts[$name], $value);
+    }
+
+    public function removeAllArguments(): void
+    {
+        foreach ($this->parts as $name => $value) {
+            $this->parts[$name] = [];
+        }
     }
 
     public function compose(): array

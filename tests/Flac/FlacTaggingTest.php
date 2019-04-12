@@ -45,16 +45,14 @@ class FlacTaggingTest extends TestCase
     public function testFlacTaggerCanTagFlacFile()
     {
         $tagData = [
-            'songId' => 1,
-            'name' => 'Test Song',
-            'songOrder' => 1,
-            'trackPreviewStart' => 0,
-            'moniker' => 'Foobius Barius',
-            'title' => 'Test Title',
-            'year' => '1981',
-            'genre' => 1,
-            'albumId' => 1,
-            'license' => 'All rights reserved.',
+            'title' => ['Test Song'],
+            'artist' => ['Foobius Barius'],
+            'date' => ['1981'],
+            'description' => ['All rights reserved.'],
+            'album' => ['Test Title'],
+            'discnumber' => ['1'],
+            'tracknumber' => ['1'],
+            'genre' => ['Rock'],
         ];
 
         $this->flacManipulator->tagger->writeTags(
@@ -69,13 +67,13 @@ class FlacTaggingTest extends TestCase
 
         $this->assertEquals(
             [
-                'title' => [$tagData['name']],
-                'artist' => [$tagData['moniker']],
-                'date' => [$tagData['year']],
-                'description' => [$tagData['license']],
-                'album' => [$tagData['title']],
-                'discnumber' => ['1/1'],
-                'tracknumber' => [$tagData['songOrder'] . '/1'],
+                'title' => $tagData['title'],
+                'artist' => $tagData['artist'],
+                'date' => $tagData['date'],
+                'description' => $tagData['description'],
+                'album' => $tagData['album'],
+                'discnumber' => ['1'],
+                'tracknumber' => [$tagData['tracknumber'][0]],
                 'genre' => ['Rock'],
             ],
             $fileDetails['tags']['vorbiscomment']
