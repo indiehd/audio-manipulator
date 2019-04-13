@@ -67,4 +67,14 @@ class AtomicParsleyCommandTest extends TestCase
             $this->atomicParsleyCommand->asString()
         );
     }
+
+    public function testItComposesOverwriteCommandCorrectly()
+    {
+        $this->atomicParsleyCommand->overwrite();
+
+        $this->assertEquals(
+            $this->atomicParsleyCommand->getBinary() . ' --overWrite',
+            $this->atomicParsleyCommand->asString()
+        );
+    }
 }
