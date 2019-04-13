@@ -18,6 +18,11 @@ class LameCommandTest extends TestCase
         $this->lameCommand = new LameCommand();
     }
 
+    public function testBinaryCanBeSetFromEnvironment()
+    {
+        $this->assertNotEmpty(getenv('LAME_BINARY'));
+    }
+
     public function testWhenInstantiatedRequiredPropertiesAreSet()
     {
         $this->assertIsString($this->lameCommand->getName());
@@ -56,6 +61,16 @@ class LameCommandTest extends TestCase
 
         $this->assertEquals(
             $this->lameCommand->getBinary() . " 'test.flac'",
+            $this->lameCommand->asString()
+        );
+    }
+
+    public function testItComposesOutputCommandCorrectly()
+    {
+        $this->lameCommand->output('test.mp3');
+
+        $this->assertEquals(
+            $this->lameCommand->getBinary() . " 'test.mp3'",
             $this->lameCommand->asString()
         );
     }

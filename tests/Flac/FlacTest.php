@@ -4,6 +4,11 @@ namespace IndieHD\AudioManipulator\Tests\Flac;
 
 use PHPUnit\Framework\TestCase;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
+use IndieHD\AudioManipulator\Processing\ProcessFailedException;
+use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
+
 class FlacTest extends TestCase
 {
     private $testDir;
@@ -79,6 +84,96 @@ class FlacTest extends TestCase
                 $this->flacManipulator->getFile(),
                 $this->tmpDir . 'foo.m4a'
             )
+        );
+    }
+
+    public function testExceptionIsThrownWhenProcessFailsWritingToMp3()
+    {
+        $this->expectException(ProcessFailedException::class);
+
+        $this->flacManipulator->converter->toMp3(
+            $this->flacManipulator->getFile(),
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenMp3InputFileDoesNotExist()
+    {
+        $this->expectException(FileNotFoundException::class);
+
+        $this->flacManipulator->converter->toMp3(
+            'foo.bar',
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenMp3InputFileIsInvalid()
+    {
+        $this->expectException(InvalidAudioFileException::class);
+
+        $this->flacManipulator->converter->toMp3(
+            $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.txt',
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenProcessFailsWritingToWav()
+    {
+        $this->expectException(ProcessFailedException::class);
+
+        $this->flacManipulator->converter->toWav(
+            $this->flacManipulator->getFile(),
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenWavInputFileDoesNotExist()
+    {
+        $this->expectException(FileNotFoundException::class);
+
+        $this->flacManipulator->converter->toWav(
+            'foo.bar',
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenWavInputFileIsInvalid()
+    {
+        $this->expectException(InvalidAudioFileException::class);
+
+        $this->flacManipulator->converter->toWav(
+            $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.txt',
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenProcessFailsWritingToAlac()
+    {
+        $this->expectException(ProcessFailedException::class);
+
+        $this->flacManipulator->converter->toAlac(
+            $this->flacManipulator->getFile(),
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenAlacInputFileDoesNotExist()
+    {
+        $this->expectException(FileNotFoundException::class);
+
+        $this->flacManipulator->converter->toAlac(
+            'foo.bar',
+            $this->tmpDir . 'foo.bar'
+        );
+    }
+
+    public function testExceptionIsThrownWhenAlacInputFileIsInvalid()
+    {
+        $this->expectException(InvalidAudioFileException::class);
+
+        $this->flacManipulator->converter->toAlac(
+            $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.txt',
+            $this->tmpDir . 'foo.bar'
         );
     }
 }

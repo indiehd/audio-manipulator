@@ -18,6 +18,11 @@ class SoxCommandTest extends TestCase
         $this->soxCommand = new SoxCommand();
     }
 
+    public function testBinaryCanBeSetFromEnvironment()
+    {
+        $this->assertNotEmpty(getenv('SOX_BINARY'));
+    }
+
     public function testWhenInstantiatedRequiredPropertiesAreSet()
     {
         $this->assertIsString($this->soxCommand->getName());

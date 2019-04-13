@@ -18,6 +18,11 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand = new FfmpegCommand();
     }
 
+    public function testBinaryCanBeSetFromEnvironment()
+    {
+        $this->assertNotEmpty(getenv('FFMPEG_BINARY'));
+    }
+
     public function testWhenInstantiatedRequiredPropertiesAreSet()
     {
         $this->assertIsString($this->ffmpegCommand->getName());

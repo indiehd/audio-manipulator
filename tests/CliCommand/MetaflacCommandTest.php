@@ -18,6 +18,11 @@ class MetaflacCommandTest extends TestCase
         $this->metaflacCommand = new MetaflacCommand();
     }
 
+    public function testBinaryCanBeSetFromEnvironment()
+    {
+        $this->assertNotEmpty(getenv('METAFLAC_BINARY'));
+    }
+
     public function testWhenInstantiatedRequiredPropertiesAreSet()
     {
         $this->assertIsString($this->metaflacCommand->getName());

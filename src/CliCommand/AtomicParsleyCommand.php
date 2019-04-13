@@ -17,8 +17,8 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
 
     public function __construct()
     {
-        if (!empty(getenv('LAME_BINARY'))) {
-            $this->binary = getenv('LAME_BINARY');
+        if (!empty(getenv('ATOMIC_PARSLEY_BINARY'))) {
+            $this->binary = getenv('ATOMIC_PARSLEY_BINARY');
         }
     }
 

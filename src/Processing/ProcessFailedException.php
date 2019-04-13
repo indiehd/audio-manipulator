@@ -10,6 +10,6 @@ class ProcessFailedException extends SymfonyProcessFailedException
 {
     public function __construct(ProcessInterface $process)
     {
-        throw new SymfonyProcessFailedException($process->getProcess());
+        parent::__construct($process->getProcess());
     }
 }
