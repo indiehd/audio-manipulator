@@ -20,7 +20,7 @@ class SoxCommandTest extends TestCase
 
     public function testBinaryCanBeSetFromEnvironment()
     {
-        $this->assertEquals('sox', getenv('SOX_BINARY'));
+        $this->assertNotEmpty(getenv('SOX_BINARY'));
     }
 
     public function testWhenInstantiatedRequiredPropertiesAreSet()

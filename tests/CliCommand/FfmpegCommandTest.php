@@ -20,7 +20,7 @@ class FfmpegCommandTest extends TestCase
 
     public function testBinaryCanBeSetFromEnvironment()
     {
-        $this->assertEquals('ffmpeg', getenv('FFMPEG_BINARY'));
+        $this->assertNotEmpty(getenv('FFMPEG_BINARY'));
     }
 
     public function testWhenInstantiatedRequiredPropertiesAreSet()

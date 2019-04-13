@@ -20,7 +20,7 @@ class LameCommandTest extends TestCase
 
     public function testBinaryCanBeSetFromEnvironment()
     {
-        $this->assertEquals('lame', getenv('LAME_BINARY'));
+        $this->assertNotEmpty(getenv('LAME_BINARY'));
     }
 
     public function testWhenInstantiatedRequiredPropertiesAreSet()

@@ -18,9 +18,9 @@ class AtomicParsleyCommandTest extends TestCase
         $this->atomicParsleyCommand = new AtomicParsleyCommand();
     }
 
-    public function testBinaryCanBeSetFromEnvironment()
+    public function testBinaryIsSetInEnvironment()
     {
-        $this->assertEquals('AtomicParsley', getenv('ATOMIC_PARSLEY_BINARY'));
+        $this->assertNotEmpty(getenv('ATOMIC_PARSLEY_BINARY'));
     }
 
     public function testWhenInstantiatedRequiredPropertiesAreSet()
