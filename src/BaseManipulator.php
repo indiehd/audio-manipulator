@@ -2,9 +2,12 @@
 
 namespace IndieHD\AudioManipulator;
 
-use IndieHD\AudioManipulator\Converting\ConverterManipulatorInterface;
+use IndieHD\AudioManipulator\ManipulatorInterface;
 
-class BaseManipulator implements ConverterManipulatorInterface
+class BaseManipulator implements ManipulatorInterface
 {
-
+    public function getFile()
+    {
+        return $this->file;
+    }
 }
