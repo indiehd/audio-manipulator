@@ -29,7 +29,7 @@ class FlacTaggingTest extends TestCase
 
         $this->sampleFile = $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac';
 
-        $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->tmpFile = $this->tmpDir . 'test.flac';
 
         copy($this->sampleFile, $this->tmpFile);
 
@@ -94,16 +94,12 @@ class FlacTaggingTest extends TestCase
         );
     }
 
-    /*
-    public function testItThrowExceptionWhenProcessFails()
+    public function testItThrowsExceptionWhenProcessFails()
     {
         $this->expectException(ProcessFailedException::class);
 
-        $_ENV['METAFLAC_BINARY'] = 'foo';
+        $this->flacManipulator->tagger->command->setBinary('non-existent-binary-path');
 
-        $this->flacManipulator->writeTags(
-            []
-        );
+        $this->flacManipulator->writeTags([]);
     }
-    */
 }
