@@ -17,11 +17,11 @@ class FlacManipulator extends BaseManipulator implements TaggerManipulatorInterf
 
     public function writeTags(array $data)
     {
-        $this->tagger->writeTags($data);
+        $this->tagger->writeTags($this->file, $data);
     }
 
     public function removeTags(array $data)
     {
-        $this->tagger->removeTags($data);
+        $this->tagger->removeTags($this->file, $data);
     }
 }

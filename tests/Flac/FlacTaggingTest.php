@@ -4,6 +4,9 @@ namespace IndieHD\AudioManipulator\Tests\Flac;
 
 use PHPUnit\Framework\TestCase;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use IndieHD\AudioManipulator\Processing\ProcessFailedException;
+
 class FlacTaggingTest extends TestCase
 {
     private $testDir;
@@ -42,7 +45,7 @@ class FlacTaggingTest extends TestCase
      *
      * @return void
      */
-    public function testFlacTaggerCanTagFlacFile()
+    public function testItCanTagFlacFile()
     {
         $tagData = [
             'title' => ['Test Song'],
@@ -55,8 +58,7 @@ class FlacTaggingTest extends TestCase
             'genre' => ['Rock'],
         ];
 
-        $this->flacManipulator->tagger->writeTags(
-            $this->flacManipulator->getFile(),
+        $this->flacManipulator->writeTags(
             $tagData
         );
 
@@ -79,4 +81,29 @@ class FlacTaggingTest extends TestCase
             $fileDetails['tags']['vorbiscomment']
         );
     }
+
+    public function testItThrowsExceptionWhenFileDoesNotExist()
+    {
+        $this->expectException(FileNotFoundException::class);
+
+        $this->flacManipulator = $this->flacManipulatorCreator
+            ->create('foo.bar');
+
+        $this->flacManipulator->writeTags(
+            []
+        );
+    }
+
+    /*
+    public function testItThrowExceptionWhenProcessFails()
+    {
+        $this->expectException(ProcessFailedException::class);
+
+        $_ENV['METAFLAC_BINARY'] = 'foo';
+
+        $this->flacManipulator->writeTags(
+            []
+        );
+    }
+    */
 }

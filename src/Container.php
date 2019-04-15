@@ -93,6 +93,7 @@ class Container
         $containerBuilder->setParameter('flac_tagger.logger', $containerBuilder->get('logger'));
         $containerBuilder->setParameter('flac_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('flac_tagger.cli_command', new MetaflacCommand());
+        $containerBuilder->setParameter('flac_tagger.validator', $containerBuilder->get('validator'));
 
         $containerBuilder->register('flac_tagger', FlacTagger::class)
             ->addArgument('%flac_tagger.getid3%')
@@ -100,7 +101,8 @@ class Container
             ->addArgument('%flac_tagger.process%')
             ->addArgument('%flac_tagger.logger%')
             ->addArgument('%flac_tagger.filename_sanitizer%')
-            ->addArgument('%flac_tagger.cli_command%');
+            ->addArgument('%flac_tagger.cli_command%')
+            ->addArgument('%flac_tagger.validator%');
 
         // FLAC Manipulator.
 

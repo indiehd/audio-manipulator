@@ -9,9 +9,12 @@ use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
+use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Validation\AudioValidatorException;
 
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
@@ -30,7 +33,8 @@ class FlacTagger implements TaggerInterface
         ProcessInterface $process,
         LoggerInterface $logger,
         FilenameSanitizerInterface $filenameSanitizer,
-        MetaflacCommandInterface $command
+        MetaflacCommandInterface $command,
+        ValidatorInterface $validator
     ) {
         $this->getid3 = $getid3;
         $this->writeTags= $writeTags;
@@ -38,6 +42,7 @@ class FlacTagger implements TaggerInterface
         $this->logger = $logger;
         $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
+        $this->validator = $validator;
 
         // TODO Make the log location configurable.
 
@@ -68,18 +73,7 @@ class FlacTagger implements TaggerInterface
 
         //Attempt to acquire the audio file's properties.
 
-        $fileDetails = $this->getid3->analyze($file);
-
-        // Ensure that the file on which we're attempting to operate is indeed
-        // a FLAC file.
-
-        // Note: we could use our internal audio validation method, but there's
-        // no reason to waste the time/memory required to call that function
-        // when we have to call getID3's analyze() method again.
-
-        if (!isset($fileDetails['fileformat']) || $fileDetails['fileformat'] != 'flac') {
-            throw new AudioValidatorException('The audio file does not validate as a FLAC file');
-        }
+        $fileDetails = $this->validator->validateAudioFile($file, 'flac');
 
         //A counter to store the number of tags that we attempted to write.
 
