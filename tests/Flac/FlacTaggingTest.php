@@ -13,6 +13,8 @@ class FlacTaggingTest extends TestCase
 
     private $tmpDir;
 
+    private $sampleDir;
+
     private $sampleFile;
 
     private $tmpFile;
@@ -27,7 +29,9 @@ class FlacTaggingTest extends TestCase
 
         $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
 
-        $this->sampleFile = $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->sampleDir = $this->testDir . 'samples' . DIRECTORY_SEPARATOR;
+
+        $this->sampleFile = $this->sampleDir . 'test.flac';
 
         $this->tmpFile = $this->tmpDir . 'test.flac';
 
@@ -101,5 +105,67 @@ class FlacTaggingTest extends TestCase
         $this->flacManipulator->tagger->command->setBinary('non-existent-binary-path');
 
         $this->flacManipulator->writeTags([]);
+    }
+
+    private function removeAllTags()
+    {
+        $this->flacManipulator->tagger->removeAllTags(
+            $this->flacManipulator->getFile()
+        );
+    }
+
+    private function removeArtwork()
+    {
+        $this->flacManipulator->tagger->removeArtwork(
+            $this->flacManipulator->getFile()
+        );
+    }
+
+    private function embedArtwork()
+    {
+        $this->removeArtwork();
+
+        $this->flacManipulator->tagger->writeArtwork(
+            $this->flacManipulator->getFile(),
+            $this->sampleDir . 'flac-logo.gif'
+        );
+    }
+
+    public function testItCanEmbedArtwork()
+    {
+        $this->embedArtwork();
+
+        $fileDetails = $this->flacManipulator->tagger->getid3->analyze(
+            $this->flacManipulator->getFile()
+        );
+
+        $testImage = file_get_contents($this->sampleDir . 'flac-logo.gif');
+
+        $this->assertEquals(
+            $testImage,
+            $fileDetails['comments']['picture'][0]['data']
+        );
+
+        $this->assertEquals(
+            $testImage,
+            $fileDetails['flac']['PICTURE'][0]['data']
+        );
+    }
+
+    public function testItCanRemoveArtworkFromFlacFile()
+    {
+        $this->removeAllTags();
+
+        $this->embedArtwork();
+
+        $this->removeArtwork();
+
+        $fileDetails = $this->flacManipulator->tagger->getid3->analyze(
+            $this->flacManipulator->getFile()
+        );
+
+        $this->assertArrayNotHasKey('comments', $fileDetails);
+
+        $this->assertArrayNotHasKey('PICTURE', $fileDetails['flac']);
     }
 }
