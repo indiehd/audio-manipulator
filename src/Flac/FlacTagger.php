@@ -102,10 +102,6 @@ class FlacTagger implements TaggerInterface
 
         $this->runProcess($this->command->compose());
 
-        if (empty($tagData['date'][0]) || $tagData['date'][0] === 'Unknown') {
-            unset($tagData['date']);
-        }
-
         if (!empty($coverFile)) {
             $this->writeArtwork($coverFile);
         }
@@ -115,7 +111,7 @@ class FlacTagger implements TaggerInterface
         return $this->verifyTagData($file, $tagData);
     }
 
-    public function removeAllTags(string $file): bool
+    public function removeAllTags(string $file): void
     {
         $this->command->removeAllArguments();
 
@@ -123,26 +119,15 @@ class FlacTagger implements TaggerInterface
 
         $this->command->removeAll();
 
-        $process = $this->runProcess($this->command->compose());
-
-        // As of this writing, metaflac returns an exit status of
-        // zero (which cannot necessarily be relied upon on Windows)
-        // and does not produce any output on success. The latter fact is
-        // far more reliable than the exit status.
-
-        if ($process->getOutput() === '' && $process->getErrorOutput() === '') {
-            return true;
-        } else {
-            return false;
-        }
+        $this->runProcess($this->command->compose());
     }
 
-    public function removeTags(array $data): bool
+    public function removeTags(array $data): void
     {
         // TODO: Implement removeTags() method.
     }
 
-    public function writeArtwork(string $audioFile, string $imageFile): bool
+    public function writeArtwork(string $audioFile, string $imageFile): void
     {
         // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
 
@@ -154,21 +139,10 @@ class FlacTagger implements TaggerInterface
 
         $this->command->importPicture($imageFile);
 
-        $process = $this->runProcess($this->command->compose());
-
-        //As of this writing, metaflac returns an exit status of
-        //zero (which cannot necessarily be relied upon on Windows)
-        //and does not produce any output on success. The latter fact is
-        //far more reliable than the exit status.
-
-        if ($process->getOutput() === '' && $process->getErrorOutput() === '') {
-            return true;
-        } else {
-            return false;
-        }
+        $this->runProcess($this->command->compose());
     }
 
-    public function removeArtwork(string $file): bool
+    public function removeArtwork(string $file): void
     {
         // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
 
@@ -180,18 +154,7 @@ class FlacTagger implements TaggerInterface
 
         $this->command->removeBlockType(['PICTURE']);
 
-        $process = $this->runProcess($this->command->compose());
-
-        //As of this writing, metaflac returns an exit status of
-        //zero (which cannot necessarily be relied upon on Windows)
-        //and does not produce any output on success. The latter fact is
-        //far more reliable than the exit status.
-
-        if ($process->getOutput() === '' && $process->getErrorOutput() === '') {
-            return true;
-        } else {
-            return false;
-        }
+        $this->runProcess($this->command->compose());
     }
 
     protected function runProcess(array $cmd): Process
@@ -236,15 +199,6 @@ class FlacTagger implements TaggerInterface
         }
 
         $this->runProcess($this->command->compose());
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->info(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
-        );
     }
 
     // TODO As it stands, this function is problematic because the Vorbis Comment
