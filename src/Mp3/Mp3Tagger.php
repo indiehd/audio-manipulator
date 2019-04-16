@@ -177,17 +177,22 @@ class Mp3Tagger implements TaggerInterface
         }
     }
 
-    public function removeTags(array $tagData)
+    public function removeAllTags(string $file): bool
+    {
+        // TODO: Implement removeAllTags() method.
+    }
+
+    public function removeTags(array $tagData): bool
     {
         // TODO: Implement removeTags() method.
     }
 
-    public function writeArtwork(string $image)
+    public function writeArtwork(string $audioFile, string $imageFile): bool
     {
         // TODO: Implement writeArtwork() method.
     }
 
-    public function removeArtwork()
+    public function removeArtwork(string $file): bool
     {
         // TODO: Implement removeArtwork() method.
     }

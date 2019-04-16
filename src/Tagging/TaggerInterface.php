@@ -6,9 +6,11 @@ interface TaggerInterface
 {
     public function writeTags(string $file, array $tagData, string $coverFile = null): array;
 
-    public function removeTags(array $data);
+    public function removeAllTags(string $file): bool;
 
-    public function writeArtwork(string $imagePath);
+    public function removeTags(array $data): bool;
 
-    public function removeArtwork();
+    public function writeArtwork(string $audioFile, string $imageFile): bool;
+
+    public function removeArtwork(string $file): bool;
 }

@@ -44,4 +44,14 @@ class MetaflacCommand extends CliCommand implements MetaflacCommandInterface
         $this->addArgument('operations', '--set-tag=' . escapeshellarg($field)
             . '=' . escapeshellarg($value));
     }
+
+    public function removeBlockType(array $types): void
+    {
+        $this->addArgument('operations', '--remove --block-type=' . implode(',', $types));
+    }
+
+    public function importPicture(string $fileOrSpecification): void
+    {
+        $this->addArgument('operations', '--import-picture-from=' . escapeshellarg($fileOrSpecification));
+    }
 }

@@ -15,7 +15,7 @@ class Mp3Manipulator extends BaseManipulator implements ManipulatorInterface, Ta
         $this->file = $file;
     }
 
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }

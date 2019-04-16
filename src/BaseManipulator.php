@@ -6,7 +6,7 @@ use IndieHD\AudioManipulator\ManipulatorInterface;
 
 class BaseManipulator implements ManipulatorInterface
 {
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }

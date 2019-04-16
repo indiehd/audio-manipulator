@@ -4,5 +4,5 @@ namespace IndieHD\AudioManipulator;
 
 interface ManipulatorInterface
 {
-    public function getFile();
+    public function getFile(): string;
 }

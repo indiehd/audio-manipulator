@@ -17,6 +17,7 @@ use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Validation\AudioValidatorException;
 
+use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
@@ -99,23 +100,7 @@ class FlacTagger implements TaggerInterface
 
         $this->command->removeAll();
 
-        $this->process->setCommand($this->command->compose());
-
-        $this->process->setTimeout(600);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
-        // character will appear as a "#" symbol.
-
-        $this->process->run(null, $this->env);
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->info(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
-        );
+        $this->runProcess($this->command->compose());
 
         if (empty($tagData['date'][0]) || $tagData['date'][0] === 'Unknown') {
             unset($tagData['date']);
@@ -130,85 +115,86 @@ class FlacTagger implements TaggerInterface
         return $this->verifyTagData($file, $tagData);
     }
 
-    public function removeTags(array $data)
+    public function removeAllTags(string $file): bool
+    {
+        $this->command->removeAllArguments();
+
+        $this->command->input($file);
+
+        $this->command->removeAll();
+
+        $process = $this->runProcess($this->command->compose());
+
+        // As of this writing, metaflac returns an exit status of
+        // zero (which cannot necessarily be relied upon on Windows)
+        // and does not produce any output on success. The latter fact is
+        // far more reliable than the exit status.
+
+        if ($process->getOutput() === '' && $process->getErrorOutput() === '') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function removeTags(array $data): bool
     {
         // TODO: Implement removeTags() method.
     }
 
-    public function writeArtwork(string $imagePath): array
+    public function writeArtwork(string $audioFile, string $imageFile): bool
     {
         // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
 
         setlocale(LC_CTYPE, 'en_US.UTF-8');
 
-        $cmd = 'metaflac --import-picture-from=' . escapeshellarg($imagePath) . ' ' . escapeshellarg($audioFile);
+        $this->command->removeAllArguments();
 
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
+        $this->command->input($audioFile);
 
-        $env = ['LC_ALL' => 'en_US.utf8'];
+        $this->command->importPicture($imageFile);
 
-        $res = \GlobalMethods::openProcess($cmd, null, $env);
-
-        if ($res !== false) {
-            // As of this writing, metaflac returns an exit status of
-            // zero (which cannot necessarily be relied upon on Windows)
-            // and does not produce any output on success. The latter fact is
-            // far more reliable than the exit status.
-
-            if ($res['stdOut'] == '' && $res['stdErr'] == '') {
-                return array('result' => true, 'error' => null);
-            } else {
-                return [
-                    'result' => false,
-                    'error' => 'The call to `metaflac` produced output, which'
-                        . ' indicates an error condition: ' . \Utility::varToString($res)
-                ];
-            }
-        } else {
-            return array('result' => false, 'error' => 'The process could not be opened: ' . $cmd);
-        }
-    }
-
-    public function removeArtwork(): array
-    {
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-        $cmd = 'metaflac --remove --block-type=PICTURE ' . escapeshellarg($file);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
-
-        $env = ['LC_ALL' => 'en_US.utf8'];
-
-        $this->process->setTimeout(600);
-
-        $this->process->run($cmd, null, $env);
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->info($cmd . PHP_EOL . PHP_EOL . $this->process->getOutput());
+        $process = $this->runProcess($this->command->compose());
 
         //As of this writing, metaflac returns an exit status of
         //zero (which cannot necessarily be relied upon on Windows)
         //and does not produce any output on success. The latter fact is
         //far more reliable than the exit status.
 
-        if ($this->process->getOutput() === '' && $this->process->getErrorOutput() === '') {
-            return ['result' => true, 'error' => null];
+        if ($process->getOutput() === '' && $process->getErrorOutput() === '') {
+            return true;
         } else {
-            return [
-                'result' => false,
-                'error' => 'The call to `metaflac` produced output, which'
-                    . ' indicates an error condition: (stdout)' . $this->process->getOutput()
-                    . ' (stderr) ' . $this->process->getErrorOutput()
-            ];
+            return false;
         }
     }
 
-    protected function runProcess(array $cmd): void
+    public function removeArtwork(string $file): bool
+    {
+        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+
+        setlocale(LC_CTYPE, 'en_US.UTF-8');
+
+        $this->command->removeAllArguments();
+
+        $this->command->input($file);
+
+        $this->command->removeBlockType(['PICTURE']);
+
+        $process = $this->runProcess($this->command->compose());
+
+        //As of this writing, metaflac returns an exit status of
+        //zero (which cannot necessarily be relied upon on Windows)
+        //and does not produce any output on success. The latter fact is
+        //far more reliable than the exit status.
+
+        if ($process->getOutput() === '' && $process->getErrorOutput() === '') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function runProcess(array $cmd): Process
     {
         $this->process->setCommand($cmd);
 
@@ -224,6 +210,8 @@ class FlacTagger implements TaggerInterface
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );
+
+        return $this->process;
     }
 
     protected function attemptWrite(string $file, array $tagData): void
@@ -247,14 +235,7 @@ class FlacTagger implements TaggerInterface
             }
         }
 
-        $this->process->setCommand($this->command->compose());
-
-        $this->process->setTimeout(600);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
-        // character will appear as a "#" symbol.
-
-        $this->process->run(null, $this->env);
+        $this->runProcess($this->command->compose());
 
         if (!$this->process->isSuccessful()) {
             throw new ProcessFailedException($this->process);

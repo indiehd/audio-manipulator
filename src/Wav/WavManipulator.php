@@ -14,7 +14,7 @@ class WavManipulator extends BaseManipulator implements ManipulatorInterface
         $this->file = $file;
     }
 
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }
