@@ -116,9 +116,13 @@ class FlacTagger implements TaggerInterface
         $this->runProcess($this->command->compose());
     }
 
-    public function removeTags(array $data): void
+    public function removeTags(string $file, array $tags): void
     {
-        // TODO: Implement removeTags() method.
+        $this->command->input($file);
+
+        $this->command->removeTags($tags);
+
+        $this->runProcess($this->command->compose());
     }
 
     public function writeArtwork(string $audioFile, string $imageFile): void

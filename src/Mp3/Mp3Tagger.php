@@ -183,7 +183,7 @@ class Mp3Tagger implements TaggerInterface
         // TODO: Implement removeAllTags() method.
     }
 
-    public function removeTags(array $tagData): void
+    public function removeTags(string $file, array $tagData): void
     {
         // TODO: Implement removeTags() method.
     }

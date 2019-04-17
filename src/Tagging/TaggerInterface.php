@@ -8,7 +8,7 @@ interface TaggerInterface
 
     public function removeAllTags(string $file): void;
 
-    public function removeTags(array $data): void;
+    public function removeTags(string $file, array $tags): void;
 
     public function writeArtwork(string $audioFile, string $imageFile): void;
 
