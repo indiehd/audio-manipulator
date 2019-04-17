@@ -66,7 +66,7 @@ class FlacTagger implements TaggerInterface
      * @param string $coverFile
      * @return array
      */
-    public function writeTags(string $file, array $tagData, string $coverFile = null): array
+    public function writeTags(string $file, array $tagData): void
     {
         if (!file_exists($file)) {
             throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
@@ -102,13 +102,9 @@ class FlacTagger implements TaggerInterface
 
         $this->runProcess($this->command->compose());
 
-        if (!empty($coverFile)) {
-            $this->writeArtwork($coverFile);
-        }
-
         $this->attemptWrite($file, $tagData);
 
-        return $this->verifyTagData($file, $tagData);
+        $this->verifyTagData($file, $tagData);
     }
 
     public function removeAllTags(string $file): void
@@ -206,7 +202,7 @@ class FlacTagger implements TaggerInterface
     // --set-tag=ARTIST=Foo --set-tag=ARTIST=Bar is perfectly valid. This function
     // should be modified to accommodate that fact.
 
-    protected function verifyTagData(string $file, array $tagData)
+    protected function verifyTagData(string $file, array $tagData): void
     {
         $fileDetails = $this->getid3->analyze($file);
 
@@ -232,15 +228,10 @@ class FlacTagger implements TaggerInterface
         // many write attempts were made in order to determine our
         // success rate.
 
-        if (count($failures) === 0) {
-            return ['result' => true, 'error' => null];
-        } else {
-            return [
-                'result' => false,
-                'error' => 'Expected does not match actual for tags:' . implode(', ', $failures)
-            ];
+        if (count($failures) > 0) {
+            throw new AudioTaggerException(
+                'Expected value does not match actual value for tags:' . implode(', ', $failures)
+            );
         }
-
-        //}
     }
 }

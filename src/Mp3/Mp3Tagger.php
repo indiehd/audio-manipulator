@@ -59,7 +59,7 @@ class Mp3Tagger implements TaggerInterface
      * for the tag, which is created using the vorbiscomment standard,
      * to be suitable for an MP3 file.
      */
-    public function writeTags(string $file, array $tagData, string $coverFile = null): array
+    public function writeTags(string $file, array $tagData, string $coverFile = null): void
     {
         $this->validator->validateAudioFile($file, 'mp3');
 
@@ -100,7 +100,8 @@ class Mp3Tagger implements TaggerInterface
                 $tagData['attached_picture'][0]['mime']          = 'image/jpeg';
             } else {
                 $error = 'Embedding cover art in MP3 file ' . $file . ' failed; ' . $res['error'];
-                return array('result' => false, 'error' => $error);
+
+                throw new AudioTaggerException($error);
             }
         }
 
@@ -117,12 +118,14 @@ class Mp3Tagger implements TaggerInterface
 
         if (!is_array($fileDetails)) {
             $error = $prefix . ' did not return a usable array';
-            return array('result' => false, 'error' => $error);
+
+            throw new AudioTaggerException($error);
         }
 
         if (!isset($fileDetails['tags']['id3v2'])) {
             $error = $prefix . ' determined that the tags were not written for some reason';
-            return array('result' => false, 'error' => $error);
+
+            throw new AudioTaggerException($error);
         } else {
             // If at least one tag was written, we'll end-up here.
 
@@ -165,14 +168,12 @@ class Mp3Tagger implements TaggerInterface
             // many write attempts were made in order to determine our
             // success rate.
 
-            if ($numWritesAttempted == $numWritesSucceeded) {
-                return array('result' => true, 'error' => null);
-            } else {
+            if ($numWritesAttempted != $numWritesSucceeded) {
                 $error = 'The number of tag writes that succeeded ('
                     . $numWritesSucceeded . ') is less than the number attempted ('
                     . $numWritesAttempted . ')';
 
-                return array('result' => false, 'error' => $error);
+                throw new AudioTaggerException($error);
             }
         }
     }
