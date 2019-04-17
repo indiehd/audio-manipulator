@@ -109,8 +109,6 @@ class FlacTagger implements TaggerInterface
 
     public function removeAllTags(string $file): void
     {
-        $this->command->removeAllArguments();
-
         $this->command->input($file);
 
         $this->command->removeAll();
@@ -129,8 +127,6 @@ class FlacTagger implements TaggerInterface
 
         setlocale(LC_CTYPE, 'en_US.UTF-8');
 
-        $this->command->removeAllArguments();
-
         $this->command->input($audioFile);
 
         $this->command->importPicture($imageFile);
@@ -143,8 +139,6 @@ class FlacTagger implements TaggerInterface
         // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
 
         setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-        $this->command->removeAllArguments();
 
         $this->command->input($file);
 
@@ -170,6 +164,8 @@ class FlacTagger implements TaggerInterface
             . $this->process->getOutput()
         );
 
+        $this->command->removeAllArguments();
+
         return $this->process;
     }
 
@@ -183,8 +179,6 @@ class FlacTagger implements TaggerInterface
         // IMPORTANT: The --set-vc-field option is deprecated in favor of the
         // --set-tag option; using the deprecated option will cause the command to
         // fail on systems on which the option is not supported.
-
-        $this->command->removeAllArguments();
 
         $this->command->input($file);
 
@@ -223,10 +217,6 @@ class FlacTagger implements TaggerInterface
                 }
             }
         }
-
-        // We're able to compare how many tags were written versus how
-        // many write attempts were made in order to determine our
-        // success rate.
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
