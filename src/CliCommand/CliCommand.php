@@ -19,6 +19,11 @@ abstract class CliCommand implements CliCommandInterface
 
     protected $parts;
 
+    public function setBinary(string $binary)
+    {
+        $this->binary = $binary;
+    }
+
     public function setParts(array $parts): void
     {
         $this->parts = $parts;

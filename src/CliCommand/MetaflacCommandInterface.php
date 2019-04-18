@@ -12,5 +12,11 @@ interface MetaflacCommandInterface extends CliCommandInterface
 
     public function removeAll(): void;
 
+    public function removeTags(array $tags): void;
+
     public function setTag(string $field, string $value): void;
+
+    public function removeBlockType(array $types): void;
+
+    public function importPicture(string $fileOrSpecification): void;
 }

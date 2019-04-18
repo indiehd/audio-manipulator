@@ -3,10 +3,10 @@
 namespace IndieHD\AudioManipulator\Mp3;
 
 use IndieHD\AudioManipulator\BaseManipulator;
-use IndieHD\AudioManipulator\Converting\ConverterManipulatorInterface;
+use IndieHD\AudioManipulator\ManipulatorInterface;
 use IndieHD\AudioManipulator\Tagging\TaggerManipulatorInterface;
 
-class Mp3Manipulator extends BaseManipulator implements ConverterManipulatorInterface, TaggerManipulatorInterface
+class Mp3Manipulator extends BaseManipulator implements ManipulatorInterface, TaggerManipulatorInterface
 {
     protected $file;
 
@@ -15,7 +15,7 @@ class Mp3Manipulator extends BaseManipulator implements ConverterManipulatorInte
         $this->file = $file;
     }
 
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }

@@ -3,9 +3,9 @@
 namespace IndieHD\AudioManipulator\Wav;
 
 use IndieHD\AudioManipulator\BaseManipulator;
-use IndieHD\AudioManipulator\Converting\ConverterManipulatorInterface;
+use IndieHD\AudioManipulator\ManipulatorInterface;
 
-class WavManipulator extends BaseManipulator implements ConverterManipulatorInterface
+class WavManipulator extends BaseManipulator implements ManipulatorInterface
 {
     protected $file;
 
@@ -14,7 +14,7 @@ class WavManipulator extends BaseManipulator implements ConverterManipulatorInte
         $this->file = $file;
     }
 
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }

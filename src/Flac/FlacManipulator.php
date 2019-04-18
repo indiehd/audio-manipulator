@@ -3,10 +3,10 @@
 namespace IndieHD\AudioManipulator\Flac;
 
 use IndieHD\AudioManipulator\BaseManipulator;
-use IndieHD\AudioManipulator\Converting\ConverterManipulatorInterface;
+use IndieHD\AudioManipulator\ManipulatorInterface;
 use IndieHD\AudioManipulator\Tagging\TaggerManipulatorInterface;
 
-class FlacManipulator extends BaseManipulator implements ConverterManipulatorInterface, TaggerManipulatorInterface
+class FlacManipulator extends BaseManipulator implements TaggerManipulatorInterface
 {
     protected $file;
 
@@ -15,23 +15,13 @@ class FlacManipulator extends BaseManipulator implements ConverterManipulatorInt
         $this->file = $file;
     }
 
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    public function convert(string $output, $filters = [])
-    {
-        $this->converter->applyFilters($filters)->convert($output);
-    }
-
     public function writeTags(array $data)
     {
-        $this->tagger->writeTags($data);
+        $this->tagger->writeTags($this->file, $data);
     }
 
     public function removeTags(array $data)
     {
-        $this->tagger->removeTags($data);
+        $this->tagger->removeTags($this->file, $data);
     }
 }

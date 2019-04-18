@@ -9,15 +9,19 @@ use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 
+use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
-use IndieHD\AudioManipulator\Validation\AudioValidatorException;
 
+use IndieHD\AudioManipulator\Validation\ValidatorInterface;
+
+use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
-use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
 
 class FlacTagger implements TaggerInterface
@@ -30,7 +34,8 @@ class FlacTagger implements TaggerInterface
         ProcessInterface $process,
         LoggerInterface $logger,
         FilenameSanitizerInterface $filenameSanitizer,
-        MetaflacCommandInterface $command
+        MetaflacCommandInterface $command,
+        ValidatorInterface $validator
     ) {
         $this->getid3 = $getid3;
         $this->writeTags= $writeTags;
@@ -38,6 +43,7 @@ class FlacTagger implements TaggerInterface
         $this->logger = $logger;
         $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
+        $this->validator = $validator;
 
         // TODO Make the log location configurable.
 
@@ -49,7 +55,15 @@ class FlacTagger implements TaggerInterface
 
         $this->logger->pushHandler($fileHandler);
 
+        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
+        // character will appear as a "#" symbol in the resultant tag value.
+
         $this->env = ['LC_ALL' => 'en_US.utf8'];
+    }
+
+    public function setEnv(array $env)
+    {
+        $this->env = $env;
     }
 
     /**
@@ -60,30 +74,13 @@ class FlacTagger implements TaggerInterface
      * @param string $coverFile
      * @return array
      */
-    public function writeTags(string $file, array $tagData, string $coverFile = null): array
+    public function writeTags(string $file, array $tagData): void
     {
         if (!file_exists($file)) {
             throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
         }
 
-        //Attempt to acquire the audio file's properties.
-
-        $fileDetails = $this->getid3->analyze($file);
-
-        // Ensure that the file on which we're attempting to operate is indeed
-        // a FLAC file.
-
-        // Note: we could use our internal audio validation method, but there's
-        // no reason to waste the time/memory required to call that function
-        // when we have to call getID3's analyze() method again.
-
-        if (!isset($fileDetails['fileformat']) || $fileDetails['fileformat'] != 'flac') {
-            throw new AudioValidatorException('The audio file does not validate as a FLAC file');
-        }
-
-        //A counter to store the number of tags that we attempted to write.
-
-        $numWritesAttempted = 0;
+        $this->command->input($file);
 
         // TODO Removing all tags as a matter of course is problematic because
         // the Artist may have added custom tags that he/she spent considerable
@@ -97,246 +94,52 @@ class FlacTagger implements TaggerInterface
         // Changed to --remove-all because cover art was not being removed.
         // -CBJ 2011.01.18
 
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+        $this->command->removeAll();
 
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
+        $this->runProcess($this->command->compose());
 
+        $this->attemptWrite($file, $tagData);
+
+        $this->verifyTagData($file, $tagData);
+    }
+
+    public function removeAllTags(string $file): void
+    {
         $this->command->input($file);
 
         $this->command->removeAll();
 
-        $this->process->setCommand($this->command->compose());
-
-        $this->process->setTimeout(600);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
-        // character will appear as a "#" symbol.
-
-        $this->process->run(null, $this->env);
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->info(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
-        );
-
-        // Attempt to acquire the audio file's properties, again, now that
-        // we've attempted to remove any existing tags.
-
-        $fileDetails = $this->getid3->analyze($file);
-
-        // We attempted to remove all tags from the FLAC file; we can
-        // determine whether or not we were successful in that effort by
-        // checking to see if the vorbiscomment block is present in the file.
-
-        if (isset($fileDetails['tags']['vorbiscomment'])) {
-            throw new AudioTaggerException('The vorbiscomment block was not removed for some reason');
-        }
-
-        if (empty($tagData['date'][0]) || $tagData['date'][0] === 'Unknown') {
-            unset($tagData['date']);
-        }
-
-        if (!empty($coverFile)) {
-            $this->writeArtwork($coverFile);
-        }
-
-        // Attempt to add each tag to the FLAC file, and keep track of the number
-        // of write attempts. Given that the shell_exec() exit status is not a
-        // reliable means by which to determine the success/failure of the
-        // operation, we must compare the number of write attempts to the number
-        // of tags that exist once we're done attempting to write.
-
-        // TODO Wouldn't it make more sense simply to compare the values
-        // that were attempted with the actual values? Then all tags could be
-        // written in a single command, rather than incur the overhead of
-        // starting an individual process for each field.
-
-        foreach ($tagData as $fieldName => $fieldDataArray) {
-            foreach ($fieldDataArray as $numericIndex => $fieldValue) {
-                // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any
-                // UTF-8 character will equate to an empty string.
-
-                setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-                // IMPORTANT: The --set-vc-field option is deprecated in favor of the
-                // --set-tag option; using the deprecated option will cause the command to
-                // fail on systems on which the option is not supported.
-
-                $this->command->removeAllArguments();
-
-                $this->command->input($file);
-
-                $this->command->setTag($fieldName, $fieldValue);
-
-                $this->process->setCommand($this->command->compose());
-
-                $this->process->setTimeout(600);
-
-                // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
-                // character will appear as a "#" symbol.
-
-                $this->process->run(null, $this->env);
-
-                if (!$this->process->isSuccessful()) {
-                    throw new ProcessFailedException($this->process);
-                }
-
-                $this->logger->info(
-                    $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-                    . $this->process->getOutput()
-                );
-
-                $numWritesAttempted++;
-            }
-        }
-
-        // Attempt to acquire the audio file's properties, again, now that we've
-        // attempted to write new tags.
-
-        $fileDetails = $this->getid3->analyze($file);
-
-        $prefix = 'getID3\'s analyze() method';
-
-        // TODO Determine what this was used for and whether or not it needs to stay.
-
-        //if ($allowBlank !== true) {
-        if (!isset($fileDetails['tags']['vorbiscomment'])) {
-            $error = $prefix . ' determined that the tags were not written for some reason';
-
-            if (!empty($fileDetails['error'])) {
-                for ($i = 0; $i < count($fileDetails['error']); $i++) {
-                    if ($i == 0) {
-                        $error .= ": ";
-                    } else {
-                        $error .= '; ';
-                    }
-
-                    $error .= $fileDetails['error'][$i];
-                }
-            }
-
-            return array('result' => false, 'error' => $error);
-        } else {
-            // If at least one tag was written, we'll end-up here.
-
-            $vorbiscomment = $fileDetails['tags']['vorbiscomment'];
-
-            $numWritesSucceeded = 0;
-
-            // Now, we'll compare each tag on the file with the tag data that
-            // we attempted to apply earlier, in order to determine whether
-            // or not each tag was written successfully.
-
-            foreach ($tagData as $fieldName => $fieldDataArray) {
-                foreach ($fieldDataArray as $numericIndex => $fieldValue) {
-                    if ($vorbiscomment[$fieldName][0] == $fieldValue) {
-                        $numWritesSucceeded++;
-                    }
-                }
-            }
-
-            // We're able to compare how many tags were written versus how
-            // many write attempts were made in order to determine our
-            // success rate.
-
-            if ($numWritesAttempted == $numWritesSucceeded) {
-                return array('result' => true, 'error' => null);
-            } else {
-                $error = 'The number of tag writes that succeeded ('
-                    . $numWritesSucceeded . ') is less than the number attempted ('
-                    . $numWritesAttempted . ')';
-
-                return array('result' => false, 'error' => $error);
-            }
-        }
-        //} else {
-        //    return array('result' => true, 'error' => null);
-        //}
+        $this->runProcess($this->command->compose());
     }
 
-    public function removeTags(array $data)
+    public function removeTags(string $file, array $tags): void
     {
-        // TODO: Implement removeTags() method.
+        $this->command->input($file);
+
+        $this->command->removeTags($tags);
+
+        $this->runProcess($this->command->compose());
     }
 
-    public function writeArtwork(string $imagePath)
+    public function writeArtwork(string $audioFile, string $imageFile): void
     {
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+        $this->command->input($audioFile);
 
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
+        $this->command->importPicture($imageFile);
 
-        $cmd = 'metaflac --import-picture-from=' . escapeshellarg($imagePath) . ' ' . escapeshellarg($audioFile);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
-
-        $env = ['LC_ALL' => 'en_US.utf8'];
-
-        $res = \GlobalMethods::openProcess($cmd, null, $env);
-
-        if ($res !== false) {
-            // As of this writing, metaflac returns an exit status of
-            // zero (which cannot necessarily be relied upon on Windows)
-            // and does not produce any output on success. The latter fact is
-            // far more reliable than the exit status.
-
-            if ($res['stdOut'] == '' && $res['stdErr'] == '') {
-                return array('result' => true, 'error' => null);
-            } else {
-                return [
-                    'result' => false,
-                    'error' => 'The call to `metaflac` produced output, which'
-                        . ' indicates an error condition: ' . \Utility::varToString($res)
-                ];
-            }
-        } else {
-            return array('result' => false, 'error' => 'The process could not be opened: ' . $cmd);
-        }
+        $this->runProcess($this->command->compose());
     }
 
-    public function removeArtwork()
+    public function removeArtwork(string $file): void
     {
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
+        $this->command->input($file);
 
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
+        $this->command->removeBlockType(['PICTURE']);
 
-        $cmd = 'metaflac --remove --block-type=PICTURE ' . escapeshellarg($file);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
-
-        $env = ['LC_ALL' => 'en_US.utf8'];
-
-        $this->process->setTimeout(600);
-
-        $this->process->run($cmd, null, $env);
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->info($cmd . PHP_EOL . PHP_EOL . $this->process->getOutput());
-
-        //As of this writing, metaflac returns an exit status of
-        //zero (which cannot necessarily be relied upon on Windows)
-        //and does not produce any output on success. The latter fact is
-        //far more reliable than the exit status.
-
-        if ($this->process->getOutput() === '' && $this->process->getErrorOutput() === '') {
-            return ['result' => true, 'error' => null];
-        } else {
-            return [
-                'result' => false,
-                'error' => 'The call to `metaflac` produced output, which'
-                    . ' indicates an error condition: (stdout)' . $this->process->getOutput()
-                    . ' (stderr) ' . $this->process->getErrorOutput()
-            ];
-        }
+        $this->runProcess($this->command->compose());
     }
 
-    protected function runProcess(array $cmd)
+    protected function runProcess(array $cmd): Process
     {
         $this->process->setCommand($cmd);
 
@@ -352,5 +155,60 @@ class FlacTagger implements TaggerInterface
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );
+
+        $this->command->removeAllArguments();
+
+        return $this->process;
+    }
+
+    protected function attemptWrite(string $file, array $tagData): void
+    {
+        // IMPORTANT: The --set-vc-field option is deprecated in favor of the
+        // --set-tag option; using the deprecated option will cause the command to
+        // fail on systems on which the option is not supported.
+
+        $this->command->input($file);
+
+        foreach ($tagData as $fieldName => $fieldDataArray) {
+            foreach ($fieldDataArray as $numericIndex => $fieldValue) {
+                $this->command->setTag($fieldName, $fieldValue);
+            }
+        }
+
+        $this->runProcess($this->command->compose());
+    }
+
+    // TODO As it stands, this function is problematic because the Vorbis Comment
+    // standard allows for multiple instances of the same tag name, e.g., passing
+    // --set-tag=ARTIST=Foo --set-tag=ARTIST=Bar is perfectly valid. This function
+    // should be modified to accommodate that fact.
+
+    protected function verifyTagData(string $file, array $tagData): void
+    {
+        $fileDetails = $this->getid3->analyze($file);
+
+        // TODO Determine what this was used for and whether or not it needs to stay.
+
+        //if ($allowBlank !== true) {
+
+        $vorbiscomment = $fileDetails['tags']['vorbiscomment'];
+
+        $failures = [];
+
+        // Compare the passed tag data to the values acquired from the file.
+
+        foreach ($tagData as $fieldName => $fieldDataArray) {
+            foreach ($fieldDataArray as $numericIndex => $fieldValue) {
+                if ($vorbiscomment[$fieldName][0] != $fieldValue) {
+                    $failures[] = $fieldName;
+                }
+            }
+        }
+
+        if (count($failures) > 0) {
+            throw new AudioTaggerException(
+                'Expected value does not match actual value for tags:' . implode(', ', $failures)
+            );
+        }
     }
 }
