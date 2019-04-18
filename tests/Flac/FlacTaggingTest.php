@@ -5,7 +5,9 @@ namespace IndieHD\AudioManipulator\Tests\Flac;
 use PHPUnit\Framework\TestCase;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
+use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 
 class FlacTaggingTest extends TestCase
 {
@@ -190,5 +192,46 @@ class FlacTaggingTest extends TestCase
         );
 
         $this->assertArrayNotHasKey('tags', $fileDetails);
+    }
+
+    public function testItCanWriteUtf8TagValuesAccurately()
+    {
+        $tagData = [
+            'title' => ['﻿ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
+        ];
+
+        $this->flacManipulator->writeTags(
+            $tagData
+        );
+
+        $fileDetails = $this->flacManipulator
+            ->tagger
+            ->getid3
+            ->analyze($this->flacManipulator->getFile());
+
+        $this->assertEquals(
+            [
+                'title' => $tagData['title'],
+            ],
+            $fileDetails['tags']['vorbiscomment']
+        );
+    }
+
+    public function testExceptionIsThrownWhenTagsCannotBeVerifiedAfterWriting()
+    {
+        $this->expectException(AudioTaggerException::class);
+
+        // Set an inappropriate encoding, which will cause the tag to be
+        // written incorrectly.
+
+        $this->flacManipulator->tagger->setEnv(['LC_ALL' => 'en_US.iso-8859-1']);
+
+        $tagData = [
+            'title' => ['﻿ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
+        ];
+
+        $this->flacManipulator->writeTags(
+            $tagData
+        );
     }
 }
