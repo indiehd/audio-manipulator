@@ -13,6 +13,8 @@ use IndieHD\AudioManipulator\Alac\AlacWriterInterface;
 use IndieHD\AudioManipulator\Wav\WavWriterInterface;
 use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommandInterface;
+use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
+use IndieHD\AudioManipulator\Processing\Process;
 
 class FlacConverter implements
     ConverterInterface,
@@ -54,6 +56,28 @@ class FlacConverter implements
         $this->supportedOutputFormats = $supportedOutputFormats;
     }
 
+    protected function runProcess(array $cmd, CliCommandInterface $command): Process
+    {
+        $this->process->setCommand($cmd);
+
+        $this->process->setTimeout(600);
+
+        $this->process->run(null);
+
+        if (!$this->process->isSuccessful()) {
+            throw new ProcessFailedException($this->process);
+        }
+
+        $this->logger->info(
+            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
+            . $this->process->getOutput()
+        );
+
+        $command->removeAllArguments();
+
+        return $this->process;
+    }
+
     private function writeFile(string $inputFile, string $outputFile): array
     {
         $this->validator->validateAudioFile($inputFile, 'flac');
@@ -62,25 +86,7 @@ class FlacConverter implements
 
         $this->sox->output($outputFile);
 
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
-        // character will appear as a "#" symbol.
-
-        $env = ['LC_ALL' => 'en_US.utf8'];
-
-        $this->process->setCommand($this->sox->compose());
-
-        $this->process->setTimeout(600);
-
-        $this->process->run(null, $env);
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->info(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-                . $this->process->getOutput()
-        );
+        $this->runProcess($this->sox->compose(), $this->sox);
 
         // On the Windows platform, SoX's exit status is not preserved, thus
         // we must confirm that the operation was completed successfully by
@@ -131,25 +137,7 @@ class FlacConverter implements
 
         $this->ffmpeg->forceAudioCodec('alac');
 
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
-        // character will appear as a "#" symbol.
-
-        $env = ['LC_ALL' => 'en_US.utf8'];
-
-        $this->process->setCommand($this->ffmpeg->compose());
-
-        $this->process->setTimeout(600);
-
-        $this->process->run(null, $env);
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->info(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
-        );
+        $this->runProcess($this->ffmpeg->compose(), $this->ffmpeg);
 
         // We'll use a validation function to analyze the resultant file and ensure that the
         // file meets our expectations.
