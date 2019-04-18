@@ -8,10 +8,8 @@ use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 class Mp3ManipulatorCreator implements Mp3ManipulatorCreatorInterface
 {
     public function __construct(
-        ConverterInterface $converter,
         TaggerInterface $tagger
     ) {
-        $this->converter = $converter;
         $this->tagger = $tagger;
     }
 
@@ -19,7 +17,6 @@ class Mp3ManipulatorCreator implements Mp3ManipulatorCreatorInterface
     {
         $manipulator = new Mp3Manipulator($file);
 
-        $manipulator->converter = $this->converter;
         $manipulator->tagger = $this->tagger;
 
         return $manipulator;

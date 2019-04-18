@@ -20,11 +20,6 @@ class Mp3Manipulator extends BaseManipulator implements ManipulatorInterface, Ta
         return $this->file;
     }
 
-    public function convert(string $output, $filters = [])
-    {
-        $this->converter->applyFilters($filters)->convert($output);
-    }
-
     public function writeTags(array $data)
     {
         $this->tagger->writeTags($data);

@@ -145,12 +145,10 @@ class Container
 
         // MP3 Manipulator.
 
-        $containerBuilder->setParameter('mp3_manipulator_creator.converter', $containerBuilder->get('mp3_converter'));
         $containerBuilder->setParameter('mp3_manipulator_creator.tagger', $containerBuilder->get('mp3_tagger'));
 
         $containerBuilder
             ->register('mp3_manipulator_creator', Mp3ManipulatorCreator::class)
-            ->addArgument('%mp3_manipulator_creator.converter%')
             ->addArgument('%mp3_manipulator_creator.tagger%');
 
         // WAV Converter.
