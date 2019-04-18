@@ -13,15 +13,15 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 
+use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
+
 use IndieHD\AudioManipulator\Validation\ValidatorInterface;
-use IndieHD\AudioManipulator\Validation\AudioValidatorException;
 
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
-use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
 
 class FlacTagger implements TaggerInterface
@@ -55,7 +55,15 @@ class FlacTagger implements TaggerInterface
 
         $this->logger->pushHandler($fileHandler);
 
+        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
+        // character will appear as a "#" symbol in the resultant tag value.
+
         $this->env = ['LC_ALL' => 'en_US.utf8'];
+    }
+
+    public function setEnv(array $env)
+    {
+        $this->env = $env;
     }
 
     /**
@@ -72,13 +80,7 @@ class FlacTagger implements TaggerInterface
             throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
         }
 
-        //Attempt to acquire the audio file's properties.
-
-        $fileDetails = $this->validator->validateAudioFile($file, 'flac');
-
-        //A counter to store the number of tags that we attempted to write.
-
-        $numWritesAttempted = 0;
+        $this->command->input($file);
 
         // TODO Removing all tags as a matter of course is problematic because
         // the Artist may have added custom tags that he/she spent considerable
@@ -91,12 +93,6 @@ class FlacTagger implements TaggerInterface
         // command to fail on systems on which the option is not supported.
         // Changed to --remove-all because cover art was not being removed.
         // -CBJ 2011.01.18
-
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-        $this->command->input($file);
 
         $this->command->removeAll();
 
@@ -127,10 +123,6 @@ class FlacTagger implements TaggerInterface
 
     public function writeArtwork(string $audioFile, string $imageFile): void
     {
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
         $this->command->input($audioFile);
 
         $this->command->importPicture($imageFile);
@@ -140,10 +132,6 @@ class FlacTagger implements TaggerInterface
 
     public function removeArtwork(string $file): void
     {
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
         $this->command->input($file);
 
         $this->command->removeBlockType(['PICTURE']);
@@ -175,11 +163,6 @@ class FlacTagger implements TaggerInterface
 
     protected function attemptWrite(string $file, array $tagData): void
     {
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any
-        // UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
         // IMPORTANT: The --set-vc-field option is deprecated in favor of the
         // --set-tag option; using the deprecated option will cause the command to
         // fail on systems on which the option is not supported.
@@ -217,7 +200,7 @@ class FlacTagger implements TaggerInterface
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
                 if ($vorbiscomment[$fieldName][0] != $fieldValue) {
-                    $failures[$vorbiscomment[$fieldName][0]];
+                    $failures[] = $fieldName;
                 }
             }
         }
