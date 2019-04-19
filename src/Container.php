@@ -28,7 +28,7 @@ use IndieHD\AudioManipulator\Alac\AlacEffects;
 use IndieHD\AudioManipulator\CliCommand\SoxCommand;
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommand;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommand;
-use IndieHD\AudioManipulator\CliCommand\LameCommand;
+use IndieHD\AudioManipulator\CliCommand\Mid3v2Command;
 
 class Container
 {
@@ -134,7 +134,7 @@ class Container
         $containerBuilder->setParameter('mp3_tagger.process', new Process());
         $containerBuilder->setParameter('mp3_tagger.logger', $containerBuilder->get('logger'));
         $containerBuilder->setParameter('mp3_tagger.filename_sanitizer', new FilenameSanitizer());
-        $containerBuilder->setParameter('mp3_tagger.cli_command', new LameCommand());
+        $containerBuilder->setParameter('mp3_tagger.cli_command', new Mid3v2Command());
         $containerBuilder->setParameter('mp3_tagger.validator', $containerBuilder->get('validator'));
 
         $containerBuilder->register('mp3_tagger', Mp3Tagger::class)

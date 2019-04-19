@@ -16,7 +16,7 @@ use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Tagging\TaggerInterface;
-use IndieHD\AudioManipulator\CliCommand\LameCommandInterface;
+use IndieHD\AudioManipulator\CliCommand\Mid3v2CommandInterface;
 
 class Mp3Tagger implements TaggerInterface
 {
@@ -26,7 +26,7 @@ class Mp3Tagger implements TaggerInterface
         ProcessInterface $process,
         LoggerInterface $logger,
         FilenameSanitizerInterface $filenameSanitizer,
-        LameCommandInterface $command,
+        Mid3v2CommandInterface $command,
         ValidatorInterface $validator
     ) {
 
@@ -64,9 +64,14 @@ class Mp3Tagger implements TaggerInterface
 
         $this->command->input($file);
 
-        $this->attemptWrite($file, $tagData);
+        $this->attemptWrite($tagData);
 
-        $this->verifyTagData($file, $tagData);
+        $fieldMappings = [
+            'song' => 'title',
+            'track' => 'track_number',
+        ];
+
+        $this->verifyTagData($file, $tagData, $fieldMappings);
     }
 
     /*
@@ -95,6 +100,11 @@ class Mp3Tagger implements TaggerInterface
 
     protected function runProcess(array $cmd): Process
     {
+        // TODO Determine whether or not this is truly necessary, via tests,
+        // i.e., when dealing with UTF-8 encoding.
+
+        #$this->process->setLocale('en_US.UTF-8');
+
         $this->process->setCommand($cmd);
 
         $this->process->setTimeout(600);
@@ -115,17 +125,11 @@ class Mp3Tagger implements TaggerInterface
         return $this->process;
     }
 
-    protected function attemptWrite(string $file, array $tagData): void
+    protected function attemptWrite(array $tagData): void
     {
-        // IMPORTANT: The --set-vc-field option is deprecated in favor of the
-        // --set-tag option; using the deprecated option will cause the command to
-        // fail on systems on which the option is not supported.
-
-        $this->command->input($file);
-
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
-                $this->command->{'set' . ucfirst($fieldName)}($fieldValue);
+                $this->command->{$fieldName}($fieldValue);
             }
         }
 
@@ -137,7 +141,7 @@ class Mp3Tagger implements TaggerInterface
     // --set-tag=ARTIST=Foo --set-tag=ARTIST=Bar is perfectly valid. This function
     // should be modified to accommodate that fact.
 
-    protected function verifyTagData(string $file, array $tagData): void
+    protected function verifyTagData(string $file, array $tagData, array $fieldMappings = null): void
     {
         $fileDetails = $this->getid3->analyze($file);
 
@@ -149,6 +153,10 @@ class Mp3Tagger implements TaggerInterface
 
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
+                if (isset($fieldMappings[$fieldName])) {
+                    $fieldName = $fieldMappings[$fieldName];
+                }
+
                 if ($tagsOnFile[$fieldName][0] != $fieldValue) {
                     $failures[] = $fieldName;
                 }
@@ -157,7 +165,7 @@ class Mp3Tagger implements TaggerInterface
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
-                'Expected value does not match actual value for tags:' . implode(', ', $failures)
+                'Expected value does not match actual value for tags: ' . implode(', ', $failures)
             );
         }
     }
