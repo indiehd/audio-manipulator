@@ -117,4 +117,11 @@ class Mp3TaggingTest extends TaggingTest
             $fileDetails['tags']['vorbiscomment']
         );
     }
+
+    protected function removeAllTags()
+    {
+        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
+        );
+    }
 }
