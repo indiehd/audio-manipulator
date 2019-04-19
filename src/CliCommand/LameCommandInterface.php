@@ -29,4 +29,18 @@ interface LameCommandInterface extends CliCommandInterface
     public function abr(): void;
 
     public function vbr(int $quality): void;
+
+    public function setTitle(string $value): void;
+
+    public function setArtist(string $value): void;
+
+    public function setYear(string $value): void;
+
+    public function setComment(string $value): void;
+
+    public function setAlbum(string $value): void;
+
+    public function setTracknumber(string $value): void;
+
+    public function setGenre(string $value): void;
 }
