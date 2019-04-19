@@ -9,6 +9,8 @@ use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
