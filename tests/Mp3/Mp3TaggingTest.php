@@ -86,12 +86,12 @@ class Mp3TaggingTest extends TaggingTest
     public function testItCanTagFile()
     {
         $tagData = [
-            'title' => ['Test Song'],
+            'song' => ['Test Song'],
             'artist' => ['Foobius Barius'],
             'year' => ['1981'],
             'comment' => ['All rights reserved.'],
             'album' => ['Test Title'],
-            'tracknumber' => ['1/1'],
+            'track' => ['1/1'],
             'genre' => ['Rock'],
         ];
 
@@ -106,12 +106,12 @@ class Mp3TaggingTest extends TaggingTest
 
         $this->assertEquals(
             [
-                'title' => $tagData['title'],
+                'song' => $tagData['song'],
                 'artist' => $tagData['artist'],
                 'year' => $tagData['year'],
                 'comment' => $tagData['comment'],
                 'album' => $tagData['album'],
-                'tracknumber' => [$tagData['tracknumber'][0]],
+                'track' => [$tagData['track'][0]],
                 'genre' => ['Rock'],
             ],
             $fileDetails['tags']['vorbiscomment']
