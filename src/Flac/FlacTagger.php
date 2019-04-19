@@ -13,7 +13,7 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 
-use IndieHD\AudioManipulator\Tagging\TaggerInterface;
+use IndieHD\AudioManipulator\Flac\FlacTaggerInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 
 use IndieHD\AudioManipulator\Validation\ValidatorInterface;
@@ -24,7 +24,7 @@ use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
 
-class FlacTagger implements TaggerInterface
+class FlacTagger implements FlacTaggerInterface
 {
     private $env;
 
@@ -71,7 +71,6 @@ class FlacTagger implements TaggerInterface
      *
      * @param string $file
      * @param array $tagData
-     * @param string $coverFile
      * @return array
      */
     public function writeTags(string $file, array $tagData): void
@@ -95,8 +94,6 @@ class FlacTagger implements TaggerInterface
         // -CBJ 2011.01.18
 
         $this->command->removeAll();
-
-        $this->runProcess($this->command->compose());
 
         $this->attemptWrite($file, $tagData);
 

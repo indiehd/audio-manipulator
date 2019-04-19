@@ -6,8 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
-use function \IndieHD\AudioManipulator\app;
-
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 
@@ -20,7 +18,7 @@ abstract class TaggingTest extends TestCase
     abstract protected function setFileType(string $type): void;
 
     /**
-     * Ensure that a FLAC file can be tagged with metadata.
+     * Ensure that the file can be tagged with metadata.
      *
      * @return void
      */
@@ -82,12 +80,14 @@ abstract class TaggingTest extends TestCase
         $this->{$this->fileType . 'Manipulator'}->writeTags([]);
     }
 
+    /*
     protected function removeAllTags()
     {
         $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
     }
+    */
 
     protected function removeArtwork()
     {
@@ -106,6 +106,7 @@ abstract class TaggingTest extends TestCase
         );
     }
 
+    /*
     public function testItCanEmbedArtwork()
     {
         $this->embedArtwork();
@@ -126,6 +127,7 @@ abstract class TaggingTest extends TestCase
             $fileDetails['flac']['PICTURE'][0]['data']
         );
     }
+    */
 
     public function testItCanRemoveArtworkFromFile()
     {
