@@ -158,14 +158,8 @@ class FlacTagger implements FlacTaggerInterface
         return $this->process;
     }
 
-    protected function attemptWrite(string $file, array $tagData): void
+    protected function attemptWrite(array $tagData): void
     {
-        // IMPORTANT: The --set-vc-field option is deprecated in favor of the
-        // --set-tag option; using the deprecated option will cause the command to
-        // fail on systems on which the option is not supported.
-
-        $this->command->input($file);
-
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
                 $this->command->setTag($fieldName, $fieldValue);
@@ -204,7 +198,7 @@ class FlacTagger implements FlacTaggerInterface
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
-                'Expected value does not match actual value for tags:' . implode(', ', $failures)
+                'Expected value does not match actual value for tags: ' . implode(', ', $failures)
             );
         }
     }
