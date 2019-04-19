@@ -93,9 +93,11 @@ class FlacTagger implements FlacTaggerInterface
         // Changed to --remove-all because cover art was not being removed.
         // -CBJ 2011.01.18
 
-        $this->command->removeAll();
+        $this->removeAllTags($file);
 
-        $this->attemptWrite($file, $tagData);
+        $this->command->input($file);
+
+        $this->attemptWrite($tagData);
 
         $this->verifyTagData($file, $tagData);
     }
