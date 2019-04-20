@@ -76,12 +76,14 @@ class Mp3Tagger implements TaggerInterface
         $this->verifyTagData($file, $tagData, $fieldMappings);
     }
 
-    /*
     public function removeAllTags(string $file): void
     {
-        // TODO: Implement removeAllTags() method.
+        $this->command->input($file);
+
+        $this->command->deleteAll();
+
+        $this->runProcess($this->command->compose());
     }
-    */
 
     /*
     public function removeTags(string $file, array $tagData): void
@@ -92,12 +94,20 @@ class Mp3Tagger implements TaggerInterface
 
     public function writeArtwork(string $audioFile, string $imageFile): void
     {
-        // TODO: Implement writeArtwork() method.
+        $this->command->input($audioFile);
+
+        $this->command->picture($imageFile);
+
+        $this->runProcess($this->command->compose());
     }
 
     public function removeArtwork(string $file): void
     {
-        // TODO: Implement removeArtwork() method.
+        $this->command->input($file);
+
+        $this->command->removeArtwork();
+
+        $this->runProcess($this->command->compose());
     }
 
     protected function runProcess(array $cmd): Process
