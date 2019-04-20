@@ -11,7 +11,7 @@ env:
   - FFMPEG_BINARY=avconv
 
 before_install:
-  - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac lame libav-tools atomicparsley
+  - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac python-mutagen lame libav-tools atomicparsley
 
 before_script:
 - composer install --no-interaction
