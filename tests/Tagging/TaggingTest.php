@@ -129,22 +129,7 @@ abstract class TaggingTest extends TestCase
     }
     */
 
-    public function testItCanRemoveArtworkFromFile()
-    {
-        $this->removeAllTags();
-
-        $this->embedArtwork();
-
-        $this->removeArtwork();
-
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
-        );
-
-        $this->assertArrayNotHasKey('comments', $fileDetails);
-
-        $this->assertArrayNotHasKey('PICTURE', $fileDetails['flac']);
-    }
+    abstract public function testItCanRemoveArtworkFromFile();
 
     public function testItCanRemoveTagsFromFile()
     {
