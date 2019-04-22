@@ -103,4 +103,27 @@ class FlacTaggingTest extends TaggingTest
 
         $this->assertArrayNotHasKey('PICTURE', $fileDetails['flac']);
     }
+
+    public function testItCanRemoveTagsFromFile()
+    {
+        $this->removeAllTags();
+
+        $this->{$this->fileType . 'Manipulator'}->writeTags(
+            [
+                'artist' => ['Foo'],
+            ]
+        );
+
+        $this->{$this->fileType . 'Manipulator'}->removeTags(
+            [
+                'artist',
+            ]
+        );
+
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
+        );
+
+        $this->assertArrayNotHasKey('tags', $fileDetails);
+    }
 }

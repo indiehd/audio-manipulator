@@ -141,4 +141,27 @@ class Mp3TaggingTest extends TaggingTest
 
         $this->assertArrayNotHasKey('APIC', $fileDetails['id3v2']);
     }
+
+    public function testItCanRemoveTagsFromFile()
+    {
+        $this->removeAllTags();
+
+        $this->{$this->fileType . 'Manipulator'}->writeTags(
+            [
+                'artist' => ['Foo'],
+            ]
+        );
+
+        $this->{$this->fileType . 'Manipulator'}->removeTags(
+            [
+                'TPE1',
+            ]
+        );
+
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
+        );
+
+        $this->assertArrayNotHasKey('tags', $fileDetails);
+    }
 }

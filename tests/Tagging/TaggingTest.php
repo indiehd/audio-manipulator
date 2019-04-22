@@ -131,33 +131,12 @@ abstract class TaggingTest extends TestCase
 
     abstract public function testItCanRemoveArtworkFromFile();
 
-    public function testItCanRemoveTagsFromFile()
-    {
-        $this->removeAllTags();
-
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
-            [
-                'title' => ['Foo'],
-            ]
-        );
-
-        $this->{$this->fileType . 'Manipulator'}->removeTags(
-            [
-                'title',
-            ]
-        );
-
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
-        );
-
-        $this->assertArrayNotHasKey('tags', $fileDetails);
-    }
+    abstract public function testItCanRemoveTagsFromFile();
 
     public function testItCanWriteUtf8TagValuesAccurately()
     {
         $tagData = [
-            'title' => ['﻿ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
+            'artist' => ['ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
         ];
 
         $this->{$this->fileType . 'Manipulator'}->writeTags(
@@ -171,10 +150,24 @@ abstract class TaggingTest extends TestCase
 
         $this->assertEquals(
             [
-                'title' => $tagData['title'],
+                'artist' => $tagData['artist'],
             ],
-            $fileDetails['tags']['vorbiscomment']
+            $fileDetails['tags']['id3v2']
         );
+
+        $this->assertEquals(
+            [
+                'artist' => $tagData['artist'],
+            ],
+            $fileDetails['id3v2']['comments']
+        );
+
+        #$this->assertEquals(
+        #    [
+        #        'artist' => $tagData['artist'],
+        #    ],
+        #    $fileDetails['id3v2']['TPE1'][0]['data']
+        #);
     }
 
     public function testExceptionIsThrownWhenTagsCannotBeVerifiedAfterWriting()
@@ -187,7 +180,7 @@ abstract class TaggingTest extends TestCase
         $this->{$this->fileType . 'Manipulator'}->tagger->setEnv(['LC_ALL' => 'en_US.iso-8859-1']);
 
         $tagData = [
-            'title' => ['﻿ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
+            'artist' => ['﻿ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
         ];
 
         $this->{$this->fileType . 'Manipulator'}->writeTags(
