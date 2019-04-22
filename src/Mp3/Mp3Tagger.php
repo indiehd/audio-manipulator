@@ -177,7 +177,7 @@ class Mp3Tagger implements TaggerInterface
                 }
 
                 if ($tagsOnFile[$fieldName][0] != $fieldValue) {
-                    $failures[] = $fieldName;
+                    $failures[] = $fieldName . ' (' . $tagsOnFile[$fieldName][0]. ' != ' . $fieldValue . ')';
                 }
             }
         }
