@@ -58,6 +58,11 @@ class Mp3Tagger implements TaggerInterface
         $this->env = ['LC_ALL' => 'en_US.utf8'];
     }
 
+    public function setEnv(array $env): void
+    {
+        $this->env = $env;
+    }
+
     public function writeTags(string $file, array $tagData): void
     {
         if (!file_exists($file)) {
@@ -85,12 +90,14 @@ class Mp3Tagger implements TaggerInterface
         $this->runProcess($this->command->compose());
     }
 
-    /*
-    public function removeTags(string $file, array $tagData): void
+    public function removeTags(string $file, array $tags): void
     {
-        // TODO: Implement removeTags() method.
+        $this->command->input($file);
+
+        $this->command->removeTags($tags);
+
+        $this->runProcess($this->command->compose());
     }
-    */
 
     public function writeArtwork(string $audioFile, string $imageFile): void
     {

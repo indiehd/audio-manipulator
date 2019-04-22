@@ -61,7 +61,7 @@ class FlacTagger implements FlacTaggerInterface
         $this->env = ['LC_ALL' => 'en_US.utf8'];
     }
 
-    public function setEnv(array $env)
+    public function setEnv(array $env): void
     {
         $this->env = $env;
     }

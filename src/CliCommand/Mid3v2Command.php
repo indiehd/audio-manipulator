@@ -81,4 +81,9 @@ class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
     {
         $this->addArgument('options', '--delete-frames=APIC');
     }
+
+    public function removeTags(array $tags): void
+    {
+        $this->addArgument('options', '--delete-frames=' . escapeshellarg(implode(',', $tags)));
+    }
 }
