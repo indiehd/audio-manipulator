@@ -126,4 +126,39 @@ class FlacTaggingTest extends TaggingTest
 
         $this->assertArrayNotHasKey('tags', $fileDetails);
     }
+
+    public function testItCanWriteUtf8TagValuesAccurately()
+    {
+        $tagData = [
+            'artist' => ['ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
+        ];
+
+        $this->{$this->fileType . 'Manipulator'}->writeTags(
+            $tagData
+        );
+
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+            ->tagger
+            ->getid3
+            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+
+        $this->assertEquals(
+            [
+                'artist' => $tagData['artist'],
+            ],
+            $fileDetails['tags']['vorbiscomment']
+        );
+
+        $this->assertEquals(
+            [
+                'artist' => $tagData['artist'],
+            ],
+            $fileDetails['flac']['comments']
+        );
+
+        $this->assertEquals(
+            $tagData['artist'],
+            $fileDetails['flac']['VORBIS_COMMENT']['comments']['artist']
+        );
+    }
 }

@@ -78,6 +78,27 @@ class Mp3TaggingTest extends TaggingTest
         $this->fileType = $type;
     }
 
+    public function testItCanEmbedArtwork()
+    {
+        $this->embedArtwork();
+
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
+        );
+
+        $testImage = file_get_contents($this->sampleDir . 'flac-logo.gif');
+
+        $this->assertEquals(
+            $testImage,
+            $fileDetails['comments']['picture'][0]['data']
+        );
+
+        $this->assertEquals(
+            $testImage,
+            $fileDetails['id3v2']['APIC'][0]['data']
+        );
+    }
+
     /**
      * Ensure that an MP3 file can be tagged with metadata.
      *
@@ -106,15 +127,16 @@ class Mp3TaggingTest extends TaggingTest
 
         $this->assertEquals(
             [
-                'song' => $tagData['song'],
+                'title' => $tagData['song'],
                 'artist' => $tagData['artist'],
                 'year' => $tagData['year'],
+                'recording_time' => $tagData['year'],
                 'comment' => $tagData['comment'],
                 'album' => $tagData['album'],
-                'track' => [$tagData['track'][0]],
+                'track_number' => [$tagData['track'][0]],
                 'genre' => ['Rock'],
             ],
-            $fileDetails['tags']['vorbiscomment']
+            $fileDetails['tags']['id3v2']
         );
     }
 
@@ -163,5 +185,40 @@ class Mp3TaggingTest extends TaggingTest
         );
 
         $this->assertArrayNotHasKey('tags', $fileDetails);
+    }
+
+    public function testItCanWriteUtf8TagValuesAccurately()
+    {
+        $tagData = [
+            'artist' => ['ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
+        ];
+
+        $this->{$this->fileType . 'Manipulator'}->writeTags(
+            $tagData
+        );
+
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+            ->tagger
+            ->getid3
+            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+
+        $this->assertEquals(
+            [
+                'artist' => $tagData['artist'],
+            ],
+            $fileDetails['tags']['id3v2']
+        );
+
+        $this->assertEquals(
+            [
+                'artist' => $tagData['artist'],
+            ],
+            $fileDetails['id3v2']['comments']
+        );
+
+        $this->assertEquals(
+            $tagData['artist'][0],
+            $fileDetails['id3v2']['TPE1'][0]['data']
+        );
     }
 }
