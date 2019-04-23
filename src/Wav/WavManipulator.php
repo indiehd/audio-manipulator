@@ -18,9 +18,4 @@ class WavManipulator extends BaseManipulator implements ManipulatorInterface
     {
         return $this->file;
     }
-
-    public function convert(string $output, $filters = [])
-    {
-        $this->converter->applyFilters($filters)->convert($output);
-    }
 }

@@ -35,12 +35,12 @@ class WavConverter implements
         $this->process = $process;
         $this->logger = $logger;
 
-        $this->supportedOutputFormats = [
+        $this->setSupportedOutputFormats([
             'flac',
             'mp3',
             'm4a',
             'ogg',
-        ];
+        ]);
     }
 
     public function setSupportedOutputFormats(array $supportedOutputFormats): void
@@ -230,10 +230,5 @@ class WavConverter implements
     public function toFlac(string $inputFile, string $outputFile): array
     {
         return $this->writeFile($inputFile, $outputFile);
-    }
-
-    public function applyEffect($effect): bool
-    {
-        // TODO: Implement applyEffect() method.
     }
 }
