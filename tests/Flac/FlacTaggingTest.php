@@ -48,17 +48,6 @@ class FlacTaggingTest extends TaggingTest
         $this->fileType = $type;
     }
 
-    /*
-    public function testItThrowsExceptionWhenProcessFails()
-    {
-        $this->expectException(ProcessFailedException::class);
-
-        $this->{$this->fileType . 'Manipulator'}->tagger->command->setBinary('non-existent-binary-path');
-
-        $this->{$this->fileType . 'Manipulator'}->writeTags([]);
-    }
-    */
-
     public function testItCanEmbedArtwork()
     {
         $this->embedArtwork();

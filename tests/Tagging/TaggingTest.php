@@ -80,15 +80,6 @@ abstract class TaggingTest extends TestCase
         $this->{$this->fileType . 'Manipulator'}->writeTags([]);
     }
 
-    /*
-    protected function removeAllTags()
-    {
-        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
-        );
-    }
-    */
-
     protected function removeArtwork()
     {
         $this->{$this->fileType . 'Manipulator'}->tagger->removeArtwork(
@@ -106,28 +97,7 @@ abstract class TaggingTest extends TestCase
         );
     }
 
-    /*
-    public function testItCanEmbedArtwork()
-    {
-        $this->embedArtwork();
-
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
-        );
-
-        $testImage = file_get_contents($this->sampleDir . 'flac-logo.gif');
-
-        $this->assertEquals(
-            $testImage,
-            $fileDetails['comments']['picture'][0]['data']
-        );
-
-        $this->assertEquals(
-            $testImage,
-            $fileDetails['flac']['PICTURE'][0]['data']
-        );
-    }
-    */
+    abstract public function testItCanEmbedArtwork();
 
     abstract public function testItCanRemoveArtworkFromFile();
 
