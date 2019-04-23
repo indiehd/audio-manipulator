@@ -98,7 +98,7 @@ class Mp3Tagger implements TaggerInterface
     {
         $this->command->input($audioFile);
 
-        $this->command->picture($imageFile);
+        $this->command->picture($imageFile, $audioFile);
 
         $this->runProcess($this->command->compose());
     }

@@ -67,17 +67,17 @@ class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
         $this->addArgument('options', '--genre=' . escapeshellarg($value));
     }
 
-    public function deleteAll()
+    public function deleteAll(): void
     {
         $this->addArgument('options', '--delete-all');
     }
 
-    public function picture(string $value): void
+    public function picture(string $imageFile, string $audioFile): void
     {
-        $this->addArgument('options', '--picture=' . escapeshellarg($value));
+        $this->addArgument('options', '--APIC ' . escapeshellarg($imageFile) . ' ' . escapeshellarg($audioFile));
     }
 
-    public function removeArtwork()
+    public function removeArtwork(): void
     {
         $this->addArgument('options', '--delete-frames=APIC');
     }

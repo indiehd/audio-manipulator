@@ -23,4 +23,12 @@ interface Mid3v2CommandInterface extends CliCommandInterface
     public function track(string $value): void;
 
     public function genre(string $value): void;
+
+    public function deleteAll(): void;
+
+    public function picture(string $imageFile, string $audioFile): void;
+
+    public function removeArtwork(): void;
+
+    public function removeTags(array $tags): void;
 }
