@@ -11,7 +11,12 @@ env:
   - FFMPEG_BINARY=avconv
 
 before_install:
-  - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac python-mutagen lame libav-tools atomicparsley
+  - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac lame libav-tools atomicparsley
+  - git clone https://github.com/quodlibet/mutagen.git /tmp/mutagen
+  - cd /tmp/mutagen
+  - git checkout -t release-1.42.0
+  - ./setup.py build
+  - sudo ./setup.py install
 
 before_script:
 - composer install --no-interaction
