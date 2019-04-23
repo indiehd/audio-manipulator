@@ -82,4 +82,39 @@ class LameCommand extends CliCommand implements LameCommandInterface
     {
         $this->addArgument('options', '--vbr-new -V ' . $quality);
     }
+
+    public function setTitle(string $value): void
+    {
+        $this->addArgument('options', '--tt ' . escapeshellarg($value));
+    }
+
+    public function setArtist(string $value): void
+    {
+        $this->addArgument('options', '--ta ' . escapeshellarg($value));
+    }
+
+    public function setYear(string $value): void
+    {
+        $this->addArgument('options', '--ty ' . escapeshellarg($value));
+    }
+
+    public function setComment(string $value): void
+    {
+        $this->addArgument('options', '--tc ' . escapeshellarg($value));
+    }
+
+    public function setAlbum(string $value): void
+    {
+        $this->addArgument('options', '--tl ' . escapeshellarg($value));
+    }
+
+    public function setTracknumber(string $value): void
+    {
+        $this->addArgument('options', '--tn ' . escapeshellarg($value));
+    }
+
+    public function setGenre(string $value): void
+    {
+        $this->addArgument('options', '--tg ' . escapeshellarg($value));
+    }
 }

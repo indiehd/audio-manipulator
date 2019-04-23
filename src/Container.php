@@ -28,6 +28,7 @@ use IndieHD\AudioManipulator\Alac\AlacEffects;
 use IndieHD\AudioManipulator\CliCommand\SoxCommand;
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommand;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommand;
+use IndieHD\AudioManipulator\CliCommand\Mid3v2Command;
 
 class Container
 {
@@ -128,29 +129,29 @@ class Container
 
         // MP3 Tagger.
 
-        $containerBuilder->setParameter('mp3_tagger.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('mp3_tagger.getid3', new getID3());
         $containerBuilder->setParameter('mp3_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('mp3_tagger.process', new Process());
         $containerBuilder->setParameter('mp3_tagger.logger', $containerBuilder->get('logger'));
         $containerBuilder->setParameter('mp3_tagger.filename_sanitizer', new FilenameSanitizer());
+        $containerBuilder->setParameter('mp3_tagger.cli_command', new Mid3v2Command());
+        $containerBuilder->setParameter('mp3_tagger.validator', $containerBuilder->get('validator'));
 
         $containerBuilder->register('mp3_tagger', Mp3Tagger::class)
-            ->addArgument('%mp3_tagger.validator%')
             ->addArgument('%mp3_tagger.getid3%')
             ->addArgument('%mp3_tagger.getid3_tag_writer%')
             ->addArgument('%mp3_tagger.process%')
             ->addArgument('%mp3_tagger.logger%')
-            ->addArgument('%mp3_tagger.filename_sanitizer%');
+            ->addArgument('%mp3_tagger.filename_sanitizer%')
+            ->addArgument('%mp3_tagger.cli_command%')
+            ->addArgument('%mp3_tagger.validator%');
 
         // MP3 Manipulator.
 
-        $containerBuilder->setParameter('mp3_manipulator_creator.converter', $containerBuilder->get('mp3_converter'));
         $containerBuilder->setParameter('mp3_manipulator_creator.tagger', $containerBuilder->get('mp3_tagger'));
 
         $containerBuilder
             ->register('mp3_manipulator_creator', Mp3ManipulatorCreator::class)
-            ->addArgument('%mp3_manipulator_creator.converter%')
             ->addArgument('%mp3_manipulator_creator.tagger%');
 
         // WAV Converter.

@@ -12,6 +12,12 @@ env:
 
 before_install:
   - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac lame libav-tools atomicparsley
+  - git clone https://github.com/quodlibet/mutagen.git /tmp/mutagen
+  - cd /tmp/mutagen
+  - git checkout -b release-1.42.0
+  - ./setup.py build
+  - sudo ./setup.py install
+  - cd $TRAVIS_BUILD_DIR
 
 before_script:
 - composer install --no-interaction

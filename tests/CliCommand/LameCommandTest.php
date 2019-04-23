@@ -8,14 +8,14 @@ use IndieHD\AudioManipulator\CliCommand\LameCommand;
 
 class LameCommandTest extends TestCase
 {
-    private $lameCommand;
+    private $command;
 
     /**
      * @inheritdoc
      */
     public function setUp(): void
     {
-        $this->lameCommand = new LameCommand();
+        $this->command = new LameCommand();
     }
 
     public function testBinaryCanBeSetFromEnvironment()
@@ -25,16 +25,16 @@ class LameCommandTest extends TestCase
 
     public function testWhenInstantiatedRequiredPropertiesAreSet()
     {
-        $this->assertIsString($this->lameCommand->getName());
-        $this->assertIsString($this->lameCommand->getBinary());
-        $this->assertIsArray($this->lameCommand->getCommandParts());
+        $this->assertIsString($this->command->getName());
+        $this->assertIsString($this->command->getBinary());
+        $this->assertIsArray($this->command->getCommandParts());
     }
 
     public function testItThrowsInvalidArgumentExceptionWhenCommandPartIsInvalid()
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $this->lameCommand->addArgument('foo', 'bar');
+        $this->command->addArgument('foo', 'bar');
     }
 
     public function testItComposesCommandCorrectly()
@@ -43,135 +43,205 @@ class LameCommandTest extends TestCase
         // that the composition order is not contingent upon the order in which
         // the the arguments are added.
 
-        $this->lameCommand->addArgument('infile', 'test.flac');
+        $this->command->addArgument('infile', 'test.flac');
 
-        $this->lameCommand->addArgument('outfile', 'test.mp3');
+        $this->command->addArgument('outfile', 'test.mp3');
 
-        $this->lameCommand->addArgument('options', '-b 320');
+        $this->command->addArgument('options', '-b 320');
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' -b 320 test.flac test.mp3',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' -b 320 test.flac test.mp3',
+            $this->command->asString()
         );
     }
 
     public function testItComposesInputCommandCorrectly()
     {
-        $this->lameCommand->input('test.flac');
+        $this->command->input('test.flac');
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . " 'test.flac'",
-            $this->lameCommand->asString()
+            $this->command->getBinary() . " 'test.flac'",
+            $this->command->asString()
         );
     }
 
     public function testItComposesOutputCommandCorrectly()
     {
-        $this->lameCommand->output('test.mp3');
+        $this->command->output('test.mp3');
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . " 'test.mp3'",
-            $this->lameCommand->asString()
+            $this->command->getBinary() . " 'test.mp3'",
+            $this->command->asString()
         );
     }
 
     public function testItComposesQuietCommandCorrectly()
     {
-        $this->lameCommand->quiet();
+        $this->command->quiet();
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --quiet',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --quiet',
+            $this->command->asString()
         );
     }
 
     public function testItComposesEnableAndForceLameTagCommandCorrectly()
     {
-        $this->lameCommand->enableAndForceLameTag();
+        $this->command->enableAndForceLameTag();
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' -T',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' -T',
+            $this->command->asString()
         );
     }
 
     public function testItComposesNoReplayGainCommandCorrectly()
     {
-        $this->lameCommand->noReplayGain();
+        $this->command->noReplayGain();
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --noreplaygain',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --noreplaygain',
+            $this->command->asString()
         );
     }
 
     public function testItComposesQualityCommandCorrectly()
     {
-        $this->lameCommand->quality(0);
+        $this->command->quality(0);
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --q 0',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --q 0',
+            $this->command->asString()
         );
     }
 
     public function testItComposesResampleCommandCorrectly()
     {
-        $this->lameCommand->resample(44);
+        $this->command->resample(44);
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --resample 44',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --resample 44',
+            $this->command->asString()
         );
     }
 
     public function testItComposesBitwidthCommandCorrectly()
     {
-        $this->lameCommand->bitwidth(16);
+        $this->command->bitwidth(16);
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --bitwidth 16',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --bitwidth 16',
+            $this->command->asString()
         );
     }
 
     public function testItComposesCbrCommandCorrectly()
     {
-        $this->lameCommand->cbr();
+        $this->command->cbr();
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --cbr',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --cbr',
+            $this->command->asString()
         );
     }
 
     public function testItComposesBitrateCommandCorrectly()
     {
-        $this->lameCommand->bitrate(128);
+        $this->command->bitrate(128);
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' -b 128',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' -b 128',
+            $this->command->asString()
         );
     }
 
     public function testItComposesAbrCommandCorrectly()
     {
-        $this->lameCommand->abr();
+        $this->command->abr();
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --abr',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --abr',
+            $this->command->asString()
         );
     }
 
     public function testItComposesVbrCommandCorrectly()
     {
-        $this->lameCommand->vbr(4);
+        $this->command->vbr(4);
 
         $this->assertEquals(
-            $this->lameCommand->getBinary() . ' --vbr-new -V 4',
-            $this->lameCommand->asString()
+            $this->command->getBinary() . ' --vbr-new -V 4',
+            $this->command->asString()
+        );
+    }
+
+    public function testItComposesSetTitleCommandCorrectly()
+    {
+        $this->command->setTitle('Foo');
+
+        $this->assertEquals(
+            $this->command->getBinary() . " --tt 'Foo'",
+            $this->command->asString()
+        );
+    }
+
+    public function testItComposesSetArtistCommandCorrectly()
+    {
+        $this->command->setArtist('Foo');
+
+        $this->assertEquals(
+            $this->command->getBinary() . " --ta 'Foo'",
+            $this->command->asString()
+        );
+    }
+
+    public function testItComposesSetYearCommandCorrectly()
+    {
+        $this->command->setYear('1981');
+
+        $this->assertEquals(
+            $this->command->getBinary() . " --ty '1981'",
+            $this->command->asString()
+        );
+    }
+
+    public function testItComposesCommentCommandCorrectly()
+    {
+        $this->command->setComment('Foo');
+
+        $this->assertEquals(
+            $this->command->getBinary() . " --tc 'Foo'",
+            $this->command->asString()
+        );
+    }
+
+    public function testItComposesSetAlbumCommandCorrectly()
+    {
+        $this->command->setAlbum('Foo');
+
+        $this->assertEquals(
+            $this->command->getBinary() . " --tl 'Foo'",
+            $this->command->asString()
+        );
+    }
+
+    public function testItComposesSetTracknumberCommandCorrectly()
+    {
+        $this->command->setTracknumber(1);
+
+        $this->assertEquals(
+            $this->command->getBinary() . " --tn '1'",
+            $this->command->asString()
+        );
+    }
+
+    public function testItComposesSetGenreCommandCorrectly()
+    {
+        $this->command->setGenre('Foo');
+
+        $this->assertEquals(
+            $this->command->getBinary() . " --tg 'Foo'",
+            $this->command->asString()
         );
     }
 }

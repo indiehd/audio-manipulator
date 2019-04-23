@@ -15,6 +15,7 @@
 	<php>
 		<env name="SOX_BINARY" value="sox" force="false" />
 		<env name="METAFLAC_BINARY" value="metaflac" force="false" />
+		<env name="MID3V2_BINARY" value="mid3v2" force="false" />
 		<env name="LAME_BINARY" value="lame" force="false" />
 		<env name="FFMPEG_BINARY" value="ffmpeg" force="false" />
 		<env name="ATOMIC_PARSLEY_BINARY" value="AtomicParsley" force="false" />

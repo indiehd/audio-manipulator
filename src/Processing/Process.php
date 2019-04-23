@@ -12,6 +12,7 @@ class Process implements ProcessInterface
     protected $process;
     protected $command;
     protected $timeout;
+    protected $locale;
 
     public function setProcess(array $command)
     {
@@ -35,9 +36,25 @@ class Process implements ProcessInterface
         return $this->command;
     }
 
+    public function setLocale(string $locale)
+    {
+        $this->locale = $locale;
+    }
+
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
     public function run(callable $callback = null, $env = [])
     {
         $this->process->setTimeout($this->timeout);
+
+        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8
+        // character used in command values/arguments will equate to an empty
+        // string.
+
+        setlocale(LC_CTYPE, $this->locale);
 
         $this->process->run($callback, $env);
 

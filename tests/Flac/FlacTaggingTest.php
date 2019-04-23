@@ -2,20 +2,15 @@
 
 namespace IndieHD\AudioManipulator\Tests\Flac;
 
-use PHPUnit\Framework\TestCase;
+use function IndieHD\AudioManipulator\app;
 
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use IndieHD\AudioManipulator\Tests\Tagging\TaggingTest;
 
-use IndieHD\AudioManipulator\Processing\ProcessFailedException;
-use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
-
-class FlacTaggingTest extends TestCase
+class FlacTaggingTest extends TaggingTest
 {
     private $testDir;
 
     private $tmpDir;
-
-    private $sampleDir;
 
     private $sampleFile;
 
@@ -26,6 +21,8 @@ class FlacTaggingTest extends TestCase
      */
     public function setUp(): void
     {
+        $this->setFileType('flac');
+
         $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
             . DIRECTORY_SEPARATOR;
 
@@ -39,106 +36,24 @@ class FlacTaggingTest extends TestCase
 
         copy($this->sampleFile, $this->tmpFile);
 
-        $this->flacManipulatorCreator = \IndieHD\AudioManipulator\app()->builder
+        $this->flacManipulatorCreator = app()->builder
             ->get('flac_manipulator_creator');
 
         $this->flacManipulator = $this->flacManipulatorCreator
             ->create($this->tmpFile);
     }
 
-    /**
-     * Ensure that a FLAC file can be tagged with metadata.
-     *
-     * @return void
-     */
-    public function testItCanTagFlacFile()
+    protected function setFileType(string $type): void
     {
-        $tagData = [
-            'title' => ['Test Song'],
-            'artist' => ['Foobius Barius'],
-            'date' => ['1981'],
-            'description' => ['All rights reserved.'],
-            'album' => ['Test Title'],
-            'discnumber' => ['1'],
-            'tracknumber' => ['1'],
-            'genre' => ['Rock'],
-        ];
-
-        $this->flacManipulator->writeTags(
-            $tagData
-        );
-
-        $fileDetails = $this->flacManipulator
-            ->tagger
-            ->getid3
-            ->analyze($this->flacManipulator->getFile());
-
-        $this->assertEquals(
-            [
-                'title' => $tagData['title'],
-                'artist' => $tagData['artist'],
-                'date' => $tagData['date'],
-                'description' => $tagData['description'],
-                'album' => $tagData['album'],
-                'discnumber' => ['1'],
-                'tracknumber' => [$tagData['tracknumber'][0]],
-                'genre' => ['Rock'],
-            ],
-            $fileDetails['tags']['vorbiscomment']
-        );
-    }
-
-    public function testItThrowsExceptionWhenFileDoesNotExist()
-    {
-        $this->expectException(FileNotFoundException::class);
-
-        $this->flacManipulator = $this->flacManipulatorCreator
-            ->create('foo.bar');
-
-        $this->flacManipulator->writeTags(
-            []
-        );
-    }
-
-    public function testItThrowsExceptionWhenProcessFails()
-    {
-        $this->expectException(ProcessFailedException::class);
-
-        $this->flacManipulator->tagger->command->setBinary('non-existent-binary-path');
-
-        $this->flacManipulator->writeTags([]);
-    }
-
-    private function removeAllTags()
-    {
-        $this->flacManipulator->tagger->removeAllTags(
-            $this->flacManipulator->getFile()
-        );
-    }
-
-    private function removeArtwork()
-    {
-        $this->flacManipulator->tagger->removeArtwork(
-            $this->flacManipulator->getFile()
-        );
-    }
-
-    private function embedArtwork()
-    {
-        $this->removeArtwork();
-
-        $this->flacManipulator->tagger->writeArtwork(
-            $this->flacManipulator->getFile(),
-            $this->sampleDir . 'flac-logo.gif'
-        );
+        $this->fileType = $type;
     }
 
     public function testItCanEmbedArtwork()
     {
         $this->embedArtwork();
 
-        $fileDetails = $this->flacManipulator->tagger->getid3->analyze(
-            $this->flacManipulator->getFile()
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
         $testImage = file_get_contents($this->sampleDir . 'flac-logo.gif');
@@ -154,7 +69,14 @@ class FlacTaggingTest extends TestCase
         );
     }
 
-    public function testItCanRemoveArtworkFromFlacFile()
+    protected function removeAllTags()
+    {
+        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
+        );
+    }
+
+    public function testItCanRemoveArtworkFromFile()
     {
         $this->removeAllTags();
 
@@ -162,8 +84,8 @@ class FlacTaggingTest extends TestCase
 
         $this->removeArtwork();
 
-        $fileDetails = $this->flacManipulator->tagger->getid3->analyze(
-            $this->flacManipulator->getFile()
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('comments', $fileDetails);
@@ -171,24 +93,24 @@ class FlacTaggingTest extends TestCase
         $this->assertArrayNotHasKey('PICTURE', $fileDetails['flac']);
     }
 
-    public function testItCanRemoveTagsFromFlacFile()
+    public function testItCanRemoveTagsFromFile()
     {
         $this->removeAllTags();
 
-        $this->flacManipulator->writeTags(
+        $this->{$this->fileType . 'Manipulator'}->writeTags(
             [
-                'title' => ['Foo'],
+                'artist' => ['Foo'],
             ]
         );
 
-        $this->flacManipulator->removeTags(
+        $this->{$this->fileType . 'Manipulator'}->removeTags(
             [
-                'title',
+                'artist',
             ]
         );
 
-        $fileDetails = $this->flacManipulator->tagger->getid3->analyze(
-            $this->flacManipulator->getFile()
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('tags', $fileDetails);
@@ -197,41 +119,35 @@ class FlacTaggingTest extends TestCase
     public function testItCanWriteUtf8TagValuesAccurately()
     {
         $tagData = [
-            'title' => ['﻿ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
+            'artist' => ['ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
         ];
 
-        $this->flacManipulator->writeTags(
+        $this->{$this->fileType . 'Manipulator'}->writeTags(
             $tagData
         );
 
-        $fileDetails = $this->flacManipulator
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}
             ->tagger
             ->getid3
-            ->analyze($this->flacManipulator->getFile());
+            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
 
         $this->assertEquals(
             [
-                'title' => $tagData['title'],
+                'artist' => $tagData['artist'],
             ],
             $fileDetails['tags']['vorbiscomment']
         );
-    }
 
-    public function testExceptionIsThrownWhenTagsCannotBeVerifiedAfterWriting()
-    {
-        $this->expectException(AudioTaggerException::class);
+        $this->assertEquals(
+            [
+                'artist' => $tagData['artist'],
+            ],
+            $fileDetails['flac']['comments']
+        );
 
-        // Set an inappropriate encoding, which will cause the tag to be
-        // written incorrectly.
-
-        $this->flacManipulator->tagger->setEnv(['LC_ALL' => 'en_US.iso-8859-1']);
-
-        $tagData = [
-            'title' => ['﻿ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
-        ];
-
-        $this->flacManipulator->writeTags(
-            $tagData
+        $this->assertEquals(
+            $tagData['artist'],
+            $fileDetails['flac']['VORBIS_COMMENT']['comments']['artist']
         );
     }
 }

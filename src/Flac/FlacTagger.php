@@ -13,7 +13,7 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 
-use IndieHD\AudioManipulator\Tagging\TaggerInterface;
+use IndieHD\AudioManipulator\Flac\FlacTaggerInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 
 use IndieHD\AudioManipulator\Validation\ValidatorInterface;
@@ -24,7 +24,7 @@ use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
 
-class FlacTagger implements TaggerInterface
+class FlacTagger implements FlacTaggerInterface
 {
     private $env;
 
@@ -61,17 +61,11 @@ class FlacTagger implements TaggerInterface
         $this->env = ['LC_ALL' => 'en_US.utf8'];
     }
 
-    public function setEnv(array $env)
-    {
-        $this->env = $env;
-    }
-
     /**
      * Add metadata tags to FLAC files.
      *
      * @param string $file
      * @param array $tagData
-     * @param string $coverFile
      * @return array
      */
     public function writeTags(string $file, array $tagData): void
@@ -94,11 +88,11 @@ class FlacTagger implements TaggerInterface
         // Changed to --remove-all because cover art was not being removed.
         // -CBJ 2011.01.18
 
-        $this->command->removeAll();
+        $this->removeAllTags($file);
 
-        $this->runProcess($this->command->compose());
+        $this->command->input($file);
 
-        $this->attemptWrite($file, $tagData);
+        $this->attemptWrite($tagData);
 
         $this->verifyTagData($file, $tagData);
     }
@@ -161,14 +155,8 @@ class FlacTagger implements TaggerInterface
         return $this->process;
     }
 
-    protected function attemptWrite(string $file, array $tagData): void
+    protected function attemptWrite(array $tagData): void
     {
-        // IMPORTANT: The --set-vc-field option is deprecated in favor of the
-        // --set-tag option; using the deprecated option will cause the command to
-        // fail on systems on which the option is not supported.
-
-        $this->command->input($file);
-
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
                 $this->command->setTag($fieldName, $fieldValue);
@@ -207,7 +195,7 @@ class FlacTagger implements TaggerInterface
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
-                'Expected value does not match actual value for tags:' . implode(', ', $failures)
+                'Expected value does not match actual value for tags: ' . implode(', ', $failures)
             );
         }
     }
