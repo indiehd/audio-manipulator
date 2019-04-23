@@ -155,10 +155,10 @@ class Mid3dv2CommandTest extends TestCase
 
     public function testItComposesPictureCommandCorrectly()
     {
-        $this->command->picture('Foo');
+        $this->command->picture('test.jpg', 'test.mp3');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --picture='Foo'",
+            $this->command->getBinary() . " --APIC 'test.jpg' 'test.mp3'",
             $this->command->asString()
         );
     }
