@@ -96,8 +96,6 @@ class Mp3Tagger implements TaggerInterface
 
     public function writeArtwork(string $audioFile, string $imageFile): void
     {
-        $this->command->input($audioFile);
-
         $this->command->picture($imageFile, $audioFile);
 
         $this->runProcess($this->command->compose());
