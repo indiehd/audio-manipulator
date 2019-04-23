@@ -183,40 +183,4 @@ class Mp3Tagger implements TaggerInterface
             );
         }
     }
-
-    /**
-     * Largely from the getID3 Write demo.
-     *
-     * @param $imageFile
-     * @return array
-     */
-    protected function prepareCoverImageForTag($imageFile)
-    {
-        ob_start();
-
-        if ($fd = fopen($imageFile, 'rb')) {
-            ob_end_clean();
-
-            $apicData = fread($fd, filesize($imageFile));
-
-            fclose($fd);
-
-            list($APIC_width, $APIC_height, $apicImageTypeId) = getimagesize($imageFile);
-
-            $imageTypes = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
-
-            if (isset($imageTypes[$apicImageTypeId])) {
-                return array('result' => $apicData, 'error' => null);
-            } else {
-                $error = 'Invalid image format (with APIC image type ID '
-                    . $apicImageTypeId . ') (only GIF, JPEG, and PNG are supported)';
-
-                return array('result' => false, 'error' => $error);
-            }
-        } else {
-            ob_end_clean();
-            $error = 'Cannot open ' . $imageFile . ': ' . ob_get_contents();
-            return array('result' => false, 'error' => $error);
-        }
-    }
 }
