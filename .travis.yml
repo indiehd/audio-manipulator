@@ -17,6 +17,7 @@ before_install:
   - git checkout -b release-1.42.0
   - ./setup.py build
   - sudo ./setup.py install
+  - cd $TRAVIS_BUILD_DIR
 
 before_script:
 - composer install --no-interaction
