@@ -58,11 +58,6 @@ class Mp3Tagger implements TaggerInterface
         $this->env = ['LC_ALL' => 'en_US.utf8'];
     }
 
-    public function setEnv(array $env): void
-    {
-        $this->env = $env;
-    }
-
     public function writeTags(string $file, array $tagData): void
     {
         if (!file_exists($file)) {
