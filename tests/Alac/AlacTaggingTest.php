@@ -34,46 +34,42 @@ class AlacTaggingTest extends TaggingTest
 
         $this->sampleFile = $this->sampleDir . 'test.flac';
 
-        $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->tmpFile = $this->tmpDir . 'test.flac';
 
         // Duplicate the version-controlled sample so it isn't modified.
 
         copy($this->sampleFile, $this->tmpFile);
 
-        // Convert the master FLAC audio sample to ALAC.
-
-        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
-            ->get($this->fileType . '_manipulator_creator');
-
-        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
-            ->create($this->tmpFile);
-
-        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
-            ->get($this->fileType . '_manipulator_creator');
-
-        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
-            ->create($this->tmpFile);
-
-        // Remove any existing tags from the sample file before converting
+        // Remove any existing tags from the temporary file before converting
         // (some tools preserve the tags when converting).
 
-        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $this->flacManipulatorCreator = app()->builder
+            ->get('flac_manipulator_creator');
+
+        $this->flacManipulator = $this->flacManipulatorCreator
+            ->create($this->tmpFile);
+
+        $this->flacManipulator->tagger->removeAllTags(
+            $this->flacManipulator->getFile()
         );
 
+        // Convert the master FLAC audio sample to ALAC.
         // Specify a unique destination file name.
 
-        $mp3Sample = $this->tmpDir . uniqid() . '.m4a';
+        $this->{$this->fileType . 'Manipulator'} = app()->builder
+            ->get($this->fileType . '_manipulator_creator');
 
-        $this->{$this->fileType . 'Manipulator'}->converter->toMp3(
-            $this->{$this->fileType . 'Manipulator'}->getFile(),
-            $mp3Sample
+        $sample = $this->tmpDir . uniqid() . '.m4a';
+
+        $this->flacManipulator->converter->toAlac(
+            $this->flacManipulator->getFile(),
+            $sample
         );
 
         // Use the newly-created file for testing.
 
-        $this->mp3Manipulator = $this->mp3ManipulatorCreator
-            ->create($mp3Sample);
+        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'Manipulator'}
+            ->create($sample);
     }
 
     protected function setFileType(string $type): void
@@ -89,7 +85,7 @@ class AlacTaggingTest extends TaggingTest
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
-        $testImage = file_get_contents($this->sampleDir . 'flac-logo.gif');
+        $testImage = file_get_contents($this->sampleDir . 'flac-logo.png');
 
         $this->assertEquals(
             $testImage,
@@ -98,7 +94,7 @@ class AlacTaggingTest extends TaggingTest
 
         $this->assertEquals(
             $testImage,
-            $fileDetails['id3v2']['APIC'][0]['data']
+            $fileDetails['quicktime']['moov']['subatoms'][2]['subatoms'][0]['subatoms'][1]['subatoms'][1]['data']
         );
     }
 
@@ -110,12 +106,12 @@ class AlacTaggingTest extends TaggingTest
     public function testItCanTagFile()
     {
         $tagData = [
-            'song' => ['Test Song'],
+            'title' => ['Test Song'],
             'artist' => ['Foobius Barius'],
             'year' => ['1981'],
             'comment' => ['All rights reserved.'],
             'album' => ['Test Title'],
-            'track' => ['1/1'],
+            'tracknum' => ['1/1'],
             'genre' => ['Rock'],
         ];
 
@@ -128,18 +124,20 @@ class AlacTaggingTest extends TaggingTest
             ->getid3
             ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
 
+        $keys = [
+            'title' => $tagData['title'],
+            'artist' => $tagData['artist'],
+            'year' => $tagData['year'],
+            'recording_time' => $tagData['year'],
+            'comment' => $tagData['comment'],
+            'album' => $tagData['album'],
+            'track_number' => [$tagData['tracknum'][0]],
+            'genre' => ['Rock'],
+        ];
+
         $this->assertEquals(
-            [
-                'title' => $tagData['song'],
-                'artist' => $tagData['artist'],
-                'year' => $tagData['year'],
-                'recording_time' => $tagData['year'],
-                'comment' => $tagData['comment'],
-                'album' => $tagData['album'],
-                'track_number' => [$tagData['track'][0]],
-                'genre' => ['Rock'],
-            ],
-            $fileDetails['tags']['id3v2']
+            $keys,
+            array_intersect_key($keys, $fileDetails['tags']['quicktime'])
         );
     }
 
