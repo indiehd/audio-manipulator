@@ -49,7 +49,7 @@ class AlacTagger implements TaggerInterface
 
         $fileHandler = new StreamHandler(
             'storage' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR
-            . 'mp3-tagger.log',
+            . 'alac-tagger.log',
             Logger::INFO
         );
 
@@ -64,13 +64,15 @@ class AlacTagger implements TaggerInterface
             throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
         }
 
+        $this->command->overwrite();
+
         $this->command->input($file);
 
         $this->attemptWrite($tagData);
 
         $fieldMappings = [
-            'song' => 'title',
-            'track' => 'track_number',
+            'year' => 'creation_date',
+            'tracknum' => 'track_number',
         ];
 
         $this->verifyTagData($file, $tagData, $fieldMappings);
@@ -96,7 +98,11 @@ class AlacTagger implements TaggerInterface
 
     public function writeArtwork(string $audioFile, string $imageFile): void
     {
-        $this->command->picture($imageFile, $audioFile);
+        $this->command->input($audioFile);
+
+        $this->command->overwrite();
+
+        $this->command->setArtwork($imageFile);
 
         $this->runProcess($this->command->compose());
     }
@@ -157,7 +163,7 @@ class AlacTagger implements TaggerInterface
     {
         $fileDetails = $this->getid3->analyze($file);
 
-        $tagsOnFile = $fileDetails['tags']['id3v2'];
+        $tagsOnFile = $fileDetails['tags']['quicktime'];
 
         $failures = [];
 
