@@ -22,9 +22,9 @@ use IndieHD\AudioManipulator\Mp3\Mp3Tagger;
 use IndieHD\AudioManipulator\Validation\Validator;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\MediaParsing\MediaParser;
-use IndieHD\AudioManipulator\Effects\Effects;
-use IndieHD\AudioManipulator\Flac\FlacEffects;
-use IndieHD\AudioManipulator\Alac\AlacEffects;
+use IndieHD\AudioManipulator\Alac\AlacManipulatorCreator;
+use IndieHD\AudioManipulator\Alac\AlacTagger;
+use IndieHD\AudioManipulator\CliCommand\AtomicParsleyCommand;
 use IndieHD\AudioManipulator\CliCommand\SoxCommand;
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommand;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommand;
@@ -49,14 +49,33 @@ class Container
 
         $containerBuilder->register('validator', Validator::class)
             ->addArgument('%validator.media_parser%');
+        
+        // ALAC Tagger.
 
-        // ALAC Effects.
+        $containerBuilder->register('alac_tagger', AlacTagger::class)
+            ->addArgument('%alac_tagger.getid3%')
+            ->addArgument('%alac_tagger.getid3_tag_writer%')
+            ->addArgument('%alac_tagger.process%')
+            ->addArgument('%alac_tagger.logger%')
+            ->addArgument('%alac_tagger.filename_sanitizer%')
+            ->addArgument('%alac_tagger.cli_command%')
+            ->addArgument('%alac_tagger.validator%');
 
-        $containerBuilder->setParameter('alac_effects.cli_command', new FfmpegCommand());
+        $containerBuilder->setParameter('alac_tagger.getid3', new getID3());
+        $containerBuilder->setParameter('alac_tagger.getid3_tag_writer', new getid3_writetags);
+        $containerBuilder->setParameter('alac_tagger.process', new Process());
+        $containerBuilder->setParameter('alac_tagger.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('alac_tagger.filename_sanitizer', new FilenameSanitizer());
+        $containerBuilder->setParameter('alac_tagger.cli_command', new AtomicParsleyCommand());
+        $containerBuilder->setParameter('alac_tagger.validator', $containerBuilder->get('validator'));
+
+        // ALAC Manipulator.
+
+        $containerBuilder->setParameter('alac_manipulator_creator.tagger', $containerBuilder->get('alac_tagger'));
 
         $containerBuilder
-            ->register('alac_effects', AlacEffects::class)
-            ->addArgument('%alac_effects.cli_command%');
+            ->register('alac_manipulator_creator', AlacManipulatorCreator::class)
+            ->addArgument('%alac_manipulator_creator.tagger%');
 
         // FLAC Effects.
 
