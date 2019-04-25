@@ -34,7 +34,7 @@ class Mp3TaggingTest extends TaggingTest
 
         $this->sampleFile = $this->sampleDir . 'test.flac';
 
-        $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->tmpFile = $this->tmpDir . 'test.flac';
 
         copy($this->sampleFile, $this->tmpFile);
 
