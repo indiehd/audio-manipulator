@@ -42,10 +42,10 @@ class AlacTaggingTest extends TaggingTest
 
         // Convert the master FLAC audio sample to ALAC.
 
-        $this->flacManipulatorCreator = app()->builder
-            ->get('flac_manipulator_creator');
+        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
+            ->get($this->fileType . '_manipulator_creator');
 
-        $this->flacManipulator = $this->flacManipulatorCreator
+        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
             ->create($this->tmpFile);
 
         $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
@@ -57,16 +57,16 @@ class AlacTaggingTest extends TaggingTest
         // Remove any existing tags from the sample file before converting
         // (some tools preserve the tags when converting).
 
-        $this->flacManipulator->tagger->removeAllTags(
-            $this->flacManipulator->getFile()
+        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
+            $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
         // Specify a unique destination file name.
 
         $mp3Sample = $this->tmpDir . uniqid() . '.m4a';
 
-        $this->flacManipulator->converter->toMp3(
-            $this->flacManipulator->getFile(),
+        $this->{$this->fileType . 'Manipulator'}->converter->toMp3(
+            $this->{$this->fileType . 'Manipulator'}->getFile(),
             $mp3Sample
         );
 
