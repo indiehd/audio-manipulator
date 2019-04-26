@@ -127,8 +127,7 @@ class AlacTaggingTest extends TaggingTest
         $keys = [
             'title' => $tagData['title'],
             'artist' => $tagData['artist'],
-            'year' => $tagData['year'],
-            'recording_time' => $tagData['year'],
+            'creation_date' => $tagData['year'],
             'comment' => $tagData['comment'],
             'album' => $tagData['album'],
             'track_number' => [$tagData['tracknum'][0]],
@@ -160,9 +159,12 @@ class AlacTaggingTest extends TaggingTest
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
-        $this->assertArrayNotHasKey('comments', $fileDetails);
+        $this->assertArrayNotHasKey('picture', $fileDetails['comments']);
 
-        $this->assertArrayNotHasKey('APIC', $fileDetails['id3v2']);
+        $this->assertArrayNotHasKey(
+            'subatoms',
+            $fileDetails['quicktime']['moov']['subatoms'][2]['subatoms'][0]['subatoms'][1]
+        );
     }
 
     public function testItCanRemoveTagsFromFile()
@@ -177,7 +179,7 @@ class AlacTaggingTest extends TaggingTest
 
         $this->{$this->fileType . 'Manipulator'}->removeTags(
             [
-                'TPE1',
+                'artist',
             ]
         );
 
@@ -207,19 +209,14 @@ class AlacTaggingTest extends TaggingTest
             [
                 'artist' => $tagData['artist'],
             ],
-            $fileDetails['tags']['id3v2']
+            array_intersect_key(['artist' => ''], $fileDetails['tags']['quicktime'])
         );
 
         $this->assertEquals(
             [
                 'artist' => $tagData['artist'],
             ],
-            $fileDetails['id3v2']['comments']
-        );
-
-        $this->assertEquals(
-            $tagData['artist'][0],
-            $fileDetails['id3v2']['TPE1'][0]['data']
+            $fileDetails['tags']['quicktime']
         );
     }
 }
