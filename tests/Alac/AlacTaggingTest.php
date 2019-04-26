@@ -40,6 +40,9 @@ class AlacTaggingTest extends TaggingTest
 
         copy($this->sampleFile, $this->tmpFile);
 
+        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
+            ->get($this->fileType . '_manipulator_creator');
+
         // Remove any existing tags from the temporary file before converting
         // (some tools preserve the tags when converting).
 
@@ -56,8 +59,8 @@ class AlacTaggingTest extends TaggingTest
         // Convert the master FLAC audio sample to ALAC.
         // Specify a unique destination file name.
 
-        $this->{$this->fileType . 'Manipulator'} = app()->builder
-            ->get($this->fileType . '_manipulator_creator');
+        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
+            ->create($this->tmpFile);
 
         $sample = $this->tmpDir . uniqid() . '.m4a';
 
@@ -68,7 +71,7 @@ class AlacTaggingTest extends TaggingTest
 
         // Use the newly-created file for testing.
 
-        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'Manipulator'}
+        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
             ->create($sample);
     }
 
