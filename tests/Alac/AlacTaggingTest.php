@@ -209,17 +209,13 @@ class AlacTaggingTest extends TaggingTest
             ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
 
         $this->assertEquals(
-            [
-                'artist' => $tagData['artist'],
-            ],
-            array_intersect_key(['artist' => ''], $fileDetails['tags']['quicktime'])
+            $tagData['artist'],
+            $fileDetails['tags']['quicktime']['artist']
         );
 
         $this->assertEquals(
-            [
-                'artist' => $tagData['artist'],
-            ],
-            $fileDetails['tags']['quicktime']
+            $tagData['artist'],
+            $fileDetails['quicktime']['comments']['artist']
         );
     }
 }
