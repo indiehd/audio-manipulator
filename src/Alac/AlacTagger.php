@@ -64,9 +64,9 @@ class AlacTagger implements TaggerInterface
             throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
         }
 
-        $this->command->overwrite();
-
         $this->command->input($file);
+
+        $this->command->overwrite();
 
         $this->attemptWrite($tagData);
 
@@ -82,6 +82,8 @@ class AlacTagger implements TaggerInterface
     {
         $this->command->input($file);
 
+        $this->command->overwrite();
+
         $this->command->deleteAll();
 
         $this->runProcess($this->command->compose());
@@ -90,6 +92,8 @@ class AlacTagger implements TaggerInterface
     public function removeTags(string $file, array $tags): void
     {
         $this->command->input($file);
+
+        $this->command->overwrite();
 
         $this->command->removeTags($tags);
 
@@ -110,6 +114,8 @@ class AlacTagger implements TaggerInterface
     public function removeArtwork(string $file): void
     {
         $this->command->input($file);
+
+        $this->command->overwrite();
 
         $this->command->removeArtwork();
 
