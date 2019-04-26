@@ -29,4 +29,6 @@ interface AtomicParsleyCommandInterface extends CliCommandInterface
     public function tracknum(string $value): void;
 
     public function genre(string $value): void;
+
+    public function removeTags(array $tags): void;
 }

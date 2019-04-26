@@ -81,4 +81,11 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
     {
         $this->addArgument('options', '--genre ' . escapeshellarg($value));
     }
+
+    public function removeTags(array $tags): void
+    {
+        foreach ($tags as $name) {
+            $this->addArgument('options', '--' . $name . '=' . escapeshellarg(''));
+        }
+    }
 }
