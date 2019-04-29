@@ -40,11 +40,11 @@ class AlacTaggingTest extends TaggingTest
 
         copy($this->sampleFile, $this->tmpFile);
 
-        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
-            ->get($this->fileType . '_manipulator_creator');
-
         // Remove any existing tags from the temporary file before converting
         // (some tools preserve the tags when converting).
+
+        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
+            ->get($this->fileType . '_manipulator_creator');
 
         $this->flacManipulatorCreator = app()->builder
             ->get('flac_manipulator_creator');

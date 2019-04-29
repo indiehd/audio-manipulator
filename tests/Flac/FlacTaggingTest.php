@@ -23,6 +23,8 @@ class FlacTaggingTest extends TaggingTest
     {
         $this->setFileType('flac');
 
+        // Define filesystem paths for use in testing.
+
         $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
             . DIRECTORY_SEPARATOR;
 
@@ -34,8 +36,12 @@ class FlacTaggingTest extends TaggingTest
 
         $this->tmpFile = $this->tmpDir . 'test.flac';
 
+        // Duplicate the version-controlled sample so it isn't modified.
+
         copy($this->sampleFile, $this->tmpFile);
 
+        // Use the newly-created file for testing.
+        
         $this->flacManipulatorCreator = app()->builder
             ->get('flac_manipulator_creator');
 

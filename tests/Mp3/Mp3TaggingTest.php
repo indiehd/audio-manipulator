@@ -23,7 +23,7 @@ class Mp3TaggingTest extends TaggingTest
     {
         $this->setFileType('mp3');
 
-        // Convert the master FLAC audio sample to MP3.
+        // Define filesystem paths for use in testing.
 
         $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
             . DIRECTORY_SEPARATOR;
@@ -36,7 +36,12 @@ class Mp3TaggingTest extends TaggingTest
 
         $this->tmpFile = $this->tmpDir . 'test.flac';
 
+        // Duplicate the version-controlled sample so it isn't modified.
+
         copy($this->sampleFile, $this->tmpFile);
+
+        // Remove any existing tags from the temporary file before converting
+        // (some tools preserve the tags when converting).
 
         $this->flacManipulatorCreator = app()->builder
             ->get('flac_manipulator_creator');
@@ -44,15 +49,14 @@ class Mp3TaggingTest extends TaggingTest
         $this->flacManipulator = $this->flacManipulatorCreator
             ->create($this->tmpFile);
 
-
-
         $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
             ->get($this->fileType . '_manipulator_creator');
 
+        // Convert the master FLAC audio sample to MP3.
+        // Specify a unique destination file name.
+
         $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
             ->create($this->tmpFile);
-
-
 
         $this->flacManipulator->tagger->removeAllTags(
             $this->flacManipulator->getFile()
@@ -65,9 +69,7 @@ class Mp3TaggingTest extends TaggingTest
             $mp3Sample
         );
 
-        // Use the newly-created sample MP3 file for testing.
-
-
+        // Use the newly-created file for testing.
 
         $this->mp3Manipulator = $this->mp3ManipulatorCreator
             ->create($mp3Sample);
