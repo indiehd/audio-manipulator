@@ -88,7 +88,7 @@ class Mp3TaggingTest extends TaggingTest
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
-        $testImage = file_get_contents($this->sampleDir . 'flac-logo.gif');
+        $testImage = file_get_contents($this->sampleDir . 'flac-logo.png');
 
         $this->assertEquals(
             $testImage,

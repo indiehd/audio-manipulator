@@ -41,7 +41,7 @@ class FlacTaggingTest extends TaggingTest
         copy($this->sampleFile, $this->tmpFile);
 
         // Use the newly-created file for testing.
-        
+
         $this->flacManipulatorCreator = app()->builder
             ->get('flac_manipulator_creator');
 
@@ -62,7 +62,7 @@ class FlacTaggingTest extends TaggingTest
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
-        $testImage = file_get_contents($this->sampleDir . 'flac-logo.gif');
+        $testImage = file_get_contents($this->sampleDir . 'flac-logo.png');
 
         $this->assertEquals(
             $testImage,
