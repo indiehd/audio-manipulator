@@ -181,7 +181,9 @@ class AlacTagger implements TaggerInterface
                     $fieldName = $fieldMappings[$fieldName];
                 }
 
-                if ($tagsOnFile[$fieldName][0] != $fieldValue) {
+                if (!isset($tagsOnFile[$fieldName][0])) {
+                    $failures[] = $fieldName . ' tag does not exist on tagged file';
+                } elseif ($tagsOnFile[$fieldName][0] != $fieldValue) {
                     $failures[] = $fieldName . ' (' . $tagsOnFile[$fieldName][0]. ' != ' . $fieldValue . ')';
                 }
             }
