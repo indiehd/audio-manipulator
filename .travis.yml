@@ -17,6 +17,13 @@ before_install:
   - git checkout -b release-1.42.0
   - ./setup.py build
   - sudo ./setup.py install
+  - sudo apt install gobjc++
+  - git clone https://github.com/wez/atomicparsley.git /tmp/atomicparsley
+  - cd /tmp/atomicparsley
+  - sed -i 's/AC_PROG_CXX/AC_PROG_CXX\nAC_PROG_OBJCXX/' ./configure.ac
+  - ./autogen.sh
+  - ./configure
+  - make && make install
   - cd $TRAVIS_BUILD_DIR
 
 before_script:
