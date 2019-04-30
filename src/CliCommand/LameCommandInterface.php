@@ -6,41 +6,41 @@ use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
 
 interface LameCommandInterface extends CliCommandInterface
 {
-    public function input(string $inputFile): void;
+    public function input(string $inputFile): LameCommand;
 
-    public function output(string $outputFile): void;
+    public function output(string $outputFile): LameCommand;
 
-    public function quiet(): void;
+    public function quiet(): LameCommand;
 
-    public function enableAndForceLameTag(): void;
+    public function enableAndForceLameTag(): LameCommand;
 
-    public function noReplayGain(): void;
+    public function noReplayGain(): LameCommand;
 
-    public function quality(int $quality): void;
+    public function quality(int $quality): LameCommand;
 
-    public function resample(float $frequency): void;
+    public function resample(float $frequency): LameCommand;
 
-    public function bitwidth(int $width): void;
+    public function bitwidth(int $width): LameCommand;
 
-    public function cbr(): void;
+    public function cbr(): LameCommand;
 
-    public function bitrate(int $rate): void;
+    public function bitrate(int $rate): LameCommand;
 
-    public function abr(): void;
+    public function abr(): LameCommand;
 
-    public function vbr(int $quality): void;
+    public function vbr(int $quality): LameCommand;
 
-    public function setTitle(string $value): void;
+    public function setTitle(string $value): LameCommand;
 
-    public function setArtist(string $value): void;
+    public function setArtist(string $value): LameCommand;
 
-    public function setYear(string $value): void;
+    public function setYear(string $value): LameCommand;
 
-    public function setComment(string $value): void;
+    public function setComment(string $value): LameCommand;
 
-    public function setAlbum(string $value): void;
+    public function setAlbum(string $value): LameCommand;
 
-    public function setTracknumber(string $value): void;
+    public function setTracknumber(string $value): LameCommand;
 
-    public function setGenre(string $value): void;
+    public function setGenre(string $value): LameCommand;
 }

@@ -6,11 +6,11 @@ use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
 
 interface FfmpegCommandInterface extends CliCommandInterface
 {
-    public function input(string $inputFile): void;
+    public function input(string $inputFile): FfmpegCommand;
 
-    public function output(string $outputFile): void;
+    public function output(string $outputFile): FfmpegCommand;
 
-    public function overwriteOutput(): void;
+    public function overwriteOutput(): FfmpegCommand;
 
-    public function forceAudioCodec(string $codec): void;
+    public function forceAudioCodec(string $codec): FfmpegCommand;
 }

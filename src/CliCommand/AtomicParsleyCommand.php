@@ -22,70 +22,96 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
         }
     }
 
-    public function input(string $inputFile): void
+    public function input(string $inputFile): AtomicParsleyCommand
     {
         $this->addArgument('infile', escapeshellarg($inputFile));
+
+        return $this;
     }
 
-    public function setArtwork(string $imageFile): void
+    public function setArtwork(string $imageFile): AtomicParsleyCommand
     {
         $this->addArgument('options', '--artwork ' . escapeshellarg($imageFile));
+
+        return $this;
     }
 
-    public function overwrite(): void
+    public function overwrite(): AtomicParsleyCommand
     {
         $this->addArgument('options', '--overWrite');
+
+        return $this;
     }
 
-    public function deleteAll(): void
+    public function deleteAll(): AtomicParsleyCommand
     {
         $this->addArgument('options', '--metaEnema');
+
+        return $this;
     }
 
-    public function removeArtwork(): void
+    public function removeArtwork(): AtomicParsleyCommand
     {
         $this->addArgument('options', '--artwork REMOVE_ALL');
+
+        return $this;
     }
 
-    public function title(string $value): void
+    public function title(string $value): AtomicParsleyCommand
     {
         $this->addArgument('options', '--title ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function artist(string $value): void
+    public function artist(string $value): AtomicParsleyCommand
     {
         $this->addArgument('options', '--artist ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function year(string $value): void
+    public function year(string $value): AtomicParsleyCommand
     {
         $this->addArgument('options', '--year ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function comment(string $value): void
+    public function comment(string $value): AtomicParsleyCommand
     {
         $this->addArgument('options', '--comment ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function album(string $value): void
+    public function album(string $value): AtomicParsleyCommand
     {
         $this->addArgument('options', '--album ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function tracknum(string $value): void
+    public function tracknum(string $value): AtomicParsleyCommand
     {
         $this->addArgument('options', '--tracknum ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function genre(string $value): void
+    public function genre(string $value): AtomicParsleyCommand
     {
         $this->addArgument('options', '--genre ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function removeTags(array $tags): void
+    public function removeTags(array $tags): AtomicParsleyCommand
     {
         foreach ($tags as $name) {
             $this->addArgument('options', '--' . $name . '=' . escapeshellarg(''));
         }
+
+        return $this;
     }
 }

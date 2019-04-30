@@ -64,9 +64,9 @@ class AlacTagger implements TaggerInterface
             throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
         }
 
-        $this->command->input($file);
-
-        $this->command->overwrite();
+        $this->command
+            ->input($file)
+            ->overwrite();
 
         $this->attemptWrite($tagData);
 
@@ -80,44 +80,40 @@ class AlacTagger implements TaggerInterface
 
     public function removeAllTags(string $file): void
     {
-        $this->command->input($file);
-
-        $this->command->overwrite();
-
-        $this->command->deleteAll();
+        $this->command
+            ->input($file)
+            ->overwrite()
+            ->deleteAll();
 
         $this->runProcess($this->command->compose());
     }
 
     public function removeTags(string $file, array $tags): void
     {
-        $this->command->input($file);
-
-        $this->command->overwrite();
-
-        $this->command->removeTags($tags);
+        $this->command
+            ->input($file)
+            ->overwrite()
+            ->removeTags($tags);
 
         $this->runProcess($this->command->compose());
     }
 
     public function writeArtwork(string $audioFile, string $imageFile): void
     {
-        $this->command->input($audioFile);
-
-        $this->command->overwrite();
-
-        $this->command->setArtwork($imageFile);
+        $this->command
+            ->input($audioFile)
+            ->overwrite()
+            ->setArtwork($imageFile);
 
         $this->runProcess($this->command->compose());
     }
 
     public function removeArtwork(string $file): void
     {
-        $this->command->input($file);
-
-        $this->command->overwrite();
-
-        $this->command->removeArtwork();
+        $this->command
+            ->input($file)
+            ->overwrite()
+            ->removeArtwork();
 
         $this->runProcess($this->command->compose());
     }

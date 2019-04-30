@@ -99,36 +99,36 @@ class FlacTagger implements FlacTaggerInterface
 
     public function removeAllTags(string $file): void
     {
-        $this->command->input($file);
-
-        $this->command->removeAll();
+        $this->command
+            ->input($file)
+            ->removeAll();
 
         $this->runProcess($this->command->compose());
     }
 
     public function removeTags(string $file, array $tags): void
     {
-        $this->command->input($file);
-
-        $this->command->removeTags($tags);
+        $this->command
+            ->input($file)
+            ->removeTags($tags);
 
         $this->runProcess($this->command->compose());
     }
 
     public function writeArtwork(string $audioFile, string $imageFile): void
     {
-        $this->command->input($audioFile);
-
-        $this->command->importPicture($imageFile);
+        $this->command
+            ->input($audioFile)
+            ->importPicture($imageFile);
 
         $this->runProcess($this->command->compose());
     }
 
     public function removeArtwork(string $file): void
     {
-        $this->command->input($file);
-
-        $this->command->removeBlockType(['PICTURE']);
+        $this->command
+            ->input($file)
+            ->removeBlockType(['PICTURE']);
 
         $this->runProcess($this->command->compose());
     }

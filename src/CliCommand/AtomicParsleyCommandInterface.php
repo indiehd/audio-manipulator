@@ -6,29 +6,29 @@ use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
 
 interface AtomicParsleyCommandInterface extends CliCommandInterface
 {
-    public function input(string $inputFile): void;
+    public function input(string $inputFile): AtomicParsleyCommand;
 
-    public function setArtwork(string $imageFile): void;
+    public function setArtwork(string $imageFile): AtomicParsleyCommand;
 
-    public function overwrite(): void;
+    public function overwrite(): AtomicParsleyCommand;
 
-    public function deleteAll(): void;
+    public function deleteAll(): AtomicParsleyCommand;
 
-    public function removeArtwork(): void;
+    public function removeArtwork(): AtomicParsleyCommand;
 
-    public function title(string $value): void;
+    public function title(string $value): AtomicParsleyCommand;
 
-    public function artist(string $value): void;
+    public function artist(string $value): AtomicParsleyCommand;
 
-    public function year(string $value): void;
+    public function year(string $value): AtomicParsleyCommand;
 
-    public function comment(string $value): void;
+    public function comment(string $value): AtomicParsleyCommand;
 
-    public function album(string $value): void;
+    public function album(string $value): AtomicParsleyCommand;
 
-    public function tracknum(string $value): void;
+    public function tracknum(string $value): AtomicParsleyCommand;
 
-    public function genre(string $value): void;
+    public function genre(string $value): AtomicParsleyCommand;
 
-    public function removeTags(array $tags): void;
+    public function removeTags(array $tags): AtomicParsleyCommand;
 }

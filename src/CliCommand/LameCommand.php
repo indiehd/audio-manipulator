@@ -23,98 +23,136 @@ class LameCommand extends CliCommand implements LameCommandInterface
         }
     }
 
-    public function input(string $inputFile): void
+    public function input(string $inputFile): LameCommand
     {
         $this->addArgument('infile', escapeshellarg($inputFile));
+
+        return $this;
     }
 
-    public function output(string $outputFile): void
+    public function output(string $outputFile): LameCommand
     {
         $this->addArgument('outfile', escapeshellarg($outputFile));
+
+        return $this;
     }
 
-    public function quiet(): void
+    public function quiet(): LameCommand
     {
         $this->addArgument('options', '--quiet');
+
+        return $this;
     }
 
-    public function enableAndForceLameTag(): void
+    public function enableAndForceLameTag(): LameCommand
     {
         $this->addArgument('options', '-T');
+
+        return $this;
     }
 
-    public function noReplayGain(): void
+    public function noReplayGain(): LameCommand
     {
         $this->addArgument('options', '--noreplaygain');
+
+        return $this;
     }
 
-    public function quality(int $quality): void
+    public function quality(int $quality): LameCommand
     {
         $this->addArgument('options', '--q ' . $quality);
+
+        return $this;
     }
 
-    public function resample(float $frequency): void
+    public function resample(float $frequency): LameCommand
     {
         $this->addArgument('options', '--resample ' . $frequency);
+
+        return $this;
     }
 
-    public function bitwidth(int $width): void
+    public function bitwidth(int $width): LameCommand
     {
         $this->addArgument('options', '--bitwidth ' . $width);
+
+        return $this;
     }
 
-    public function cbr(): void
+    public function cbr(): LameCommand
     {
         $this->addArgument('options', '--cbr');
+
+        return $this;
     }
 
-    public function bitrate(int $rate): void
+    public function bitrate(int $rate): LameCommand
     {
         $this->addArgument('options', '-b ' . $rate);
+
+        return $this;
     }
 
-    public function abr(): void
+    public function abr(): LameCommand
     {
         $this->addArgument('options', '--abr');
+
+        return $this;
     }
 
-    public function vbr(int $quality): void
+    public function vbr(int $quality): LameCommand
     {
         $this->addArgument('options', '--vbr-new -V ' . $quality);
+
+        return $this;
     }
 
-    public function setTitle(string $value): void
+    public function setTitle(string $value): LameCommand
     {
         $this->addArgument('options', '--tt ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function setArtist(string $value): void
+    public function setArtist(string $value): LameCommand
     {
         $this->addArgument('options', '--ta ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function setYear(string $value): void
+    public function setYear(string $value): LameCommand
     {
         $this->addArgument('options', '--ty ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function setComment(string $value): void
+    public function setComment(string $value): LameCommand
     {
         $this->addArgument('options', '--tc ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function setAlbum(string $value): void
+    public function setAlbum(string $value): LameCommand
     {
         $this->addArgument('options', '--tl ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function setTracknumber(string $value): void
+    public function setTracknumber(string $value): LameCommand
     {
         $this->addArgument('options', '--tn ' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function setGenre(string $value): void
+    public function setGenre(string $value): LameCommand
     {
         $this->addArgument('options', '--tg ' . escapeshellarg($value));
+
+        return $this;
     }
 }
