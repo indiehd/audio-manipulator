@@ -40,7 +40,9 @@ class Container
     {
         // Configuration.
 
-        Dotenv::create([__DIR__])->load();
+        if (getenv('APP_ENV') === 'development') {
+            Dotenv::create([__DIR__])->load();
+        }
 
         // Container.
 
