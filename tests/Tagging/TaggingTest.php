@@ -93,7 +93,7 @@ abstract class TaggingTest extends TestCase
 
         $this->{$this->fileType . 'Manipulator'}->tagger->writeArtwork(
             $this->{$this->fileType . 'Manipulator'}->getFile(),
-            $this->sampleDir . 'flac-logo.gif'
+            $this->sampleDir . 'flac-logo.png'
         );
     }
 

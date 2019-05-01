@@ -11,12 +11,20 @@ env:
   - FFMPEG_BINARY=avconv
 
 before_install:
-  - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac lame libav-tools atomicparsley
+  - sudo apt-get -y install sox libsox2 libsox-dev libsox-fmt-all flac lame libav-tools
   - git clone https://github.com/quodlibet/mutagen.git /tmp/mutagen
   - cd /tmp/mutagen
   - git checkout -b release-1.42.0
   - ./setup.py build
   - sudo ./setup.py install
+  - sudo apt install gobjc++
+  - git clone https://github.com/wez/atomicparsley.git /tmp/atomicparsley
+  - cd /tmp/atomicparsley
+  - sed -i 's/AC_PROG_CXX/AC_PROG_CXX\nAC_PROG_OBJCXX/' ./configure.ac
+  - ./autogen.sh
+  - ./configure
+  - sudo make
+  - sudo make install
   - cd $TRAVIS_BUILD_DIR
 
 before_script:
