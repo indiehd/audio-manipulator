@@ -25,23 +25,31 @@ class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
         }
     }
 
-    public function input(string $inputFile): void
+    public function input(string $inputFile): FfmpegCommand
     {
         $this->addArgument('infile', '-i ' . escapeshellarg($inputFile));
+
+        return $this;
     }
 
-    public function output(string $outputFile): void
+    public function output(string $outputFile): FfmpegCommand
     {
         $this->addArgument('outfile', escapeshellarg($outputFile));
+
+        return $this;
     }
 
-    public function overwriteOutput(): void
+    public function overwriteOutput(): FfmpegCommand
     {
         $this->addArgument('options', '-y');
+
+        return $this;
     }
 
-    public function forceAudioCodec(string $codec): void
+    public function forceAudioCodec(string $codec): FfmpegCommand
     {
         $this->addArgument('outfile-options', '-acodec ' . $codec);
+
+        return $this;
     }
 }

@@ -24,41 +24,55 @@ class MetaflacCommand extends CliCommand implements MetaflacCommandInterface
         }
     }
 
-    public function input(string $inputFile): void
+    public function input(string $inputFile): MetaflacCommand
     {
         $this->addArgument('flacfile-in', escapeshellarg($inputFile));
+
+        return $this;
     }
 
-    public function output(string $outputFile): void
+    public function output(string $outputFile): MetaflacCommand
     {
         $this->addArgument('flacfile-out', escapeshellarg($outputFile));
+
+        return $this;
     }
 
-    public function removeAll(): void
+    public function removeAll(): MetaflacCommand
     {
         $this->addArgument('operations', '--remove-all');
+
+        return $this;
     }
 
-    public function removeTags(array $tags): void
+    public function removeTags(array $tags): MetaflacCommand
     {
         foreach ($tags as $name) {
             $this->addArgument('operations', '--remove-tag=' . escapeshellarg($name));
         }
+
+        return $this;
     }
 
-    public function setTag(string $field, string $value): void
+    public function setTag(string $field, string $value): MetaflacCommand
     {
         $this->addArgument('operations', '--set-tag=' . escapeshellarg($field)
             . '=' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function removeBlockType(array $types): void
+    public function removeBlockType(array $types): MetaflacCommand
     {
         $this->addArgument('operations', '--remove --block-type=' . implode(',', $types));
+
+        return $this;
     }
 
-    public function importPicture(string $fileOrSpecification): void
+    public function importPicture(string $fileOrSpecification): MetaflacCommand
     {
         $this->addArgument('operations', '--import-picture-from=' . escapeshellarg($fileOrSpecification));
+
+        return $this;
     }
 }

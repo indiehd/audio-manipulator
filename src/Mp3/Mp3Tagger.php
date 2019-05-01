@@ -78,18 +78,18 @@ class Mp3Tagger implements TaggerInterface
 
     public function removeAllTags(string $file): void
     {
-        $this->command->input($file);
-
-        $this->command->deleteAll();
+        $this->command
+            ->input($file)
+            ->deleteAll();
 
         $this->runProcess($this->command->compose());
     }
 
     public function removeTags(string $file, array $tags): void
     {
-        $this->command->input($file);
-
-        $this->command->removeTags($tags);
+        $this->command
+            ->input($file)
+            ->removeTags($tags);
 
         $this->runProcess($this->command->compose());
     }
@@ -103,9 +103,9 @@ class Mp3Tagger implements TaggerInterface
 
     public function removeArtwork(string $file): void
     {
-        $this->command->input($file);
-
-        $this->command->removeArtwork();
+        $this->command
+            ->input($file)
+            ->removeArtwork();
 
         $this->runProcess($this->command->compose());
     }

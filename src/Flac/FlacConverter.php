@@ -82,9 +82,9 @@ class FlacConverter implements
     {
         $this->validator->validateAudioFile($inputFile, 'flac');
 
-        $this->sox->input($inputFile);
-
-        $this->sox->output($outputFile);
+        $this->sox
+            ->input($inputFile)
+            ->output($outputFile);
 
         $this->runProcess($this->sox->compose(), $this->sox);
 
@@ -129,13 +129,11 @@ class FlacConverter implements
 
         #$this->tagger->removeArtwork($inputFile);
 
-        $this->ffmpeg->input($inputFile);
-
-        $this->ffmpeg->output($outputFile);
-
-        $this->ffmpeg->overwriteOutput($outputFile);
-
-        $this->ffmpeg->forceAudioCodec('alac');
+        $this->ffmpeg
+            ->input($inputFile)
+            ->output($outputFile)
+            ->overwriteOutput($outputFile)
+            ->forceAudioCodec('alac');
 
         $this->runProcess($this->ffmpeg->compose(), $this->ffmpeg);
 

@@ -22,68 +22,94 @@ class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
         }
     }
 
-    public function input(string $inputFile): void
+    public function input(string $inputFile): Mid3v2Command
     {
         $this->addArgument('infile', escapeshellarg($inputFile));
+
+        return $this;
     }
 
-    public function quiet(): void
+    public function quiet(): Mid3v2Command
     {
         $this->addArgument('options', '--quiet');
+
+        return $this;
     }
 
-    public function song(string $value): void
+    public function song(string $value): Mid3v2Command
     {
         $this->addArgument('options', '--song=' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function artist(string $value): void
+    public function artist(string $value): Mid3v2Command
     {
         $this->addArgument('options', '--artist=' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function year(string $value): void
+    public function year(string $value): Mid3v2Command
     {
         $this->addArgument('options', '--year=' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function comment(string $value): void
+    public function comment(string $value): Mid3v2Command
     {
         $this->addArgument('options', '--comment=0:' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function album(string $value): void
+    public function album(string $value): Mid3v2Command
     {
         $this->addArgument('options', '--album=' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function track(string $value): void
+    public function track(string $value): Mid3v2Command
     {
         $this->addArgument('options', '--track=' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function genre(string $value): void
+    public function genre(string $value): Mid3v2Command
     {
         $this->addArgument('options', '--genre=' . escapeshellarg($value));
+
+        return $this;
     }
 
-    public function deleteAll(): void
+    public function deleteAll(): Mid3v2Command
     {
         $this->addArgument('options', '--delete-all');
+
+        return $this;
     }
 
-    public function picture(string $imageFile, string $audioFile): void
+    public function picture(string $imageFile, string $audioFile): Mid3v2Command
     {
         $this->addArgument('options', '--APIC ' . escapeshellarg($imageFile) . ' ' . escapeshellarg($audioFile));
+
+        return $this;
     }
 
-    public function removeArtwork(): void
+    public function removeArtwork(): Mid3v2Command
     {
         $this->addArgument('options', '--delete-frames=APIC');
+
+        return $this;
     }
 
-    public function removeTags(array $tags): void
+    public function removeTags(array $tags): Mid3v2Command
     {
         $this->addArgument('options', '--delete-frames=' . escapeshellarg(implode(',', $tags)));
+
+        return $this;
     }
 }

@@ -27,29 +27,39 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         }
     }
 
-    public function singleThreaded(): void
+    public function singleThreaded(): SoxCommand
     {
         $this->addArgument('gopts', '--single-threaded');
+
+        return $this;
     }
 
-    public function verbosity(int $level): void
+    public function verbosity(int $level): SoxCommand
     {
         $this->addArgument('gopts', '-V' . (string) $level);
+
+        return $this;
     }
 
-    public function input(string $inputFile): void
+    public function input(string $inputFile): SoxCommand
     {
         $this->addArgument('infile', escapeshellarg($inputFile));
+
+        return $this;
     }
 
-    public function channels(int $channels): void
+    public function channels(int $channels): SoxCommand
     {
         $this->addArgument('fopts-in', '--channels ' . $channels);
+
+        return $this;
     }
 
-    public function output(string $outputFile): void
+    public function output(string $outputFile): SoxCommand
     {
         $this->addArgument('outfile', escapeshellarg($outputFile));
+
+        return $this;
     }
 
     public function fade(
@@ -57,7 +67,7 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         float $fadeInLength,
         float $stopPosition = null,
         float $fadeOutLength = null
-    ): void {
+    ): SoxCommand {
         $effect = ['fade'];
 
         if (!is_null($type)) {
@@ -75,5 +85,7 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
         }
 
         $this->addArgument('effopt', implode(' ', $effect));
+
+        return $this;
     }
 }
