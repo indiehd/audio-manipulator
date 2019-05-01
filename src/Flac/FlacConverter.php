@@ -3,6 +3,7 @@
 namespace IndieHD\AudioManipulator\Flac;
 
 use Psr\Log\LoggerInterface;
+use Monolog\Handler\HandlerInterface;
 
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Converting\ConverterInterface;
@@ -22,9 +23,13 @@ class FlacConverter implements
     AlacWriterInterface,
     WavWriterInterface
 {
+    private $logName = 'FLAC_CONVERTER_LOG';
+    private $loggingEnabled = false;
+
     private $validator;
     private $process;
     private $logger;
+    private $handler;
     private $sox;
     private $ffmpeg;
 
@@ -34,12 +39,14 @@ class FlacConverter implements
         ValidatorInterface $validator,
         ProcessInterface $process,
         LoggerInterface $logger,
+        HandlerInterface $handler,
         SoxCommandInterface $sox,
         FfmpegCommandInterface $ffmpeg
     ) {
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
+        $this->handler = $handler;
         $this->sox = $sox;
         $this->ffmpeg = $ffmpeg;
 
@@ -49,6 +56,26 @@ class FlacConverter implements
             'm4a',
             'ogg',
         ]);
+
+        $this->configureLogger();
+    }
+
+    protected function configureLogger(): void
+    {
+        if (!empty(getenv($this->logName))) {
+            $this->logger->pushHandler($this->handler);
+        }
+
+        if (getenv('ENABLE_LOGGING') === 'true') {
+            $this->loggingEnabled = true;
+        }
+    }
+
+    protected function log(string $message, string $level = 'info'): void
+    {
+        if ($this->loggingEnabled) {
+            $this->logger->{$level}($message);
+        }
     }
 
     public function setSupportedOutputFormats(array $supportedOutputFormats): void
@@ -68,7 +95,7 @@ class FlacConverter implements
             throw new ProcessFailedException($this->process);
         }
 
-        $this->logger->info(
+        $this->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );

@@ -6,8 +6,7 @@ use getID3;
 use getid3_writetags;
 
 use Psr\Log\LoggerInterface;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\HandlerInterface;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
@@ -22,40 +21,64 @@ use IndieHD\AudioManipulator\CliCommand\AtomicParsleyCommandInterface;
 
 class AlacTagger implements TaggerInterface
 {
+    private $env;
+    private $logName = 'ALAC_TAGGER_LOG';
+    private $loggingEnabled = false;
+
+    public $getid3;
+    private $writeTags;
+    private $process;
+    private $logger;
+    private $handler;
+    private $filenameSanitizer;
+    public $command;
+    private $validator;
+
     public function __construct(
         getID3 $getid3,
         getid3_writetags $writeTags,
         ProcessInterface $process,
         LoggerInterface $logger,
+        HandlerInterface $handler,
         FilenameSanitizerInterface $filenameSanitizer,
         AtomicParsleyCommandInterface $command,
         ValidatorInterface $validator
     ) {
-
         $this->getid3 = $getid3;
         $this->writeTags= $writeTags;
         $this->process = $process;
         $this->logger = $logger;
+        $this->handler = $handler;
         $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
         $this->validator = $validator;
+
+        $this->configureLogger();
 
         // This option is specific to the tag READER (the WRITER has its own,
         // separate encoding setting).
 
         $this->getid3->setOption(['encoding' => 'UTF-8']);
 
-        // TODO Make the log location configurable.
-
-        $fileHandler = new StreamHandler(
-            'storage' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR
-            . 'alac-tagger.log',
-            Logger::INFO
-        );
-
-        $this->logger->pushHandler($fileHandler);
-
         $this->env = ['LC_ALL' => 'en_US.utf8'];
+    }
+
+    protected function configureLogger(): void
+    {
+        if (!empty(getenv($this->logName))) {
+            $this->logger->pushHandler($this->handler);
+        }
+
+        if (getenv('ENABLE_LOGGING') === 'true') {
+            $this->loggingEnabled = true;
+        }
+    }
+
+    protected function log(string $message, string $level = 'info'): void
+    {
+        if ($this->loggingEnabled) {
+            $this->logger->{$level}($message);
+        }
     }
 
     public function writeTags(string $file, array $tagData): void
@@ -135,7 +158,7 @@ class AlacTagger implements TaggerInterface
             throw new ProcessFailedException($this->process);
         }
 
-        $this->logger->info(
+        $this->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );

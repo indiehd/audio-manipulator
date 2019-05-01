@@ -2,9 +2,13 @@
 
 namespace IndieHD\AudioManipulator;
 
+use Dotenv\Dotenv;
+
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+
 use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 use \getID3;
 use \getid3_writetags;
@@ -34,14 +38,13 @@ class Container
 {
     public function __construct()
     {
+        // Configuration.
+
+        Dotenv::create([__DIR__])->load();
+
+        // Container.
+
         $containerBuilder = new ContainerBuilder();
-
-        // Logger.
-
-        $containerBuilder->setParameter('logger.monolog', 'general');
-
-        $containerBuilder->register('logger', Logger::class)
-            ->addArgument('%logger.monolog%');
 
         // Validator.
 
@@ -49,7 +52,17 @@ class Container
 
         $containerBuilder->register('validator', Validator::class)
             ->addArgument('%validator.media_parser%');
-        
+
+        // ALAC Logger.
+
+        $containerBuilder->register('logger.alac.tagger.handler', StreamHandler::class)
+            ->addArgument(
+                __DIR__ . DIRECTORY_SEPARATOR . getenv('ALAC_TAGGER_LOG')
+            );
+
+        $containerBuilder->register('logger.alac', Logger::class)
+            ->addArgument('alac');
+
         // ALAC Tagger.
 
         $containerBuilder->register('alac_tagger', AlacTagger::class)
@@ -57,6 +70,7 @@ class Container
             ->addArgument('%alac_tagger.getid3_tag_writer%')
             ->addArgument('%alac_tagger.process%')
             ->addArgument('%alac_tagger.logger%')
+            ->addArgument('%alac_tagger.handler%')
             ->addArgument('%alac_tagger.filename_sanitizer%')
             ->addArgument('%alac_tagger.cli_command%')
             ->addArgument('%alac_tagger.validator%');
@@ -64,7 +78,8 @@ class Container
         $containerBuilder->setParameter('alac_tagger.getid3', new getID3());
         $containerBuilder->setParameter('alac_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('alac_tagger.process', new Process());
-        $containerBuilder->setParameter('alac_tagger.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('alac_tagger.logger', new Reference('logger.alac'));
+        $containerBuilder->setParameter('alac_tagger.handler', new Reference('logger.alac.tagger.handler'));
         $containerBuilder->setParameter('alac_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('alac_tagger.cli_command', new AtomicParsleyCommand());
         $containerBuilder->setParameter('alac_tagger.validator', $containerBuilder->get('validator'));
@@ -77,23 +92,27 @@ class Container
             ->register('alac_manipulator_creator', AlacManipulatorCreator::class)
             ->addArgument('%alac_manipulator_creator.tagger%');
 
-        // FLAC Effects.
+        // FLAC Logger.
 
-        $containerBuilder->setParameter('flac_effects.cli_command', new SoxCommand());
+        $containerBuilder->register('logger.flac.converter.handler', StreamHandler::class)
+            ->addArgument(
+                __DIR__ . DIRECTORY_SEPARATOR . getenv('FLAC_CONVERTER_LOG')
+            );
 
-        $containerBuilder
-            ->register('flac_effects', FlacEffects::class)
-            ->addArgument('%flac_effects.cli_command%');
+        $containerBuilder->register('logger.flac.tagger.handler', StreamHandler::class)
+            ->addArgument(
+                __DIR__ . DIRECTORY_SEPARATOR . getenv('FLAC_TAGGER_LOG')
+            );
 
-        $containerBuilder->register('effects', Effects::class)
-            ->addMethodCall('setFlac', [new Reference('flac_effects')])
-            ->addMethodCall('setAlac', [new Reference('alac_effects')]);
+        $containerBuilder->register('logger.flac', Logger::class)
+            ->addArgument('flac');
 
         // FLAC Converter.
 
         $containerBuilder->setParameter('flac_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('flac_converter.process', new Process());
-        $containerBuilder->setParameter('flac_converter.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('flac_converter.logger', new Reference('logger.flac'));
+        $containerBuilder->setParameter('flac_converter.handler', new Reference('logger.flac.converter.handler'));
         $containerBuilder->setParameter('flac_converter.sox', new SoxCommand());
         $containerBuilder->setParameter('flac_converter.ffmpeg', new FfmpegCommand());
 
@@ -102,6 +121,7 @@ class Container
             ->addArgument('%flac_converter.validator%')
             ->addArgument('%flac_converter.process%')
             ->addArgument('%flac_converter.logger%')
+            ->addArgument('%flac_converter.handler%')
             ->addArgument('%flac_converter.sox%')
             ->addArgument('%flac_converter.ffmpeg%');
 
@@ -110,7 +130,8 @@ class Container
         $containerBuilder->setParameter('flac_tagger.getid3', new getID3());
         $containerBuilder->setParameter('flac_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('flac_tagger.process', new Process());
-        $containerBuilder->setParameter('flac_tagger.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('flac_tagger.logger', new Reference('logger.flac'));
+        $containerBuilder->setParameter('flac_tagger.handler', new Reference('logger.flac.tagger.handler'));
         $containerBuilder->setParameter('flac_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('flac_tagger.cli_command', new MetaflacCommand());
         $containerBuilder->setParameter('flac_tagger.validator', $containerBuilder->get('validator'));
@@ -120,6 +141,7 @@ class Container
             ->addArgument('%flac_tagger.getid3_tag_writer%')
             ->addArgument('%flac_tagger.process%')
             ->addArgument('%flac_tagger.logger%')
+            ->addArgument('%flac_tagger.handler%')
             ->addArgument('%flac_tagger.filename_sanitizer%')
             ->addArgument('%flac_tagger.cli_command%')
             ->addArgument('%flac_tagger.validator%');
@@ -134,11 +156,21 @@ class Container
             ->addArgument('%flac_manipulator_creator.converter%')
             ->addArgument('%flac_manipulator_creator.tagger%');
 
+        // MP3 Logger.
+
+        $containerBuilder->register('logger.mp3.tagger.handler', StreamHandler::class)
+            ->addArgument(
+                __DIR__ . DIRECTORY_SEPARATOR . getenv('MP3_TAGGER_LOG')
+            );
+
+        $containerBuilder->register('logger.mp3', Logger::class)
+            ->addArgument('mp3');
+
         // MP3 Converter.
 
         $containerBuilder->setParameter('mp3_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('mp3_converter.process', new Process());
-        $containerBuilder->setParameter('mp3_converter.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('mp3_converter.logger', new Reference('logger.mp3'));
 
         $containerBuilder
             ->register('mp3_converter', Mp3Converter::class)
@@ -151,7 +183,7 @@ class Container
         $containerBuilder->setParameter('mp3_tagger.getid3', new getID3());
         $containerBuilder->setParameter('mp3_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('mp3_tagger.process', new Process());
-        $containerBuilder->setParameter('mp3_tagger.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('mp3_tagger.logger', new Reference('logger.mp3'));
         $containerBuilder->setParameter('mp3_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('mp3_tagger.cli_command', new Mid3v2Command());
         $containerBuilder->setParameter('mp3_tagger.validator', $containerBuilder->get('validator'));
@@ -173,11 +205,21 @@ class Container
             ->register('mp3_manipulator_creator', Mp3ManipulatorCreator::class)
             ->addArgument('%mp3_manipulator_creator.tagger%');
 
+        // WAV Logger.
+
+        $containerBuilder->register('logger.wav.tagger.handler', StreamHandler::class)
+            ->addArgument(
+                __DIR__ . DIRECTORY_SEPARATOR . getenv('WAV_CONVERTER_LOG')
+            );
+
+        $containerBuilder->register('logger.wav', Logger::class)
+            ->addArgument('wav');
+
         // WAV Converter.
 
         $containerBuilder->setParameter('wav_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('wav_converter.process', new Process());
-        $containerBuilder->setParameter('wav_converter.logger', $containerBuilder->get('logger'));
+        $containerBuilder->setParameter('wav_converter.logger', new Reference('logger.wav'));
 
         $containerBuilder
             ->register('wav_converter', WavConverter::class)
