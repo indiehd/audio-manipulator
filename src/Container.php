@@ -160,6 +160,11 @@ class Container
 
         // MP3 Logger.
 
+        $containerBuilder->register('logger.mp3.converter.handler', StreamHandler::class)
+            ->addArgument(
+                __DIR__ . DIRECTORY_SEPARATOR . getenv('MP3_CONVERTER_LOG')
+            );
+
         $containerBuilder->register('logger.mp3.tagger.handler', StreamHandler::class)
             ->addArgument(
                 __DIR__ . DIRECTORY_SEPARATOR . getenv('MP3_TAGGER_LOG')
@@ -173,12 +178,14 @@ class Container
         $containerBuilder->setParameter('mp3_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('mp3_converter.process', new Process());
         $containerBuilder->setParameter('mp3_converter.logger', new Reference('logger.mp3'));
+        $containerBuilder->setParameter('mp3_converter.handler', new Reference('logger.mp3.converter.handler'));
 
         $containerBuilder
             ->register('mp3_converter', Mp3Converter::class)
             ->addArgument('%mp3_converter.validator%')
             ->addArgument('%mp3_converter.process%')
-            ->addArgument('%mp3_converter.logger%');
+            ->addArgument('%mp3_converter.logger%')
+            ->addArgument('%mp3_converter.handler%');
 
         // MP3 Tagger.
 
@@ -186,6 +193,7 @@ class Container
         $containerBuilder->setParameter('mp3_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('mp3_tagger.process', new Process());
         $containerBuilder->setParameter('mp3_tagger.logger', new Reference('logger.mp3'));
+        $containerBuilder->setParameter('mp3_tagger.handler', new Reference('logger.mp3.tagger.handler'));
         $containerBuilder->setParameter('mp3_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('mp3_tagger.cli_command', new Mid3v2Command());
         $containerBuilder->setParameter('mp3_tagger.validator', $containerBuilder->get('validator'));
@@ -195,6 +203,7 @@ class Container
             ->addArgument('%mp3_tagger.getid3_tag_writer%')
             ->addArgument('%mp3_tagger.process%')
             ->addArgument('%mp3_tagger.logger%')
+            ->addArgument('%mp3_tagger.handler%')
             ->addArgument('%mp3_tagger.filename_sanitizer%')
             ->addArgument('%mp3_tagger.cli_command%')
             ->addArgument('%mp3_tagger.validator%');
@@ -209,7 +218,7 @@ class Container
 
         // WAV Logger.
 
-        $containerBuilder->register('logger.wav.tagger.handler', StreamHandler::class)
+        $containerBuilder->register('logger.wav.converter.handler', StreamHandler::class)
             ->addArgument(
                 __DIR__ . DIRECTORY_SEPARATOR . getenv('WAV_CONVERTER_LOG')
             );
@@ -222,12 +231,14 @@ class Container
         $containerBuilder->setParameter('wav_converter.validator', $containerBuilder->get('validator'));
         $containerBuilder->setParameter('wav_converter.process', new Process());
         $containerBuilder->setParameter('wav_converter.logger', new Reference('logger.wav'));
+        $containerBuilder->setParameter('wav_converter.handler', new Reference('logger.wav.converter.handler'));
 
         $containerBuilder
             ->register('wav_converter', WavConverter::class)
             ->addArgument('%wav_converter.validator%')
             ->addArgument('%wav_converter.process%')
-            ->addArgument('%wav_converter.logger%');
+            ->addArgument('%wav_converter.logger%')
+            ->addArgument('%wav_converter.handler%');
 
         // WAV Manipulator.
 
