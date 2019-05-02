@@ -59,7 +59,7 @@ class Container
 
         $containerBuilder->register('logger.alac.tagger.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . getenv('ALAC_TAGGER_LOG')
+                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('ALAC_TAGGER_LOG')
             );
 
         $containerBuilder->register('logger.alac', Logger::class)
@@ -98,12 +98,12 @@ class Container
 
         $containerBuilder->register('logger.flac.converter.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . getenv('FLAC_CONVERTER_LOG')
+                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('FLAC_CONVERTER_LOG')
             );
 
         $containerBuilder->register('logger.flac.tagger.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . getenv('FLAC_TAGGER_LOG')
+                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('FLAC_TAGGER_LOG')
             );
 
         $containerBuilder->register('logger.flac', Logger::class)
@@ -162,12 +162,12 @@ class Container
 
         $containerBuilder->register('logger.mp3.converter.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . getenv('MP3_CONVERTER_LOG')
+                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('MP3_CONVERTER_LOG')
             );
 
         $containerBuilder->register('logger.mp3.tagger.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . getenv('MP3_TAGGER_LOG')
+                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('MP3_TAGGER_LOG')
             );
 
         $containerBuilder->register('logger.mp3', Logger::class)
@@ -220,7 +220,7 @@ class Container
 
         $containerBuilder->register('logger.wav.converter.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . getenv('WAV_CONVERTER_LOG')
+                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('WAV_CONVERTER_LOG')
             );
 
         $containerBuilder->register('logger.wav', Logger::class)
