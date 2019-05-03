@@ -41,6 +41,7 @@ abstract class TaggingTest extends TestCase
 
         $fileDetails = $this->{$this->fileType . 'Manipulator'}
             ->tagger
+            ->tagVerifier
             ->getid3
             ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
 

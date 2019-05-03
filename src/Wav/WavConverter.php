@@ -2,10 +2,9 @@
 
 namespace IndieHD\AudioManipulator\Wav;
 
-use Psr\Log\LoggerInterface;
-
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
+use IndieHD\AudioManipulator\Logging\LoggerInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Converting\ConverterInterface;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
@@ -34,6 +33,8 @@ class WavConverter implements
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
+
+        $this->logger->configureLogger('WAV_CONVERTER_LOG');
 
         $this->setSupportedOutputFormats([
             'flac',
@@ -108,7 +109,7 @@ class WavConverter implements
             throw new ProcessFailedException($this->process);
         }
 
-        $this->logger->info(
+        $this->logger->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
                 . $this->process->getOutput()
         );
@@ -200,7 +201,7 @@ class WavConverter implements
             throw new ProcessFailedException($this->process);
         }
 
-        $this->logger->info(
+        $this->logger->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );

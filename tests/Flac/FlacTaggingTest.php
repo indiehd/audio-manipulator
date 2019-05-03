@@ -58,7 +58,7 @@ class FlacTaggingTest extends TaggingTest
     {
         $this->embedArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
@@ -90,7 +90,7 @@ class FlacTaggingTest extends TaggingTest
 
         $this->removeArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
@@ -115,7 +115,7 @@ class FlacTaggingTest extends TaggingTest
             ]
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->getid3->analyze(
+        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
             $this->{$this->fileType . 'Manipulator'}->getFile()
         );
 
@@ -134,6 +134,7 @@ class FlacTaggingTest extends TaggingTest
 
         $fileDetails = $this->{$this->fileType . 'Manipulator'}
             ->tagger
+            ->tagVerifier
             ->getid3
             ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
 
