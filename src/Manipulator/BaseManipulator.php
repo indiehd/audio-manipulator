@@ -1,8 +1,8 @@
 <?php
 
-namespace IndieHD\AudioManipulator;
+namespace IndieHD\AudioManipulator\Manipulator;
 
-use IndieHD\AudioManipulator\ManipulatorInterface;
+use IndieHD\AudioManipulator\Manipulator\ManipulatorInterface;
 
 class BaseManipulator implements ManipulatorInterface
 {

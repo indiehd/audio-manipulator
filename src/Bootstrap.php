@@ -4,7 +4,7 @@ namespace IndieHD\AudioManipulator;
 
 use Dotenv\Dotenv;
 
-use IndieHD\AudioManipulator\Container;
+use IndieHD\AudioManipulator\Container\Container;
 
 if (!defined('app')) {
     function app()
