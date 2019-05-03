@@ -2,11 +2,9 @@
 
 namespace IndieHD\AudioManipulator\Wav;
 
-use Psr\Log\LoggerInterface;
-use Monolog\Handler\HandlerInterface;
-
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
+use IndieHD\AudioManipulator\Logging\LoggerInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Converting\ConverterInterface;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
@@ -21,28 +19,22 @@ class WavConverter implements
     AlacWriterInterface,
     FlacWriterInterface
 {
-    private $logName = 'WAV_CONVERTER_LOG';
-    private $loggingEnabled = false;
-
     private $validator;
     private $process;
     private $logger;
-    private $handler;
 
     protected $supportedOutputFormats;
 
     public function __construct(
         ValidatorInterface $validator,
         ProcessInterface $process,
-        LoggerInterface $logger,
-        HandlerInterface $handler
+        LoggerInterface $logger
     ) {
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
-        $this->handler = $handler;
 
-        $this->configureLogger();
+        $this->logger->configureLogger('WAV_CONVERTER_LOG');
 
         $this->setSupportedOutputFormats([
             'flac',
@@ -50,24 +42,6 @@ class WavConverter implements
             'm4a',
             'ogg',
         ]);
-    }
-
-    protected function configureLogger(): void
-    {
-        if (!empty(getenv($this->logName))) {
-            $this->logger->pushHandler($this->handler);
-        }
-
-        if (getenv('ENABLE_LOGGING') === 'true') {
-            $this->loggingEnabled = true;
-        }
-    }
-
-    protected function log(string $message, string $level = 'info'): void
-    {
-        if ($this->loggingEnabled) {
-            $this->logger->{$level}($message);
-        }
     }
 
     public function setSupportedOutputFormats(array $supportedOutputFormats): void
@@ -135,7 +109,7 @@ class WavConverter implements
             throw new ProcessFailedException($this->process);
         }
 
-        $this->log(
+        $this->logger->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
                 . $this->process->getOutput()
         );
@@ -227,7 +201,7 @@ class WavConverter implements
             throw new ProcessFailedException($this->process);
         }
 
-        $this->log(
+        $this->logger->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );

@@ -2,11 +2,9 @@
 
 namespace IndieHD\AudioManipulator\Mp3;
 
-use Psr\Log\LoggerInterface;
-use Monolog\Handler\HandlerInterface;
-
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
+use IndieHD\AudioManipulator\Logging\LoggerInterface;
 use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
@@ -17,49 +15,25 @@ use IndieHD\AudioManipulator\CliCommand\Mid3v2CommandInterface;
 class Mp3Tagger implements TaggerInterface
 {
     private $env;
-    private $logName = 'MP3_TAGGER_LOG';
-    private $loggingEnabled = false;
-
     public $tagVerifier;
     private $process;
     private $logger;
-    private $handler;
     public $command;
 
     public function __construct(
         TagVerifierInterface $tagVerifier,
         ProcessInterface $process,
         LoggerInterface $logger,
-        HandlerInterface $handler,
         Mid3v2CommandInterface $command
     ) {
         $this->tagVerifier = $tagVerifier;
         $this->process = $process;
         $this->logger = $logger;
-        $this->handler = $handler;
         $this->command = $command;
 
-        $this->configureLogger();
+        $this->logger->configureLogger('MP3_TAGGER_LOG');
 
         $this->env = ['LC_ALL' => 'en_US.utf8'];
-    }
-
-    protected function configureLogger(): void
-    {
-        if (!empty(getenv($this->logName))) {
-            $this->logger->pushHandler($this->handler);
-        }
-
-        if (getenv('ENABLE_LOGGING') === 'true') {
-            $this->loggingEnabled = true;
-        }
-    }
-
-    protected function log(string $message, string $level = 'info'): void
-    {
-        if ($this->loggingEnabled) {
-            $this->logger->{$level}($message);
-        }
     }
 
     public function writeTags(string $file, array $tagData): void
@@ -131,7 +105,7 @@ class Mp3Tagger implements TaggerInterface
             throw new ProcessFailedException($this->process);
         }
 
-        $this->log(
+        $this->logger->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
             . $this->process->getOutput()
         );
