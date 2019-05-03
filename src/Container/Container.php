@@ -42,7 +42,11 @@ class Container
         // Configuration.
 
         if (getenv('APP_ENV') === 'development') {
-            Dotenv::create([__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR])->load();
+            Dotenv::create([
+                __DIR__ . DIRECTORY_SEPARATOR
+                . '..' . DIRECTORY_SEPARATOR
+                . '..' . DIRECTORY_SEPARATOR
+            ])->load();
         }
 
         // Container.
@@ -268,12 +272,16 @@ class Container
         $containerBuilder->setParameter('wav_converter.validator', new Reference('validator'));
         $containerBuilder->setParameter('wav_converter.process', new Process());
         $containerBuilder->setParameter('wav_converter.logger', new Reference('logger.converter.wav'));
+        $containerBuilder->setParameter('wav_converter.sox', new SoxCommand());
+        $containerBuilder->setParameter('wav_converter.ffmpeg', new FfmpegCommand());
 
         $containerBuilder
             ->register('wav_converter', WavConverter::class)
             ->addArgument('%wav_converter.validator%')
             ->addArgument('%wav_converter.process%')
-            ->addArgument('%wav_converter.logger%');
+            ->addArgument('%wav_converter.logger%')
+            ->addArgument('%wav_converter.sox%')
+            ->addArgument('%wav_converter.ffmpeg%');
 
         // WAV Manipulator.
 

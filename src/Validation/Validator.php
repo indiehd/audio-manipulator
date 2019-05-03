@@ -69,7 +69,7 @@ class Validator implements ValidatorInterface
             ) {
                 throw new InvalidAudioFileException(
                     'The audio file\'s file format could not be ascertained or'
-                        . 'is not of the specified type (' . $type . ')'
+                        . ' is not of the specified type (' . $type . ')'
                 );
             }
         }
