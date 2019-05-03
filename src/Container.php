@@ -88,8 +88,6 @@ class Container
         // ALAC Tagger.
 
         $containerBuilder->register('alac_tagger', AlacTagger::class)
-            #->addArgument('%alac_tagger.getid3%')
-            #->addArgument('%alac_tagger.getid3_tag_writer%')
             ->addArgument('%alac_tagger.tag_verifier%')
             ->addArgument('%alac_tagger.process%')
             ->addArgument('%alac_tagger.logger%')
@@ -98,8 +96,6 @@ class Container
             ->addArgument('%alac_tagger.cli_command%')
             ->addArgument('%alac_tagger.validator%');
 
-        #$containerBuilder->setParameter('alac_tagger.getid3', new getID3());
-        #$containerBuilder->setParameter('alac_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('alac_tagger.tag_verifier', new Reference('alac.tag_verifier'));
         $containerBuilder->setParameter('alac_tagger.process', new Process());
         $containerBuilder->setParameter('alac_tagger.logger', new Reference('logger.alac'));
@@ -142,7 +138,6 @@ class Container
 
         $containerBuilder
             ->register('flac_converter', FlacConverter::class)
-            #->addArgument('%flac_tagger.tag_verifier%')
             ->addArgument('%flac_converter.validator%')
             ->addArgument('%flac_converter.process%')
             ->addArgument('%flac_converter.logger%')
@@ -152,8 +147,6 @@ class Container
 
         // FLAC Tagger.
 
-        #$containerBuilder->setParameter('flac_tagger.getid3', new getID3());
-        #$containerBuilder->setParameter('flac_tagger.getid3_tag_writer', new getid3_writetags);
         $containerBuilder->setParameter('flac_tagger.tag_verifier', new Reference('flac.tag_verifier'));
         $containerBuilder->setParameter('flac_tagger.process', new Process());
         $containerBuilder->setParameter('flac_tagger.logger', new Reference('logger.flac'));
@@ -163,8 +156,6 @@ class Container
         $containerBuilder->setParameter('flac_tagger.validator', $containerBuilder->get('validator'));
 
         $containerBuilder->register('flac_tagger', FlacTagger::class)
-            #->addArgument('%flac_tagger.getid3%')
-            #->addArgument('%flac_tagger.getid3_tag_writer%')
             ->addArgument('%flac_tagger.tag_verifier%')
             ->addArgument('%flac_tagger.process%')
             ->addArgument('%flac_tagger.logger%')
