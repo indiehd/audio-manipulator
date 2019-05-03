@@ -3,24 +3,18 @@
 namespace IndieHD\AudioManipulator\Flac;
 
 use Psr\Log\LoggerInterface;
-use Monolog\Logger;
 use Monolog\Handler\HandlerInterface;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-
-use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
-
-use IndieHD\AudioManipulator\Flac\FlacTaggerInterface;
-use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 
 use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
-
+use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
 
-class FlacTagger implements FlacTaggerInterface
+class FlacTagger implements TaggerInterface
 {
     private $env;
     private $logName = 'FLAC_TAGGER_LOG';
@@ -30,7 +24,6 @@ class FlacTagger implements FlacTaggerInterface
     private $process;
     private $logger;
     private $handler;
-    private $filenameSanitizer;
     public $command;
 
     public function __construct(
@@ -38,14 +31,12 @@ class FlacTagger implements FlacTaggerInterface
         ProcessInterface $process,
         LoggerInterface $logger,
         HandlerInterface $handler,
-        FilenameSanitizerInterface $filenameSanitizer,
         MetaflacCommandInterface $command
     ) {
         $this->tagVerifier = $tagVerifier;
         $this->process = $process;
         $this->logger = $logger;
         $this->handler = $handler;
-        $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
 
         $this->configureLogger();

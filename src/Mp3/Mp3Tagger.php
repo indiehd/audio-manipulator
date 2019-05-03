@@ -8,7 +8,6 @@ use Monolog\Handler\HandlerInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
-use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
@@ -17,22 +16,27 @@ use IndieHD\AudioManipulator\CliCommand\Mid3v2CommandInterface;
 
 class Mp3Tagger implements TaggerInterface
 {
+    private $env;
     private $logName = 'MP3_TAGGER_LOG';
     private $loggingEnabled = false;
+
+    public $tagVerifier;
+    private $process;
+    private $logger;
+    private $handler;
+    public $command;
 
     public function __construct(
         TagVerifierInterface $tagVerifier,
         ProcessInterface $process,
         LoggerInterface $logger,
         HandlerInterface $handler,
-        FilenameSanitizerInterface $filenameSanitizer,
         Mid3v2CommandInterface $command
     ) {
         $this->tagVerifier = $tagVerifier;
         $this->process = $process;
         $this->logger = $logger;
         $this->handler = $handler;
-        $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
 
         $this->configureLogger();

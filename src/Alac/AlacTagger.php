@@ -8,7 +8,6 @@ use Monolog\Handler\HandlerInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
-use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
@@ -21,12 +20,10 @@ class AlacTagger implements TaggerInterface
     private $logName = 'ALAC_TAGGER_LOG';
     private $loggingEnabled = false;
 
-    public $getid3;
-    private $writeTags;
+    public $tagVerifier;
     private $process;
     private $logger;
     private $handler;
-    private $filenameSanitizer;
     public $command;
 
     public function __construct(
@@ -34,14 +31,12 @@ class AlacTagger implements TaggerInterface
         ProcessInterface $process,
         LoggerInterface $logger,
         HandlerInterface $handler,
-        FilenameSanitizerInterface $filenameSanitizer,
         AtomicParsleyCommandInterface $command
     ) {
         $this->tagVerifier = $tagVerifier;
         $this->process = $process;
         $this->logger = $logger;
         $this->handler = $handler;
-        $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
 
         $this->configureLogger();

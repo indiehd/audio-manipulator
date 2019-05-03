@@ -11,9 +11,6 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 use \getID3;
-use \getid3_writetags;
-
-use IndieHD\FilenameSanitizer\FilenameSanitizer;
 
 use IndieHD\AudioManipulator\Mp3\Mp3TagVerifier;
 use IndieHD\AudioManipulator\Alac\AlacTagVerifier;
@@ -92,7 +89,6 @@ class Container
             ->addArgument('%alac_tagger.process%')
             ->addArgument('%alac_tagger.logger%')
             ->addArgument('%alac_tagger.handler%')
-            ->addArgument('%alac_tagger.filename_sanitizer%')
             ->addArgument('%alac_tagger.cli_command%')
             ->addArgument('%alac_tagger.validator%');
 
@@ -100,7 +96,6 @@ class Container
         $containerBuilder->setParameter('alac_tagger.process', new Process());
         $containerBuilder->setParameter('alac_tagger.logger', new Reference('logger.alac'));
         $containerBuilder->setParameter('alac_tagger.handler', new Reference('logger.alac.tagger.handler'));
-        $containerBuilder->setParameter('alac_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('alac_tagger.cli_command', new AtomicParsleyCommand());
         $containerBuilder->setParameter('alac_tagger.validator', $containerBuilder->get('validator'));
 
@@ -151,7 +146,6 @@ class Container
         $containerBuilder->setParameter('flac_tagger.process', new Process());
         $containerBuilder->setParameter('flac_tagger.logger', new Reference('logger.flac'));
         $containerBuilder->setParameter('flac_tagger.handler', new Reference('logger.flac.tagger.handler'));
-        $containerBuilder->setParameter('flac_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('flac_tagger.cli_command', new MetaflacCommand());
         $containerBuilder->setParameter('flac_tagger.validator', $containerBuilder->get('validator'));
 
@@ -160,7 +154,6 @@ class Container
             ->addArgument('%flac_tagger.process%')
             ->addArgument('%flac_tagger.logger%')
             ->addArgument('%flac_tagger.handler%')
-            ->addArgument('%flac_tagger.filename_sanitizer%')
             ->addArgument('%flac_tagger.cli_command%')
             ->addArgument('%flac_tagger.validator%');
 
@@ -209,7 +202,6 @@ class Container
         $containerBuilder->setParameter('mp3_tagger.process', new Process());
         $containerBuilder->setParameter('mp3_tagger.logger', new Reference('logger.mp3'));
         $containerBuilder->setParameter('mp3_tagger.handler', new Reference('logger.mp3.tagger.handler'));
-        $containerBuilder->setParameter('mp3_tagger.filename_sanitizer', new FilenameSanitizer());
         $containerBuilder->setParameter('mp3_tagger.cli_command', new Mid3v2Command());
 
         $containerBuilder->register('mp3_tagger', Mp3Tagger::class)
@@ -217,7 +209,6 @@ class Container
             ->addArgument('%mp3_tagger.process%')
             ->addArgument('%mp3_tagger.logger%')
             ->addArgument('%mp3_tagger.handler%')
-            ->addArgument('%mp3_tagger.filename_sanitizer%')
             ->addArgument('%mp3_tagger.cli_command%');
 
         // MP3 Manipulator.
