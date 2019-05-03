@@ -2,17 +2,13 @@
 
 namespace IndieHD\AudioManipulator\Mp3;
 
-use getID3;
-use getid3_writetags;
-
 use Psr\Log\LoggerInterface;
 use Monolog\Handler\HandlerInterface;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
-use IndieHD\AudioManipulator\Validation\ValidatorInterface;
+use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
-use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
@@ -25,30 +21,21 @@ class Mp3Tagger implements TaggerInterface
     private $loggingEnabled = false;
 
     public function __construct(
-        getID3 $getid3,
-        getid3_writetags $writeTags,
+        TagVerifierInterface $tagVerifier,
         ProcessInterface $process,
         LoggerInterface $logger,
         HandlerInterface $handler,
         FilenameSanitizerInterface $filenameSanitizer,
-        Mid3v2CommandInterface $command,
-        ValidatorInterface $validator
+        Mid3v2CommandInterface $command
     ) {
-        $this->getid3 = $getid3;
-        $this->writeTags= $writeTags;
+        $this->tagVerifier = $tagVerifier;
         $this->process = $process;
         $this->logger = $logger;
         $this->handler = $handler;
         $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
-        $this->validator = $validator;
 
         $this->configureLogger();
-
-        // This option is specific to the tag READER (the WRITER has its own,
-        // separate encoding setting).
-
-        $this->getid3->setOption(['encoding' => 'UTF-8']);
 
         $this->env = ['LC_ALL' => 'en_US.utf8'];
     }
@@ -86,7 +73,7 @@ class Mp3Tagger implements TaggerInterface
             'track' => 'track_number',
         ];
 
-        $this->verifyTagData($file, $tagData, $fieldMappings);
+        $this->tagVerifier->verify($file, $tagData, $fieldMappings);
     }
 
     public function removeAllTags(string $file): void
@@ -159,39 +146,5 @@ class Mp3Tagger implements TaggerInterface
         }
 
         $this->runProcess($this->command->compose());
-    }
-
-    // TODO As it stands, this function is problematic because the Vorbis Comment
-    // standard allows for multiple instances of the same tag name, e.g., passing
-    // --set-tag=ARTIST=Foo --set-tag=ARTIST=Bar is perfectly valid. This function
-    // should be modified to accommodate that fact.
-
-    protected function verifyTagData(string $file, array $tagData, array $fieldMappings = null): void
-    {
-        $fileDetails = $this->getid3->analyze($file);
-
-        $tagsOnFile = $fileDetails['tags']['id3v2'];
-
-        $failures = [];
-
-        // Compare the passed tag data to the values acquired from the file.
-
-        foreach ($tagData as $fieldName => $fieldDataArray) {
-            foreach ($fieldDataArray as $numericIndex => $fieldValue) {
-                if (isset($fieldMappings[$fieldName])) {
-                    $fieldName = $fieldMappings[$fieldName];
-                }
-
-                if ($tagsOnFile[$fieldName][0] != $fieldValue) {
-                    $failures[] = $fieldName . ' (' . $tagsOnFile[$fieldName][0]. ' != ' . $fieldValue . ')';
-                }
-            }
-        }
-
-        if (count($failures) > 0) {
-            throw new AudioTaggerException(
-                'Expected value does not match actual value for tags: ' . implode(', ', $failures)
-            );
-        }
     }
 }

@@ -2,9 +2,6 @@
 
 namespace IndieHD\AudioManipulator\Flac;
 
-use getID3;
-use getid3_writetags;
-
 use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 use Monolog\Handler\HandlerInterface;
@@ -16,8 +13,7 @@ use IndieHD\FilenameSanitizer\FilenameSanitizerInterface;
 use IndieHD\AudioManipulator\Flac\FlacTaggerInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
 
-use IndieHD\AudioManipulator\Validation\ValidatorInterface;
-
+use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 use IndieHD\AudioManipulator\Processing\Process;
 use IndieHD\AudioManipulator\Processing\ProcessInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
@@ -30,33 +26,27 @@ class FlacTagger implements FlacTaggerInterface
     private $logName = 'FLAC_TAGGER_LOG';
     private $loggingEnabled = false;
 
-    public $getid3;
-    private $writeTags;
+    public $tagVerifier;
     private $process;
     private $logger;
     private $handler;
     private $filenameSanitizer;
     public $command;
-    private $validator;
 
     public function __construct(
-        getID3 $getid3,
-        getid3_writetags $writeTags,
+        TagVerifierInterface $tagVerifier,
         ProcessInterface $process,
         LoggerInterface $logger,
         HandlerInterface $handler,
         FilenameSanitizerInterface $filenameSanitizer,
-        MetaflacCommandInterface $command,
-        ValidatorInterface $validator
+        MetaflacCommandInterface $command
     ) {
-        $this->getid3 = $getid3;
-        $this->writeTags = $writeTags;
+        $this->tagVerifier = $tagVerifier;
         $this->process = $process;
         $this->logger = $logger;
         $this->handler = $handler;
         $this->filenameSanitizer = $filenameSanitizer;
         $this->command = $command;
-        $this->validator = $validator;
 
         $this->configureLogger();
 
@@ -117,7 +107,7 @@ class FlacTagger implements FlacTaggerInterface
 
         $this->attemptWrite($tagData);
 
-        $this->verifyTagData($file, $tagData);
+        $this->tagVerifier->verify($file, $tagData);
     }
 
     public function removeAllTags(string $file): void
@@ -187,39 +177,5 @@ class FlacTagger implements FlacTaggerInterface
         }
 
         $this->runProcess($this->command->compose());
-    }
-
-    // TODO As it stands, this function is problematic because the Vorbis Comment
-    // standard allows for multiple instances of the same tag name, e.g., passing
-    // --set-tag=ARTIST=Foo --set-tag=ARTIST=Bar is perfectly valid. This function
-    // should be modified to accommodate that fact.
-
-    protected function verifyTagData(string $file, array $tagData): void
-    {
-        $fileDetails = $this->getid3->analyze($file);
-
-        // TODO Determine what this was used for and whether or not it needs to stay.
-
-        //if ($allowBlank !== true) {
-
-        $vorbiscomment = $fileDetails['tags']['vorbiscomment'];
-
-        $failures = [];
-
-        // Compare the passed tag data to the values acquired from the file.
-
-        foreach ($tagData as $fieldName => $fieldDataArray) {
-            foreach ($fieldDataArray as $numericIndex => $fieldValue) {
-                if ($vorbiscomment[$fieldName][0] != $fieldValue) {
-                    $failures[] = $fieldName;
-                }
-            }
-        }
-
-        if (count($failures) > 0) {
-            throw new AudioTaggerException(
-                'Expected value does not match actual value for tags: ' . implode(', ', $failures)
-            );
-        }
     }
 }
