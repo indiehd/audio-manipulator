@@ -1,6 +1,6 @@
 <?php
 
-namespace IndieHD\AudioManipulator;
+namespace IndieHD\AudioManipulator\Manipulator;
 
 interface ManipulatorInterface
 {

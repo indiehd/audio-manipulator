@@ -2,8 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Wav;
 
-use IndieHD\AudioManipulator\BaseManipulator;
-use IndieHD\AudioManipulator\ManipulatorInterface;
+use IndieHD\AudioManipulator\Manipulator\BaseManipulator;
+use IndieHD\AudioManipulator\Manipulator\ManipulatorInterface;
 
 class WavManipulator extends BaseManipulator implements ManipulatorInterface
 {
