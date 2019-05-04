@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\Wav;
 
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-
 use IndieHD\AudioManipulator\Logging\LoggerInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Converting\ConverterInterface;
@@ -12,6 +10,10 @@ use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use IndieHD\AudioManipulator\Mp3\Mp3WriterInterface;
 use IndieHD\AudioManipulator\Alac\AlacWriterInterface;
 use IndieHD\AudioManipulator\Flac\FlacWriterInterface;
+use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
+use IndieHD\AudioManipulator\CliCommand\FfmpegCommandInterface;
+use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
+use IndieHD\AudioManipulator\Processing\Process;
 
 class WavConverter implements
     ConverterInterface,
@@ -22,17 +24,23 @@ class WavConverter implements
     private $validator;
     private $process;
     private $logger;
+    private $sox;
+    private $ffmpeg;
 
     protected $supportedOutputFormats;
 
     public function __construct(
         ValidatorInterface $validator,
         ProcessInterface $process,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SoxCommandInterface $sox,
+        FfmpegCommandInterface $ffmpeg
     ) {
         $this->validator = $validator;
         $this->process = $process;
         $this->logger = $logger;
+        $this->sox = $sox;
+        $this->ffmpeg = $ffmpeg;
 
         $this->logger->configureLogger('WAV_CONVERTER_LOG');
 
@@ -49,61 +57,13 @@ class WavConverter implements
         $this->supportedOutputFormats = $supportedOutputFormats;
     }
 
-    public function validateFile($inputFile): array
+    protected function runProcess(array $cmd, CliCommandInterface $command): Process
     {
-        if (!file_exists($inputFile)) {
-            throw new FileNotFoundException('The input file "' . $inputFile . '" appears not to exist');
-        }
-
-        // Grab the file extension to determine the implicit audio format of the
-        // input file.
-
-        $fileExt = pathinfo($inputFile, PATHINFO_EXTENSION);
-        $inputFormat = $fileExt;
-
-        // Attempt to validate the input file according to its implied file type.
-
-        // The audio type validation function returns the audio file's
-        // details if the validation succeeds. We may as well leverage that
-        // for the next step.
-
-        return $this->validator->validateAudioFile($inputFile, $inputFormat);
-    }
-
-    public function writeFile(string $inputFile, string $outputFile): array
-    {
-        $fileDetails = $this->validateFile($inputFile);
-
-        $cmd = [];
-
-        // Attempt to perform the transcoding operation.
-
-        $cmd[] = 'sox';
-
-        // TODO Deal with this.
-
-        #if ($this->singleThreaded === true) {
-            $cmd[] = ' --single-threaded';
-        #}
-
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-        $cmd[] = ' -V4';
-        $cmd[] = ' ' . escapeshellarg($inputFile);
-        $cmd[] = ' --channels 2';
-        $cmd[] = ' ' . escapeshellarg($outputFile);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
-
-        $env = ['LC_ALL' => 'en_US.utf8'];
-
         $this->process->setCommand($cmd);
 
         $this->process->setTimeout(600);
 
-        $this->process->run(null, $env);
+        $this->process->run(null);
 
         if (!$this->process->isSuccessful()) {
             throw new ProcessFailedException($this->process);
@@ -111,8 +71,23 @@ class WavConverter implements
 
         $this->logger->log(
             $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-                . $this->process->getOutput()
+            . $this->process->getOutput()
         );
+
+        $command->removeAllArguments();
+
+        return $this->process;
+    }
+
+    private function writeFile(string $inputFile, string $outputFile): array
+    {
+        $this->validator->validateAudioFile($inputFile, 'wav');
+
+        $this->sox
+            ->input($inputFile)
+            ->output($outputFile);
+
+        $this->runProcess($this->sox->compose(), $this->sox);
 
         // On the Windows platform, SoX's exit status is not preserved, thus
         // we must confirm that the operation was completed successfully by
@@ -128,16 +103,7 @@ class WavConverter implements
 
         $outputFormat = $fileExt;
 
-        $newFileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);
-
-        if (!$newFileDetails) {
-            throw new InvalidAudioFileException('The ' . strtoupper($outputFormat)
-                . ' file appears to have been created, but does not validate as'
-                . ' such; ensure that the determined audio format (e.g., MP1,'
-                . ' MP2, etc.) is in the array of allowable formats');
-        }
-
-        return $newFileDetails;
+        return $this->validator->validateAudioFile($outputFile, $outputFormat);
     }
 
     public function toMp3(string $inputFile, string $outputFile): array
@@ -146,65 +112,31 @@ class WavConverter implements
     }
 
     /**
-     * Important: NEVER call this function on a "master" file, as it removes the
-     * artwork from THAT file (and not a copy)!
      * @param string $inputFile
      * @param string $outputFile
      * @return array
      */
     public function toAlac(string $inputFile, string $outputFile): array
     {
-        $fileDetails = $this->validateFile($inputFile);
+        $this->validator->validateAudioFile($inputFile, 'wav');
 
-        //In avconv/ffmpeg version 9.16 (and possibly earlier), embedded artwork with a
-        //width or height that is not divisible by 2 will cause a failure, e.g.:
-        //"width not divisible by 2 (1419x1419)". So, we must strip any "odd" artwork.
-        //It's entirely possible that artwork was not copied in earlier versions, so
-        //this error did not occur.
+        // In avconv/ffmpeg version 9.16 (and possibly earlier), embedded artwork with a
+        // width or height that is not divisible by 2 will cause a failure, e.g.:
+        // "width not divisible by 2 (1419x1419)". So, we must strip any "odd" artwork.
+        // It's entirely possible that artwork was not copied in earlier versions, so
+        // this error did not occur.
 
         // TODO Determine whether or not this is still necessary.
 
-        //$this->tagger->removeArtwork($inputFile);
+        #$this->tagger->removeArtwork($inputFile);
 
-        $cmd = [];
+        $this->ffmpeg
+            ->input($inputFile)
+            ->output($outputFile)
+            ->overwriteOutput($outputFile)
+            ->forceAudioCodec('alac');
 
-        // The "-y" switch forces overwriting.
-
-        $cmd[] = !empty(getenv('FFMPEG_BINARY')) ? getenv('FFMPEG_BINARY') : 'ffmpeg';
-        $cmd[] = '-y';
-        $cmd[] = '-i';
-
-        //Tag data is copied automatically. Nice!!!
-
-        $pathParts = pathinfo($inputFile);
-
-        // If setlocale(LC_CTYPE, "en_US.UTF-8") is not called here, any UTF-8 character will equate to an empty string.
-
-        setlocale(LC_CTYPE, 'en_US.UTF-8');
-
-        $cmd[] = escapeshellarg($inputFile);
-        $cmd[] = '-acodec';
-        $cmd[] = 'alac';
-        $cmd[] = escapeshellarg($outputFile);
-
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8 character will appear as a "#" symbol.
-
-        $env = ['LC_ALL' => 'en_US.utf8'];
-
-        $this->process->setCommand($cmd);
-
-        $this->process->setTimeout(600);
-
-        $this->process->run(null, $env);
-
-        if (!$this->process->isSuccessful()) {
-            throw new ProcessFailedException($this->process);
-        }
-
-        $this->logger->log(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
-        );
+        $this->runProcess($this->ffmpeg->compose(), $this->ffmpeg);
 
         // We'll use a validation function to analyze the resultant file and ensure that the
         // file meets our expectations.
@@ -216,16 +148,7 @@ class WavConverter implements
 
         $outputFormat = $fileExt;
 
-        $newFileDetails = $this->validator->validateAudioFile($outputFile, $outputFormat);
-
-        if (!$newFileDetails) {
-            throw new InvalidAudioFileException('The ' . strtoupper($outputFormat)
-                . ' file appears to have been created, but does not validate as'
-                . ' such; ensure that the determined audio format (e.g., MP1,'
-                . ' MP2, etc.) is in the array of allowable formats');
-        }
-
-        return $newFileDetails;
+        return $this->validator->validateAudioFile($outputFile, $outputFormat);
     }
 
     public function toFlac(string $inputFile, string $outputFile): array
