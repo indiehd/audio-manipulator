@@ -7,8 +7,8 @@ use Monolog\Handler\HandlerInterface;
 
 class Logger implements LoggerInterface
 {
-    private $logger;
-    private $loggingEnabled = false;
+    protected $logger;
+    protected $loggingEnabled = false;
 
     public function __construct(
         PsrLoggerInterface $logger,
@@ -24,7 +24,7 @@ class Logger implements LoggerInterface
             $this->logger->pushHandler($this->handler);
         }
 
-        if (getenv('ENABLE_LOGGING') === 'true') {
+        if (getenv('ENABLE_LOGGING') == true) {
             $this->loggingEnabled = true;
         }
     }
