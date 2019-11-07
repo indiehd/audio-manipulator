@@ -33,7 +33,18 @@ class Mp3TagVerifier implements TagVerifierInterface
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
                 if (isset($fieldMappings[$fieldName])) {
-                    $fieldName = $fieldMappings[$fieldName];
+                    if (!is_array($fieldMappings[$fieldName])) {
+                        $fieldName = $fieldMappings[$fieldName];
+                    } else {
+                        if (
+                            isset($fieldMappings[$fieldName]['mutator'])
+                            && is_callable($fieldMappings[$fieldName]['mutator'])
+                        ) {
+                            $fieldValue = call_user_func($fieldMappings[$fieldName]['mutator'], $fieldValue);
+
+                            $fieldName = $fieldMappings[$fieldName]['name'];
+                        }
+                    }
                 }
 
                 if ($tagsOnFile[$fieldName][0] != $fieldValue) {

@@ -48,7 +48,12 @@ class Mp3Tagger implements TaggerInterface
 
         $fieldMappings = [
             'song' => 'title',
-            'track' => 'track_number',
+            'track' => [
+                'name' => 'track_number',
+                'mutator' => function ($input) {
+                    return explode('/', $input[0])[0];
+                }
+            ],
         ];
 
         $this->tagVerifier->verify($file, $tagData, $fieldMappings);

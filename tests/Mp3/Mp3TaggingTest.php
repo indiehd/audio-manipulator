@@ -136,7 +136,8 @@ class Mp3TaggingTest extends TaggingTest
                 'recording_time' => $tagData['year'],
                 'comment' => $tagData['comment'],
                 'album' => $tagData['album'],
-                'track_number' => [$tagData['track'][0]],
+                'track_number' => [explode('/', $tagData['track'][0])[0]],
+                'totaltracks' => [explode('/', $tagData['track'][0])[1]],
                 'genre' => ['Rock'],
             ],
             $fileDetails['tags']['id3v2']
