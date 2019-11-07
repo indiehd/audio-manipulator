@@ -1,44 +1,44 @@
 {
-	"name": "indiehd/audio-manipulator",
-	"type": "library",
-	"description": "Library for manipulating audio files (validating, transcoding, and tagging)",
-	"keywords": ["audio","flac","mp3","wav","alac"],
-	"homepage": "https://github.com/indiehd/audio-manipulator",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "indieHD, LLC",
-			"email": "webmaster@indiehd.com",
-			"homepage": "https://indiehd.com"
-		},
-		{
-			"name": "Contributors",
-			"homepage": "https://github.com/indiehd/audio-manipulator/graphs/contributors"
-		}
-	],
-	"require": {
-		"php": ">=7.1.0",
-		"symfony/process": "^4.2",
-		"symfony/dependency-injection": "^4.2",
-		"james-heinrich/getid3": "dev-master",
+    "name": "indiehd/audio-manipulator",
+    "type": "library",
+    "description": "Library for manipulating audio files (validating, transcoding, and tagging)",
+    "keywords": ["audio","flac","mp3","wav","alac"],
+    "homepage": "https://github.com/indiehd/audio-manipulator",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "indieHD, LLC",
+            "email": "webmaster@indiehd.com",
+            "homepage": "https://indiehd.com"
+        },
+        {
+            "name": "Contributors",
+            "homepage": "https://github.com/indiehd/audio-manipulator/graphs/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "symfony/process": "^4.2",
+        "symfony/dependency-injection": "^4.2",
+        "james-heinrich/getid3": "^1.9",
         "monolog/monolog": "^2.0",
-		"league/flysystem": "^1.0",
-		"vlucas/phpdotenv": "^3.3"
-	},
-	"autoload": {
-		"psr-4": {
-			"IndieHD\\AudioManipulator\\": "src/",
-			"IndieHD\\AudioManipulator\\Tests\\": "tests/"
-		},
-		"files": ["src/Bootstrap.php"]
-	},
-	"minimum-stability": "stable",
-	"require-dev": {
-		"phpunit/phpunit": "^7.0",
+        "league/flysystem": "^1.0",
+        "vlucas/phpdotenv": "^3.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "IndieHD\\AudioManipulator\\": "src/",
+            "IndieHD\\AudioManipulator\\Tests\\": "tests/"
+        },
+        "files": ["src/Bootstrap.php"]
+    },
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^7.0",
         "phpro/grumphp": "^0.16.2",
-		"squizlabs/php_codesniffer": "^3.4",
-		"phpmd/phpmd": "^2.6",
-		"friendsofphp/php-cs-fixer": "^2.14",
-		"php-coveralls/php-coveralls": "^2.1"
-	}
+        "squizlabs/php_codesniffer": "^3.4",
+        "phpmd/phpmd": "^2.6",
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "php-coveralls/php-coveralls": "^2.1"
+    }
 }
