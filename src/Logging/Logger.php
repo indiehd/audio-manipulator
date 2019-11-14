@@ -25,8 +25,18 @@ class Logger implements LoggerInterface
         }
 
         if (getenv('ENABLE_LOGGING') == true) {
-            $this->loggingEnabled = true;
+            $this->enableLogging();
         }
+    }
+    
+    public function enableLogging(): void
+    {
+        $this->loggingEnabled = true;
+    }
+    
+    public function disableLogging(): void
+    {
+        $this->loggingEnabled = false;
     }
 
     public function log(string $message, string $level = 'info'): void
