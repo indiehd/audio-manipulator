@@ -20,7 +20,7 @@
         "php": ">=7.1.0",
         "symfony/process": "^4.2",
         "symfony/dependency-injection": "^4.2",
-        "james-heinrich/getid3": "^1.9",
+        "james-heinrich/getid3": "dev-master#bd3501c815586f8292316f832d5ff8425f466ba0",
         "monolog/monolog": "^2.0",
         "league/flysystem": "^1.0",
         "vlucas/phpdotenv": "^3.3"
