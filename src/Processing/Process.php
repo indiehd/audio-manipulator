@@ -16,7 +16,7 @@ class Process implements ProcessInterface
 
     public function setProcess(array $command)
     {
-        $this->process = new SymfonyProcess(join(' ', $command));
+        $this->process = SymfonyProcess::fromShellCommandline(join(' ', $command));
     }
 
     public function getProcess()
