@@ -22,6 +22,7 @@ before_install:
   - sudo apt-get -y install gobjc++
   - git clone https://github.com/wez/atomicparsley.git /tmp/atomicparsley
   - cd /tmp/atomicparsley
+  - git checkout tags/0.9.6 -B 0.9.6
   - sed -i 's/AC_PROG_CXX/AC_PROG_CXX\nAC_PROG_OBJCXX/' ./configure.ac
   - ./autogen.sh
   - ./configure
