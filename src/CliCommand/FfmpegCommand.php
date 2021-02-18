@@ -52,4 +52,18 @@ class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
 
         return $this;
     }
+
+    public function forceVideoCodec(string $codec): FfmpegCommand
+    {
+        $this->addArgument('outfile-options', '-vcodec ' . $codec);
+
+        return $this;
+    }
+
+    public function disableVideo(): FfmpegCommand
+    {
+        $this->addArgument('outfile-options', '-vn');
+
+        return $this;
+    }
 }

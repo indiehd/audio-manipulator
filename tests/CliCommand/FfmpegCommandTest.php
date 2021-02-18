@@ -98,4 +98,24 @@ class FfmpegCommandTest extends TestCase
             $this->ffmpegCommand->asString()
         );
     }
+
+    public function testItComposesForceVideoCodecCommandCorrectly()
+    {
+        $this->ffmpegCommand->forceVideoCodec('copy');
+
+        $this->assertEquals(
+            $this->ffmpegCommand->getBinary() . ' -vcodec copy',
+            $this->ffmpegCommand->asString()
+        );
+    }
+
+    public function testItComposesDisableVideoCommandCorrectly()
+    {
+        $this->ffmpegCommand->disableVideo('alac');
+
+        $this->assertEquals(
+            $this->ffmpegCommand->getBinary() . ' -vn',
+            $this->ffmpegCommand->asString()
+        );
+    }
 }
