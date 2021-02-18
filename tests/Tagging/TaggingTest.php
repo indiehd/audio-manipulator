@@ -2,12 +2,10 @@
 
 namespace IndieHD\AudioManipulator\Tests\Tagging;
 
-use PHPUnit\Framework\TestCase;
-
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 abstract class TaggingTest extends TestCase
 {
@@ -25,36 +23,36 @@ abstract class TaggingTest extends TestCase
     public function testItCanTagFile()
     {
         $tagData = [
-            'title' => ['Test Song'],
-            'artist' => ['Foobius Barius'],
-            'date' => ['1981'],
+            'title'       => ['Test Song'],
+            'artist'      => ['Foobius Barius'],
+            'date'        => ['1981'],
             'description' => ['All rights reserved.'],
-            'album' => ['Test Title'],
-            'discnumber' => ['1'],
+            'album'       => ['Test Title'],
+            'discnumber'  => ['1'],
             'tracknumber' => ['1'],
-            'genre' => ['Rock'],
+            'genre'       => ['Rock'],
         ];
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             $tagData
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+        $fileDetails = $this->{$this->fileType.'Manipulator'}
             ->tagger
             ->tagVerifier
             ->getid3
-            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+            ->analyze($this->{$this->fileType.'Manipulator'}->getFile());
 
         $this->assertEquals(
             [
-                'title' => $tagData['title'],
-                'artist' => $tagData['artist'],
-                'date' => $tagData['date'],
+                'title'       => $tagData['title'],
+                'artist'      => $tagData['artist'],
+                'date'        => $tagData['date'],
                 'description' => $tagData['description'],
-                'album' => $tagData['album'],
-                'discnumber' => ['1'],
+                'album'       => $tagData['album'],
+                'discnumber'  => ['1'],
                 'tracknumber' => [$tagData['tracknumber'][0]],
-                'genre' => ['Rock'],
+                'genre'       => ['Rock'],
             ],
             $fileDetails['tags']['vorbiscomment']
         );
@@ -64,10 +62,10 @@ abstract class TaggingTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
+        $this->{$this->fileType.'Manipulator'} = $this->{$this->fileType.'ManipulatorCreator'}
             ->create('foo.bar');
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             []
         );
     }
@@ -76,15 +74,15 @@ abstract class TaggingTest extends TestCase
     {
         $this->expectException(ProcessFailedException::class);
 
-        $this->{$this->fileType . 'Manipulator'}->tagger->command->setBinary('non-existent-binary-path');
+        $this->{$this->fileType.'Manipulator'}->tagger->command->setBinary('non-existent-binary-path');
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags([]);
+        $this->{$this->fileType.'Manipulator'}->writeTags([]);
     }
 
     protected function removeArtwork()
     {
-        $this->{$this->fileType . 'Manipulator'}->tagger->removeArtwork(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $this->{$this->fileType.'Manipulator'}->tagger->removeArtwork(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
     }
 
@@ -92,9 +90,9 @@ abstract class TaggingTest extends TestCase
     {
         $this->removeArtwork();
 
-        $this->{$this->fileType . 'Manipulator'}->tagger->writeArtwork(
-            $this->{$this->fileType . 'Manipulator'}->getFile(),
-            $this->sampleDir . 'flac-logo.png'
+        $this->{$this->fileType.'Manipulator'}->tagger->writeArtwork(
+            $this->{$this->fileType.'Manipulator'}->getFile(),
+            $this->sampleDir.'flac-logo.png'
         );
     }
 

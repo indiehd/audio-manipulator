@@ -2,15 +2,14 @@
 
 namespace IndieHD\AudioManipulator\Flac;
 
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-
-use IndieHD\AudioManipulator\Logging\LoggerInterface;
-use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
-use IndieHD\AudioManipulator\Processing\Process;
-use IndieHD\AudioManipulator\Processing\ProcessInterface;
-use IndieHD\AudioManipulator\Processing\ProcessFailedException;
-use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
+use IndieHD\AudioManipulator\Logging\LoggerInterface;
+use IndieHD\AudioManipulator\Processing\Process;
+use IndieHD\AudioManipulator\Processing\ProcessFailedException;
+use IndieHD\AudioManipulator\Processing\ProcessInterface;
+use IndieHD\AudioManipulator\Tagging\TaggerInterface;
+use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class FlacTagger implements TaggerInterface
 {
@@ -43,13 +42,14 @@ class FlacTagger implements TaggerInterface
      * Add metadata tags to FLAC files.
      *
      * @param string $file
-     * @param array $tagData
+     * @param array  $tagData
+     *
      * @return array
      */
     public function writeTags(string $file, array $tagData): void
     {
         if (!file_exists($file)) {
-            throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
+            throw new FileNotFoundException('The input file "'.$file.'" appears not to exist');
         }
 
         $this->command->input($file);
@@ -124,8 +124,8 @@ class FlacTagger implements TaggerInterface
         }
 
         $this->logger->log(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
+            $this->process->getProcess()->getCommandLine().PHP_EOL.PHP_EOL
+            .$this->process->getOutput()
         );
 
         $this->command->removeAllArguments();

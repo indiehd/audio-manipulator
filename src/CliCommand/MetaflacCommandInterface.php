@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\CliCommand;
 
-use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
-
 interface MetaflacCommandInterface extends CliCommandInterface
 {
     public function input(string $inputFile): MetaflacCommand;

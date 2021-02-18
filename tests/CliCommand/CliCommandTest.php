@@ -2,9 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\CliCommand;
 
-use PHPUnit\Framework\TestCase;
-
 use IndieHD\AudioManipulator\CliCommand\CliCommand;
+use PHPUnit\Framework\TestCase;
 
 class CliCommandTest extends TestCase
 {

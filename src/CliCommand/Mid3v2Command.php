@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\CliCommand;
 
-use IndieHD\AudioManipulator\CliCommand\Mid3v2CommandInterface;
-
 class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
 {
     protected $name = 'mid3v2_command';
@@ -12,7 +10,7 @@ class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
 
     protected $parts = [
         'options' => [],    // Global options
-        'infile' => [],     // Input file
+        'infile'  => [],     // Input file
     ];
 
     public function __construct()
@@ -38,49 +36,49 @@ class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
 
     public function song(string $value): Mid3v2Command
     {
-        $this->addArgument('options', '--song=' . escapeshellarg($value));
+        $this->addArgument('options', '--song='.escapeshellarg($value));
 
         return $this;
     }
 
     public function artist(string $value): Mid3v2Command
     {
-        $this->addArgument('options', '--artist=' . escapeshellarg($value));
+        $this->addArgument('options', '--artist='.escapeshellarg($value));
 
         return $this;
     }
 
     public function year(string $value): Mid3v2Command
     {
-        $this->addArgument('options', '--year=' . escapeshellarg($value));
+        $this->addArgument('options', '--year='.escapeshellarg($value));
 
         return $this;
     }
 
     public function comment(string $value): Mid3v2Command
     {
-        $this->addArgument('options', '--comment=0:' . escapeshellarg($value));
+        $this->addArgument('options', '--comment=0:'.escapeshellarg($value));
 
         return $this;
     }
 
     public function album(string $value): Mid3v2Command
     {
-        $this->addArgument('options', '--album=' . escapeshellarg($value));
+        $this->addArgument('options', '--album='.escapeshellarg($value));
 
         return $this;
     }
 
     public function track(string $value): Mid3v2Command
     {
-        $this->addArgument('options', '--track=' . escapeshellarg($value));
+        $this->addArgument('options', '--track='.escapeshellarg($value));
 
         return $this;
     }
 
     public function genre(string $value): Mid3v2Command
     {
-        $this->addArgument('options', '--genre=' . escapeshellarg($value));
+        $this->addArgument('options', '--genre='.escapeshellarg($value));
 
         return $this;
     }
@@ -94,7 +92,7 @@ class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
 
     public function picture(string $imageFile, string $audioFile): Mid3v2Command
     {
-        $this->addArgument('options', '--APIC ' . escapeshellarg($imageFile) . ' ' . escapeshellarg($audioFile));
+        $this->addArgument('options', '--APIC '.escapeshellarg($imageFile).' '.escapeshellarg($audioFile));
 
         return $this;
     }
@@ -108,7 +106,7 @@ class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
 
     public function removeTags(array $tags): Mid3v2Command
     {
-        $this->addArgument('options', '--delete-frames=' . escapeshellarg(implode(',', $tags)));
+        $this->addArgument('options', '--delete-frames='.escapeshellarg(implode(',', $tags)));
 
         return $this;
     }

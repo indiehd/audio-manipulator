@@ -6,12 +6,12 @@ abstract class CliCommand implements CliCommandInterface
 {
     // TODO Discuss this commented code and remove if not necessary, ultimately.
 
-    #protected $instance;
+    //protected $instance;
 
-    #public function instance()
-    #{
-    #    return $this->instance;
-    #}
+    //public function instance()
+    //{
+    //    return $this->instance;
+    //}
 
     protected $name;
 
@@ -48,7 +48,7 @@ abstract class CliCommand implements CliCommandInterface
     {
         if (!array_key_exists($name, $this->parts)) {
             throw new \InvalidArgumentException(
-                'The "' . $this->binary . '" command does not contain a part named "' . $name . '"'
+                'The "'.$this->binary.'" command does not contain a part named "'.$name.'"'
             );
         }
 

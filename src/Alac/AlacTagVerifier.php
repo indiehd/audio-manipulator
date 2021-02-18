@@ -3,9 +3,8 @@
 namespace IndieHD\AudioManipulator\Alac;
 
 use getID3;
-
-use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
+use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 
 class AlacTagVerifier implements TagVerifierInterface
 {
@@ -37,16 +36,16 @@ class AlacTagVerifier implements TagVerifierInterface
                 }
 
                 if (!isset($tagsOnFile[$fieldName][0])) {
-                    $failures[] = $fieldName . ' tag does not exist on tagged file';
+                    $failures[] = $fieldName.' tag does not exist on tagged file';
                 } elseif ($tagsOnFile[$fieldName][0] != $fieldValue) {
-                    $failures[] = $fieldName . ' (' . $tagsOnFile[$fieldName][0]. ' != ' . $fieldValue . ')';
+                    $failures[] = $fieldName.' ('.$tagsOnFile[$fieldName][0].' != '.$fieldValue.')';
                 }
             }
         }
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
-                'Expected value does not match actual value for tags: ' . implode(', ', $failures)
+                'Expected value does not match actual value for tags: '.implode(', ', $failures)
             );
         }
     }

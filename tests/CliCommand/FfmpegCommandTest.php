@@ -2,9 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\CliCommand;
 
-use PHPUnit\Framework\TestCase;
-
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommand;
+use PHPUnit\Framework\TestCase;
 
 class FfmpegCommandTest extends TestCase
 {
@@ -54,7 +53,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->addArgument('options', '-y');
 
         $this->assertEquals(
-            $this->ffmpegCommand->getBinary() . ' -y -f flac -i test.flac -acodec alac test.alac',
+            $this->ffmpegCommand->getBinary().' -y -f flac -i test.flac -acodec alac test.alac',
             $this->ffmpegCommand->asString()
         );
     }
@@ -64,7 +63,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->input('test.flac');
 
         $this->assertEquals(
-            $this->ffmpegCommand->getBinary() . " -i 'test.flac'",
+            $this->ffmpegCommand->getBinary()." -i 'test.flac'",
             $this->ffmpegCommand->asString()
         );
     }
@@ -74,7 +73,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->output('test.alac');
 
         $this->assertEquals(
-            $this->ffmpegCommand->getBinary() . " 'test.alac'",
+            $this->ffmpegCommand->getBinary()." 'test.alac'",
             $this->ffmpegCommand->asString()
         );
     }
@@ -84,7 +83,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->overwriteOutput();
 
         $this->assertEquals(
-            $this->ffmpegCommand->getBinary() . ' -y',
+            $this->ffmpegCommand->getBinary().' -y',
             $this->ffmpegCommand->asString()
         );
     }
@@ -94,7 +93,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->forceAudioCodec('alac');
 
         $this->assertEquals(
-            $this->ffmpegCommand->getBinary() . ' -acodec alac',
+            $this->ffmpegCommand->getBinary().' -acodec alac',
             $this->ffmpegCommand->asString()
         );
     }
@@ -104,7 +103,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->forceVideoCodec('copy');
 
         $this->assertEquals(
-            $this->ffmpegCommand->getBinary() . ' -vcodec copy',
+            $this->ffmpegCommand->getBinary().' -vcodec copy',
             $this->ffmpegCommand->asString()
         );
     }
@@ -114,7 +113,7 @@ class FfmpegCommandTest extends TestCase
         $this->ffmpegCommand->disableVideo('alac');
 
         $this->assertEquals(
-            $this->ffmpegCommand->getBinary() . ' -vn',
+            $this->ffmpegCommand->getBinary().' -vn',
             $this->ffmpegCommand->asString()
         );
     }

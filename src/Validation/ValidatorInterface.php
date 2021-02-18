@@ -10,6 +10,7 @@ interface ValidatorInterface
      *
      * @param string $file
      * @param string $type
+     *
      * @return array
      */
     public function validateAudioFile(string $file, string $type): array;

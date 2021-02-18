@@ -2,9 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\CliCommand;
 
-use PHPUnit\Framework\TestCase;
-
 use IndieHD\AudioManipulator\CliCommand\AtomicParsleyCommand;
+use PHPUnit\Framework\TestCase;
 
 class AtomicParsleyCommandTest extends TestCase
 {
@@ -48,7 +47,7 @@ class AtomicParsleyCommandTest extends TestCase
         $this->atomicParsleyCommand->addArgument('options', '-T 1');
 
         $this->assertEquals(
-            $this->atomicParsleyCommand->getBinary() . ' test.alac -T 1',
+            $this->atomicParsleyCommand->getBinary().' test.alac -T 1',
             $this->atomicParsleyCommand->asString()
         );
     }
@@ -58,7 +57,7 @@ class AtomicParsleyCommandTest extends TestCase
         $this->atomicParsleyCommand->input('test.alac');
 
         $this->assertEquals(
-            $this->atomicParsleyCommand->getBinary() . " 'test.alac'",
+            $this->atomicParsleyCommand->getBinary()." 'test.alac'",
             $this->atomicParsleyCommand->asString()
         );
     }
@@ -68,7 +67,7 @@ class AtomicParsleyCommandTest extends TestCase
         $this->atomicParsleyCommand->setArtwork('foo.jpg');
 
         $this->assertEquals(
-            $this->atomicParsleyCommand->getBinary() . " --artwork 'foo.jpg'",
+            $this->atomicParsleyCommand->getBinary()." --artwork 'foo.jpg'",
             $this->atomicParsleyCommand->asString()
         );
     }
@@ -78,7 +77,7 @@ class AtomicParsleyCommandTest extends TestCase
         $this->atomicParsleyCommand->overwrite();
 
         $this->assertEquals(
-            $this->atomicParsleyCommand->getBinary() . ' --overWrite',
+            $this->atomicParsleyCommand->getBinary().' --overWrite',
             $this->atomicParsleyCommand->asString()
         );
     }

@@ -3,7 +3,6 @@
 namespace IndieHD\AudioManipulator\Tests\Mp3;
 
 use function IndieHD\AudioManipulator\app;
-
 use IndieHD\AudioManipulator\Tests\Tagging\TaggingTest;
 
 class Mp3TaggingTest extends TaggingTest
@@ -25,16 +24,16 @@ class Mp3TaggingTest extends TaggingTest
 
         // Define filesystem paths for use in testing.
 
-        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
-            . DIRECTORY_SEPARATOR;
+        $this->testDir = __DIR__.DIRECTORY_SEPARATOR.'..'
+            .DIRECTORY_SEPARATOR;
 
-        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+        $this->tmpDir = $this->testDir.'storage'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR;
 
-        $this->sampleDir = $this->testDir . 'samples' . DIRECTORY_SEPARATOR;
+        $this->sampleDir = $this->testDir.'samples'.DIRECTORY_SEPARATOR;
 
-        $this->sampleFile = $this->sampleDir . 'test.flac';
+        $this->sampleFile = $this->sampleDir.'test.flac';
 
-        $this->tmpFile = $this->tmpDir . 'test.flac';
+        $this->tmpFile = $this->tmpDir.'test.flac';
 
         // Duplicate the version-controlled sample so it isn't modified.
 
@@ -49,20 +48,20 @@ class Mp3TaggingTest extends TaggingTest
         $this->flacManipulator = $this->flacManipulatorCreator
             ->create($this->tmpFile);
 
-        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
-            ->get($this->fileType . '_manipulator_creator');
+        $this->{$this->fileType.'ManipulatorCreator'} = app()->builder
+            ->get($this->fileType.'_manipulator_creator');
 
         // Convert the master FLAC audio sample to MP3.
         // Specify a unique destination file name.
 
-        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
+        $this->{$this->fileType.'Manipulator'} = $this->{$this->fileType.'ManipulatorCreator'}
             ->create($this->tmpFile);
 
         $this->flacManipulator->tagger->removeAllTags(
             $this->flacManipulator->getFile()
         );
 
-        $mp3Sample = $this->tmpDir . uniqid() . '.mp3';
+        $mp3Sample = $this->tmpDir.uniqid().'.mp3';
 
         $this->flacManipulator->converter->toMp3(
             $this->flacManipulator->getFile(),
@@ -84,11 +83,11 @@ class Mp3TaggingTest extends TaggingTest
     {
         $this->embedArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
-        $testImage = file_get_contents($this->sampleDir . 'flac-logo.png');
+        $testImage = file_get_contents($this->sampleDir.'flac-logo.png');
 
         $this->assertEquals(
             $testImage,
@@ -109,36 +108,36 @@ class Mp3TaggingTest extends TaggingTest
     public function testItCanTagFile()
     {
         $tagData = [
-            'song' => ['Test Song'],
-            'artist' => ['Foobius Barius'],
-            'year' => ['1981'],
+            'song'    => ['Test Song'],
+            'artist'  => ['Foobius Barius'],
+            'year'    => ['1981'],
             'comment' => ['All rights reserved.'],
-            'album' => ['Test Title'],
-            'track' => ['1/1'],
-            'genre' => ['Rock'],
+            'album'   => ['Test Title'],
+            'track'   => ['1/1'],
+            'genre'   => ['Rock'],
         ];
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             $tagData
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+        $fileDetails = $this->{$this->fileType.'Manipulator'}
             ->tagger
             ->tagVerifier
             ->getid3
-            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+            ->analyze($this->{$this->fileType.'Manipulator'}->getFile());
 
         $this->assertEquals(
             [
-                'title' => $tagData['song'],
-                'artist' => $tagData['artist'],
-                'year' => $tagData['year'],
+                'title'          => $tagData['song'],
+                'artist'         => $tagData['artist'],
+                'year'           => $tagData['year'],
                 'recording_time' => $tagData['year'],
-                'comment' => $tagData['comment'],
-                'album' => $tagData['album'],
-                'track_number' => [explode('/', $tagData['track'][0])[0]],
-                'totaltracks' => [explode('/', $tagData['track'][0])[1]],
-                'genre' => ['Rock'],
+                'comment'        => $tagData['comment'],
+                'album'          => $tagData['album'],
+                'track_number'   => [explode('/', $tagData['track'][0])[0]],
+                'totaltracks'    => [explode('/', $tagData['track'][0])[1]],
+                'genre'          => ['Rock'],
             ],
             $fileDetails['tags']['id3v2']
         );
@@ -146,8 +145,8 @@ class Mp3TaggingTest extends TaggingTest
 
     protected function removeAllTags()
     {
-        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $this->{$this->fileType.'Manipulator'}->tagger->removeAllTags(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
     }
 
@@ -159,8 +158,8 @@ class Mp3TaggingTest extends TaggingTest
 
         $this->removeArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('comments', $fileDetails);
@@ -172,20 +171,20 @@ class Mp3TaggingTest extends TaggingTest
     {
         $this->removeAllTags();
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             [
                 'artist' => ['Foo'],
             ]
         );
 
-        $this->{$this->fileType . 'Manipulator'}->removeTags(
+        $this->{$this->fileType.'Manipulator'}->removeTags(
             [
                 'TPE1',
             ]
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('tags', $fileDetails);
@@ -197,15 +196,15 @@ class Mp3TaggingTest extends TaggingTest
             'artist' => ['ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
         ];
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             $tagData
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+        $fileDetails = $this->{$this->fileType.'Manipulator'}
             ->tagger
             ->tagVerifier
             ->getid3
-            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+            ->analyze($this->{$this->fileType.'Manipulator'}->getFile());
 
         $this->assertEquals(
             [

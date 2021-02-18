@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\CliCommand;
 
-use IndieHD\AudioManipulator\CliCommand\MetaflacCommandInterface;
-
 class MetaflacCommand extends CliCommand implements MetaflacCommandInterface
 {
     protected $name = 'metaflac_command';
@@ -11,9 +9,9 @@ class MetaflacCommand extends CliCommand implements MetaflacCommandInterface
     protected $binary = 'metaflac';
 
     protected $parts = [
-        'options' => [],        // Global options
-        'operations' => [],     // Operations to perform
-        'flacfile-in' => [],   // Input file
+        'options'      => [],        // Global options
+        'operations'   => [],     // Operations to perform
+        'flacfile-in'  => [],   // Input file
         'flacfile-out' => [],  // Output file
     ];
 
@@ -48,7 +46,7 @@ class MetaflacCommand extends CliCommand implements MetaflacCommandInterface
     public function removeTags(array $tags): MetaflacCommand
     {
         foreach ($tags as $name) {
-            $this->addArgument('operations', '--remove-tag=' . escapeshellarg($name));
+            $this->addArgument('operations', '--remove-tag='.escapeshellarg($name));
         }
 
         return $this;
@@ -56,22 +54,22 @@ class MetaflacCommand extends CliCommand implements MetaflacCommandInterface
 
     public function setTag(string $field, string $value): MetaflacCommand
     {
-        $this->addArgument('operations', '--set-tag=' . escapeshellarg($field)
-            . '=' . escapeshellarg($value));
+        $this->addArgument('operations', '--set-tag='.escapeshellarg($field)
+            .'='.escapeshellarg($value));
 
         return $this;
     }
 
     public function removeBlockType(array $types): MetaflacCommand
     {
-        $this->addArgument('operations', '--remove --block-type=' . implode(',', $types));
+        $this->addArgument('operations', '--remove --block-type='.implode(',', $types));
 
         return $this;
     }
 
     public function importPicture(string $fileOrSpecification): MetaflacCommand
     {
-        $this->addArgument('operations', '--import-picture-from=' . escapeshellarg($fileOrSpecification));
+        $this->addArgument('operations', '--import-picture-from='.escapeshellarg($fileOrSpecification));
 
         return $this;
     }

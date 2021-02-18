@@ -3,37 +3,33 @@
 namespace IndieHD\AudioManipulator\Container;
 
 use Dotenv\Dotenv;
-
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
-
-use Monolog\Logger as MonologLogger;
-use Monolog\Handler\StreamHandler;
-
-use \getID3;
-
-use IndieHD\AudioManipulator\Logging\Logger;
-use IndieHD\AudioManipulator\Mp3\Mp3TagVerifier;
-use IndieHD\AudioManipulator\Alac\AlacTagVerifier;
-use IndieHD\AudioManipulator\Flac\FlacTagVerifier;
-use IndieHD\AudioManipulator\Flac\FlacManipulatorCreator;
-use IndieHD\AudioManipulator\Flac\FlacConverter;
-use IndieHD\AudioManipulator\Flac\FlacTagger;
-use IndieHD\AudioManipulator\Wav\WavManipulatorCreator;
-use IndieHD\AudioManipulator\Wav\WavConverter;
-use IndieHD\AudioManipulator\Mp3\Mp3ManipulatorCreator;
-use IndieHD\AudioManipulator\Mp3\Mp3Converter;
-use IndieHD\AudioManipulator\Mp3\Mp3Tagger;
-use IndieHD\AudioManipulator\Validation\Validator;
-use IndieHD\AudioManipulator\Processing\Process;
-use IndieHD\AudioManipulator\MediaParsing\MediaParser;
+use getID3;
 use IndieHD\AudioManipulator\Alac\AlacManipulatorCreator;
 use IndieHD\AudioManipulator\Alac\AlacTagger;
+use IndieHD\AudioManipulator\Alac\AlacTagVerifier;
 use IndieHD\AudioManipulator\CliCommand\AtomicParsleyCommand;
-use IndieHD\AudioManipulator\CliCommand\SoxCommand;
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommand;
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommand;
 use IndieHD\AudioManipulator\CliCommand\Mid3v2Command;
+use IndieHD\AudioManipulator\CliCommand\SoxCommand;
+use IndieHD\AudioManipulator\Flac\FlacConverter;
+use IndieHD\AudioManipulator\Flac\FlacManipulatorCreator;
+use IndieHD\AudioManipulator\Flac\FlacTagger;
+use IndieHD\AudioManipulator\Flac\FlacTagVerifier;
+use IndieHD\AudioManipulator\Logging\Logger;
+use IndieHD\AudioManipulator\MediaParsing\MediaParser;
+use IndieHD\AudioManipulator\Mp3\Mp3Converter;
+use IndieHD\AudioManipulator\Mp3\Mp3ManipulatorCreator;
+use IndieHD\AudioManipulator\Mp3\Mp3Tagger;
+use IndieHD\AudioManipulator\Mp3\Mp3TagVerifier;
+use IndieHD\AudioManipulator\Processing\Process;
+use IndieHD\AudioManipulator\Validation\Validator;
+use IndieHD\AudioManipulator\Wav\WavConverter;
+use IndieHD\AudioManipulator\Wav\WavManipulatorCreator;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger as MonologLogger;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class Container
 {
@@ -43,9 +39,9 @@ class Container
 
         if (getenv('APP_ENV') === 'development') {
             Dotenv::create([
-                __DIR__ . DIRECTORY_SEPARATOR
-                . '..' . DIRECTORY_SEPARATOR
-                . '..' . DIRECTORY_SEPARATOR
+                __DIR__.DIRECTORY_SEPARATOR
+                .'..'.DIRECTORY_SEPARATOR
+                .'..'.DIRECTORY_SEPARATOR,
             ])->load();
         }
 
@@ -55,7 +51,7 @@ class Container
 
         // Validator.
 
-        $containerBuilder->setParameter('validator.media_parser', new MediaParser);
+        $containerBuilder->setParameter('validator.media_parser', new MediaParser());
 
         $containerBuilder->register('validator', Validator::class)
             ->addArgument('%validator.media_parser%');
@@ -84,7 +80,7 @@ class Container
 
         $containerBuilder->register('alac.tagger.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('ALAC_TAGGER_LOG')
+                __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.getenv('ALAC_TAGGER_LOG')
             );
 
         $containerBuilder->register('logger.tagger.alac', Logger::class)
@@ -123,7 +119,7 @@ class Container
 
         $containerBuilder->register('flac.converter.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('FLAC_CONVERTER_LOG')
+                __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.getenv('FLAC_CONVERTER_LOG')
             );
 
         $containerBuilder->register('logger.converter.flac', Logger::class)
@@ -137,7 +133,7 @@ class Container
 
         $containerBuilder->register('flac.tagger.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('FLAC_TAGGER_LOG')
+                __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.getenv('FLAC_TAGGER_LOG')
             );
 
         $containerBuilder->register('logger.tagger.flac', Logger::class)
@@ -208,7 +204,7 @@ class Container
 
         $containerBuilder->register('mp3.tagger.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('MP3_TAGGER_LOG')
+                __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.getenv('MP3_TAGGER_LOG')
             );
 
         $containerBuilder->register('logger.tagger.mp3', Logger::class)
@@ -260,7 +256,7 @@ class Container
 
         $containerBuilder->register('wav.converter.handler', StreamHandler::class)
             ->addArgument(
-                __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . getenv('WAV_CONVERTER_LOG')
+                __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.getenv('WAV_CONVERTER_LOG')
             );
 
         $containerBuilder->register('logger.converter.wav', Logger::class)

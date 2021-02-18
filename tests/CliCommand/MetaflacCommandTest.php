@@ -2,9 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\CliCommand;
 
-use PHPUnit\Framework\TestCase;
-
 use IndieHD\AudioManipulator\CliCommand\MetaflacCommand;
+use PHPUnit\Framework\TestCase;
 
 class MetaflacCommandTest extends TestCase
 {
@@ -52,7 +51,7 @@ class MetaflacCommandTest extends TestCase
         $this->metaflacCommand->addArgument('options', '--no-utf8-convert');
 
         $this->assertEquals(
-            $this->metaflacCommand->getBinary() . ' --no-utf8-convert --remove test.flac test.flac',
+            $this->metaflacCommand->getBinary().' --no-utf8-convert --remove test.flac test.flac',
             $this->metaflacCommand->asString()
         );
     }
@@ -62,7 +61,7 @@ class MetaflacCommandTest extends TestCase
         $this->metaflacCommand->input('test.flac');
 
         $this->assertEquals(
-            $this->metaflacCommand->getBinary() . " 'test.flac'",
+            $this->metaflacCommand->getBinary()." 'test.flac'",
             $this->metaflacCommand->asString()
         );
     }
@@ -72,7 +71,7 @@ class MetaflacCommandTest extends TestCase
         $this->metaflacCommand->output('test.flac');
 
         $this->assertEquals(
-            $this->metaflacCommand->getBinary() . " 'test.flac'",
+            $this->metaflacCommand->getBinary()." 'test.flac'",
             $this->metaflacCommand->asString()
         );
     }
@@ -82,7 +81,7 @@ class MetaflacCommandTest extends TestCase
         $this->metaflacCommand->removeAll();
 
         $this->assertEquals(
-            $this->metaflacCommand->getBinary() . ' --remove-all',
+            $this->metaflacCommand->getBinary().' --remove-all',
             $this->metaflacCommand->asString()
         );
     }
@@ -92,7 +91,7 @@ class MetaflacCommandTest extends TestCase
         $this->metaflacCommand->setTag('Artist', 'Foobius Barius');
 
         $this->assertEquals(
-            $this->metaflacCommand->getBinary() . " --set-tag='Artist'='Foobius Barius'",
+            $this->metaflacCommand->getBinary()." --set-tag='Artist'='Foobius Barius'",
             $this->metaflacCommand->asString()
         );
     }

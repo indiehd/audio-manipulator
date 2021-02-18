@@ -21,14 +21,14 @@ class WavTest extends TestCase
     {
         // Convert the master FLAC audio sample to WAV.
 
-        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
-            . DIRECTORY_SEPARATOR;
+        $this->testDir = __DIR__.DIRECTORY_SEPARATOR.'..'
+            .DIRECTORY_SEPARATOR;
 
-        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+        $this->tmpDir = $this->testDir.'storage'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR;
 
-        $this->sampleFile = $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->sampleFile = $this->testDir.'samples'.DIRECTORY_SEPARATOR.'test.flac';
 
-        $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->tmpFile = $this->tmpDir.DIRECTORY_SEPARATOR.'test.flac';
 
         $this->flacManipulatorCreator = app()->builder
             ->get('flac_manipulator_creator');
@@ -36,7 +36,7 @@ class WavTest extends TestCase
         $this->flacManipulator = $this->flacManipulatorCreator
             ->create($this->sampleFile);
 
-        $wavSample = $this->tmpDir . uniqid() . '.wav';
+        $wavSample = $this->tmpDir.uniqid().'.wav';
 
         $this->flacManipulator->converter->toWav(
             $this->flacManipulator->getFile(),
@@ -62,7 +62,7 @@ class WavTest extends TestCase
         $this->assertIsArray(
             $this->wavManipulator->converter->toMp3(
                 $this->wavManipulator->getFile(),
-                $this->tmpDir . 'foo.mp3'
+                $this->tmpDir.'foo.mp3'
             )
         );
     }
@@ -77,7 +77,7 @@ class WavTest extends TestCase
         $this->assertIsArray(
             $this->wavManipulator->converter->toFlac(
                 $this->wavManipulator->getFile(),
-                $this->tmpDir . 'foo.flac'
+                $this->tmpDir.'foo.flac'
             )
         );
     }
@@ -92,7 +92,7 @@ class WavTest extends TestCase
         $this->assertIsArray(
             $this->wavManipulator->converter->toAlac(
                 $this->wavManipulator->getFile(),
-                $this->tmpDir . 'foo.m4a'
+                $this->tmpDir.'foo.m4a'
             )
         );
     }

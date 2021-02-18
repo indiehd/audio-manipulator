@@ -8,5 +8,4 @@ use IndieHD\AudioManipulator\Tagging\TaggerManipulatorInterface;
 
 class AlacManipulator extends BaseManipulator implements ManipulatorInterface, TaggerManipulatorInterface
 {
-
 }

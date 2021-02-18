@@ -2,15 +2,14 @@
 
 namespace IndieHD\AudioManipulator\Alac;
 
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-
-use IndieHD\AudioManipulator\Logging\LoggerInterface;
-use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
-use IndieHD\AudioManipulator\Processing\Process;
-use IndieHD\AudioManipulator\Processing\ProcessInterface;
-use IndieHD\AudioManipulator\Processing\ProcessFailedException;
-use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 use IndieHD\AudioManipulator\CliCommand\AtomicParsleyCommandInterface;
+use IndieHD\AudioManipulator\Logging\LoggerInterface;
+use IndieHD\AudioManipulator\Processing\Process;
+use IndieHD\AudioManipulator\Processing\ProcessFailedException;
+use IndieHD\AudioManipulator\Processing\ProcessInterface;
+use IndieHD\AudioManipulator\Tagging\TaggerInterface;
+use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class AlacTagger implements TaggerInterface
 {
@@ -39,7 +38,7 @@ class AlacTagger implements TaggerInterface
     public function writeTags(string $file, array $tagData): void
     {
         if (!file_exists($file)) {
-            throw new FileNotFoundException('The input file "' . $file . '" appears not to exist');
+            throw new FileNotFoundException('The input file "'.$file.'" appears not to exist');
         }
 
         $this->command
@@ -49,7 +48,7 @@ class AlacTagger implements TaggerInterface
         $this->attemptWrite($tagData);
 
         $fieldMappings = [
-            'year' => 'creation_date',
+            'year'     => 'creation_date',
             'tracknum' => 'track_number',
         ];
 
@@ -101,7 +100,7 @@ class AlacTagger implements TaggerInterface
         // TODO Determine whether or not this is truly necessary, via tests,
         // i.e., when dealing with UTF-8 encoding.
 
-        #$this->process->setLocale('en_US.UTF-8');
+        //$this->process->setLocale('en_US.UTF-8');
 
         $this->process->setCommand($cmd);
 
@@ -114,8 +113,8 @@ class AlacTagger implements TaggerInterface
         }
 
         $this->logger->log(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
+            $this->process->getProcess()->getCommandLine().PHP_EOL.PHP_EOL
+            .$this->process->getOutput()
         );
 
         $this->command->removeAllArguments();
