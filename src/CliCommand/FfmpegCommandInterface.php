@@ -13,4 +13,8 @@ interface FfmpegCommandInterface extends CliCommandInterface
     public function overwriteOutput(): FfmpegCommand;
 
     public function forceAudioCodec(string $codec): FfmpegCommand;
+
+    public function forceVideoCodec(string $codec): FfmpegCommand;
+
+    public function disableVideo(): FfmpegCommand;
 }
