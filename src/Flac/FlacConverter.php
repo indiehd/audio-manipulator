@@ -134,7 +134,10 @@ class FlacConverter implements
             ->input($inputFile)
             ->output($outputFile)
             ->overwriteOutput($outputFile)
-            ->forceAudioCodec('alac');
+            ->forceAudioCodec('alac')
+            // This omits any thumbnail, whereas the latter call preserves it.
+            //->disableVideo()
+            ->forceVideoCodec('copy');
 
         $this->runProcess($this->ffmpeg->compose(), $this->ffmpeg);
 
