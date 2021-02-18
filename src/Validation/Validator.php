@@ -2,10 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Validation;
 
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-
 use IndieHD\AudioManipulator\MediaParsing\MediaParserInterface;
-use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class Validator implements ValidatorInterface
 {
@@ -17,6 +15,7 @@ class Validator implements ValidatorInterface
 
     /**
      * @inheritdoc
+     *
      * @throws \IndieHD\AudioManipulator\Validation\InvalidAudioFileException
      */
     public function validateAudioFile(string $file, string $type): array
@@ -57,10 +56,10 @@ class Validator implements ValidatorInterface
                 || !in_array($fileDetails['audio']['dataformat'], $acceptableWavFormats)
             ) {
                 throw new InvalidAudioFileException(
-                    'The audio file\'s ("' . $file . '") data format could not'
-                        . ' be ascertained, or the format was not within the'
-                        . ' acceptable list of WAV audio data formats (format was "'
-                        . $fileDetails['audio']['dataformat'] . '")'
+                    'The audio file\'s ("'.$file.'") data format could not'
+                        .' be ascertained, or the format was not within the'
+                        .' acceptable list of WAV audio data formats (format was "'
+                        .$fileDetails['audio']['dataformat'].'")'
                 );
             }
         } elseif ($type === 'flac' || $type === 'mp3') {
@@ -69,7 +68,7 @@ class Validator implements ValidatorInterface
             ) {
                 throw new InvalidAudioFileException(
                     'The audio file\'s file format could not be ascertained or'
-                        . ' is not of the specified type (' . $type . ')'
+                        .' is not of the specified type ('.$type.')'
                 );
             }
         }

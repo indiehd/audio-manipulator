@@ -2,7 +2,6 @@
 
 namespace IndieHD\AudioManipulator\Mp3;
 
-use IndieHD\AudioManipulator\Converting\ConverterInterface;
 use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 
 class Mp3ManipulatorCreator implements Mp3ManipulatorCreatorInterface

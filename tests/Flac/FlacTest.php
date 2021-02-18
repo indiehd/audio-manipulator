@@ -2,12 +2,10 @@
 
 namespace IndieHD\AudioManipulator\Tests\Flac;
 
-use PHPUnit\Framework\TestCase;
-
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class FlacTest extends TestCase
 {
@@ -24,14 +22,14 @@ class FlacTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
-            . DIRECTORY_SEPARATOR;
+        $this->testDir = __DIR__.DIRECTORY_SEPARATOR.'..'
+            .DIRECTORY_SEPARATOR;
 
-        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+        $this->tmpDir = $this->testDir.'storage'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR;
 
-        $this->sampleFile = $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->sampleFile = $this->testDir.'samples'.DIRECTORY_SEPARATOR.'test.flac';
 
-        $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test.flac';
+        $this->tmpFile = $this->tmpDir.DIRECTORY_SEPARATOR.'test.flac';
 
         copy($this->sampleFile, $this->tmpFile);
 
@@ -52,7 +50,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toMp3(
                 $this->flacManipulator->getFile(),
-                $this->tmpDir . 'foo.mp3'
+                $this->tmpDir.'foo.mp3'
             )
         );
     }
@@ -67,7 +65,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toWav(
                 $this->flacManipulator->getFile(),
-                $this->tmpDir . 'foo.wav'
+                $this->tmpDir.'foo.wav'
             )
         );
     }
@@ -82,7 +80,7 @@ class FlacTest extends TestCase
         $this->assertIsArray(
             $this->flacManipulator->converter->toAlac(
                 $this->flacManipulator->getFile(),
-                $this->tmpDir . 'foo.m4a'
+                $this->tmpDir.'foo.m4a'
             )
         );
     }
@@ -93,7 +91,7 @@ class FlacTest extends TestCase
 
         $this->flacManipulator->converter->toMp3(
             $this->flacManipulator->getFile(),
-            $this->tmpDir . 'foo.bar'
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -103,7 +101,7 @@ class FlacTest extends TestCase
 
         $this->flacManipulator->converter->toMp3(
             'foo.bar',
-            $this->tmpDir . 'foo.bar'
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -112,8 +110,8 @@ class FlacTest extends TestCase
         $this->expectException(InvalidAudioFileException::class);
 
         $this->flacManipulator->converter->toMp3(
-            $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.txt',
-            $this->tmpDir . 'foo.bar'
+            $this->testDir.'samples'.DIRECTORY_SEPARATOR.'test.txt',
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -123,7 +121,7 @@ class FlacTest extends TestCase
 
         $this->flacManipulator->converter->toWav(
             $this->flacManipulator->getFile(),
-            $this->tmpDir . 'foo.bar'
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -133,7 +131,7 @@ class FlacTest extends TestCase
 
         $this->flacManipulator->converter->toWav(
             'foo.bar',
-            $this->tmpDir . 'foo.bar'
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -142,8 +140,8 @@ class FlacTest extends TestCase
         $this->expectException(InvalidAudioFileException::class);
 
         $this->flacManipulator->converter->toWav(
-            $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.txt',
-            $this->tmpDir . 'foo.bar'
+            $this->testDir.'samples'.DIRECTORY_SEPARATOR.'test.txt',
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -153,7 +151,7 @@ class FlacTest extends TestCase
 
         $this->flacManipulator->converter->toAlac(
             $this->flacManipulator->getFile(),
-            $this->tmpDir . 'foo.bar'
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -163,7 +161,7 @@ class FlacTest extends TestCase
 
         $this->flacManipulator->converter->toAlac(
             'foo.bar',
-            $this->tmpDir . 'foo.bar'
+            $this->tmpDir.'foo.bar'
         );
     }
 
@@ -172,8 +170,8 @@ class FlacTest extends TestCase
         $this->expectException(InvalidAudioFileException::class);
 
         $this->flacManipulator->converter->toAlac(
-            $this->testDir . 'samples' . DIRECTORY_SEPARATOR . 'test.txt',
-            $this->tmpDir . 'foo.bar'
+            $this->testDir.'samples'.DIRECTORY_SEPARATOR.'test.txt',
+            $this->tmpDir.'foo.bar'
         );
     }
 }

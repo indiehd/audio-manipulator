@@ -8,5 +8,4 @@ use IndieHD\AudioManipulator\Tagging\TaggerManipulatorInterface;
 
 class FlacManipulator extends BaseManipulator implements ManipulatorInterface, TaggerManipulatorInterface
 {
-
 }

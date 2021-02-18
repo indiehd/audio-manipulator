@@ -3,7 +3,6 @@
 namespace IndieHD\AudioManipulator\Tests\Flac;
 
 use function IndieHD\AudioManipulator\app;
-
 use IndieHD\AudioManipulator\Tests\Tagging\TaggingTest;
 
 class FlacTaggingTest extends TaggingTest
@@ -25,16 +24,16 @@ class FlacTaggingTest extends TaggingTest
 
         // Define filesystem paths for use in testing.
 
-        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
-            . DIRECTORY_SEPARATOR;
+        $this->testDir = __DIR__.DIRECTORY_SEPARATOR.'..'
+            .DIRECTORY_SEPARATOR;
 
-        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+        $this->tmpDir = $this->testDir.'storage'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR;
 
-        $this->sampleDir = $this->testDir . 'samples' . DIRECTORY_SEPARATOR;
+        $this->sampleDir = $this->testDir.'samples'.DIRECTORY_SEPARATOR;
 
-        $this->sampleFile = $this->sampleDir . 'test.flac';
+        $this->sampleFile = $this->sampleDir.'test.flac';
 
-        $this->tmpFile = $this->tmpDir . 'test.flac';
+        $this->tmpFile = $this->tmpDir.'test.flac';
 
         // Duplicate the version-controlled sample so it isn't modified.
 
@@ -58,11 +57,11 @@ class FlacTaggingTest extends TaggingTest
     {
         $this->embedArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
-        $testImage = file_get_contents($this->sampleDir . 'flac-logo.png');
+        $testImage = file_get_contents($this->sampleDir.'flac-logo.png');
 
         $this->assertEquals(
             $testImage,
@@ -77,8 +76,8 @@ class FlacTaggingTest extends TaggingTest
 
     protected function removeAllTags()
     {
-        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $this->{$this->fileType.'Manipulator'}->tagger->removeAllTags(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
     }
 
@@ -90,8 +89,8 @@ class FlacTaggingTest extends TaggingTest
 
         $this->removeArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('comments', $fileDetails);
@@ -103,20 +102,20 @@ class FlacTaggingTest extends TaggingTest
     {
         $this->removeAllTags();
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             [
                 'artist' => ['Foo'],
             ]
         );
 
-        $this->{$this->fileType . 'Manipulator'}->removeTags(
+        $this->{$this->fileType.'Manipulator'}->removeTags(
             [
                 'artist',
             ]
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('tags', $fileDetails);
@@ -128,15 +127,15 @@ class FlacTaggingTest extends TaggingTest
             'artist' => ['ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
         ];
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             $tagData
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+        $fileDetails = $this->{$this->fileType.'Manipulator'}
             ->tagger
             ->tagVerifier
             ->getid3
-            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+            ->analyze($this->{$this->fileType.'Manipulator'}->getFile());
 
         $this->assertEquals(
             [

@@ -8,5 +8,4 @@ use IndieHD\AudioManipulator\Tagging\TaggerManipulatorInterface;
 
 class Mp3Manipulator extends BaseManipulator implements ManipulatorInterface, TaggerManipulatorInterface
 {
-
 }

@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\CliCommand;
 
-use IndieHD\AudioManipulator\CliCommand\FfmpegCommandInterface;
-
 class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
 {
     protected $name = 'ffmpeg_command';
@@ -11,11 +9,11 @@ class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
     protected $binary = 'ffmpeg';
 
     protected $parts = [
-        'options' => [],            // Global options
-        'infile-options' => [],     // File options (input)
-        'infile' => [],             // Input file
+        'options'         => [],            // Global options
+        'infile-options'  => [],     // File options (input)
+        'infile'          => [],             // Input file
         'outfile-options' => [],    // File options (output)
-        'outfile' => [],            // Output file
+        'outfile'         => [],            // Output file
     ];
 
     public function __construct()
@@ -27,7 +25,7 @@ class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
 
     public function input(string $inputFile): FfmpegCommand
     {
-        $this->addArgument('infile', '-i ' . escapeshellarg($inputFile));
+        $this->addArgument('infile', '-i '.escapeshellarg($inputFile));
 
         return $this;
     }
@@ -48,14 +46,14 @@ class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
 
     public function forceAudioCodec(string $codec): FfmpegCommand
     {
-        $this->addArgument('outfile-options', '-acodec ' . $codec);
+        $this->addArgument('outfile-options', '-acodec '.$codec);
 
         return $this;
     }
 
     public function forceVideoCodec(string $codec): FfmpegCommand
     {
-        $this->addArgument('outfile-options', '-vcodec ' . $codec);
+        $this->addArgument('outfile-options', '-vcodec '.$codec);
 
         return $this;
     }

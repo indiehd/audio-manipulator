@@ -2,18 +2,18 @@
 
 namespace IndieHD\AudioManipulator\Wav;
 
-use IndieHD\AudioManipulator\Logging\LoggerInterface;
-use IndieHD\AudioManipulator\Processing\ProcessFailedException;
-use IndieHD\AudioManipulator\Converting\ConverterInterface;
-use IndieHD\AudioManipulator\Processing\ProcessInterface;
-use IndieHD\AudioManipulator\Validation\ValidatorInterface;
-use IndieHD\AudioManipulator\Mp3\Mp3WriterInterface;
 use IndieHD\AudioManipulator\Alac\AlacWriterInterface;
-use IndieHD\AudioManipulator\Flac\FlacWriterInterface;
 use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
 use IndieHD\AudioManipulator\CliCommand\FfmpegCommandInterface;
 use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
+use IndieHD\AudioManipulator\Converting\ConverterInterface;
+use IndieHD\AudioManipulator\Flac\FlacWriterInterface;
+use IndieHD\AudioManipulator\Logging\LoggerInterface;
+use IndieHD\AudioManipulator\Mp3\Mp3WriterInterface;
 use IndieHD\AudioManipulator\Processing\Process;
+use IndieHD\AudioManipulator\Processing\ProcessFailedException;
+use IndieHD\AudioManipulator\Processing\ProcessInterface;
+use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 
 class WavConverter implements
     ConverterInterface,
@@ -70,8 +70,8 @@ class WavConverter implements
         }
 
         $this->logger->log(
-            $this->process->getProcess()->getCommandLine() . PHP_EOL . PHP_EOL
-            . $this->process->getOutput()
+            $this->process->getProcess()->getCommandLine().PHP_EOL.PHP_EOL
+            .$this->process->getOutput()
         );
 
         $command->removeAllArguments();
@@ -114,6 +114,7 @@ class WavConverter implements
     /**
      * @param string $inputFile
      * @param string $outputFile
+     *
      * @return array
      */
     public function toAlac(string $inputFile, string $outputFile): array
@@ -128,7 +129,7 @@ class WavConverter implements
 
         // TODO Determine whether or not this is still necessary.
 
-        #$this->tagger->removeArtwork($inputFile);
+        //$this->tagger->removeArtwork($inputFile);
 
         $this->ffmpeg
             ->input($inputFile)

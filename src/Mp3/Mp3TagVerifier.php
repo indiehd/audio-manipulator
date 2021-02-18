@@ -3,9 +3,8 @@
 namespace IndieHD\AudioManipulator\Mp3;
 
 use getID3;
-
-use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 use IndieHD\AudioManipulator\Tagging\AudioTaggerException;
+use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 
 class Mp3TagVerifier implements TagVerifierInterface
 {
@@ -48,14 +47,14 @@ class Mp3TagVerifier implements TagVerifierInterface
                 }
 
                 if ($tagsOnFile[$fieldName][0] != $fieldValue) {
-                    $failures[] = $fieldName . ' (' . $tagsOnFile[$fieldName][0]. ' != ' . $fieldValue . ')';
+                    $failures[] = $fieldName.' ('.$tagsOnFile[$fieldName][0].' != '.$fieldValue.')';
                 }
             }
         }
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
-                'Expected value does not match actual value for tags: ' . implode(', ', $failures)
+                'Expected value does not match actual value for tags: '.implode(', ', $failures)
             );
         }
     }

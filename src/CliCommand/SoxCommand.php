@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\CliCommand;
 
-use IndieHD\AudioManipulator\CliCommand\SoxCommandInterface;
-
 class SoxCommand extends CliCommand implements SoxCommandInterface
 {
     protected $name = 'sox_command';
@@ -11,13 +9,13 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
     protected $binary = 'sox';
 
     protected $parts = [
-        'gopts' => [],      // Global options
-        'fopts-in' => [],   // File options (input)
-        'infile' => [],     // Input file
+        'gopts'     => [],      // Global options
+        'fopts-in'  => [],   // File options (input)
+        'infile'    => [],     // Input file
         'fopts-out' => [],  // File options (output)
-        'outfile' => [],    // Output file
-        'effect' => [],     // Effect
-        'effopt' => [],     // Effect options
+        'outfile'   => [],    // Output file
+        'effect'    => [],     // Effect
+        'effopt'    => [],     // Effect options
     ];
 
     public function __construct()
@@ -36,7 +34,7 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
 
     public function verbosity(int $level): SoxCommand
     {
-        $this->addArgument('gopts', '-V' . (string) $level);
+        $this->addArgument('gopts', '-V'.(string) $level);
 
         return $this;
     }
@@ -50,7 +48,7 @@ class SoxCommand extends CliCommand implements SoxCommandInterface
 
     public function channels(int $channels): SoxCommand
     {
-        $this->addArgument('fopts-in', '--channels ' . $channels);
+        $this->addArgument('fopts-in', '--channels '.$channels);
 
         return $this;
     }

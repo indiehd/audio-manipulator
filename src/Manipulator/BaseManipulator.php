@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\Manipulator;
 
-use IndieHD\AudioManipulator\Manipulator\ManipulatorInterface;
-
 class BaseManipulator implements ManipulatorInterface
 {
     protected $file;

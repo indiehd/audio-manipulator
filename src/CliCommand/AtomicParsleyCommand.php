@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\CliCommand;
 
-use IndieHD\AudioManipulator\CliCommand\AtomicParsleyCommandInterface;
-
 class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInterface
 {
     protected $name = 'atomic_parsley_command';
@@ -11,7 +9,7 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
     protected $binary = 'AtomicParsley';
 
     protected $parts = [
-        'infile' => [],     // Input file
+        'infile'  => [],     // Input file
         'options' => [],    // Global options
     ];
 
@@ -31,7 +29,7 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
 
     public function setArtwork(string $imageFile): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--artwork ' . escapeshellarg($imageFile));
+        $this->addArgument('options', '--artwork '.escapeshellarg($imageFile));
 
         return $this;
     }
@@ -59,49 +57,49 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
 
     public function title(string $value): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--title ' . escapeshellarg($value));
+        $this->addArgument('options', '--title '.escapeshellarg($value));
 
         return $this;
     }
 
     public function artist(string $value): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--artist ' . escapeshellarg($value));
+        $this->addArgument('options', '--artist '.escapeshellarg($value));
 
         return $this;
     }
 
     public function year(string $value): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--year ' . escapeshellarg($value));
+        $this->addArgument('options', '--year '.escapeshellarg($value));
 
         return $this;
     }
 
     public function comment(string $value): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--comment ' . escapeshellarg($value));
+        $this->addArgument('options', '--comment '.escapeshellarg($value));
 
         return $this;
     }
 
     public function album(string $value): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--album ' . escapeshellarg($value));
+        $this->addArgument('options', '--album '.escapeshellarg($value));
 
         return $this;
     }
 
     public function tracknum(string $value): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--tracknum ' . escapeshellarg($value));
+        $this->addArgument('options', '--tracknum '.escapeshellarg($value));
 
         return $this;
     }
 
     public function genre(string $value): AtomicParsleyCommand
     {
-        $this->addArgument('options', '--genre ' . escapeshellarg($value));
+        $this->addArgument('options', '--genre '.escapeshellarg($value));
 
         return $this;
     }
@@ -109,7 +107,7 @@ class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInt
     public function removeTags(array $tags): AtomicParsleyCommand
     {
         foreach ($tags as $name) {
-            $this->addArgument('options', '--' . $name . '=' . escapeshellarg(''));
+            $this->addArgument('options', '--'.$name.'='.escapeshellarg(''));
         }
 
         return $this;

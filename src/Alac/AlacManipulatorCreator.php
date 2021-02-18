@@ -2,7 +2,6 @@
 
 namespace IndieHD\AudioManipulator\Alac;
 
-use IndieHD\AudioManipulator\Converting\ConverterInterface;
 use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 
 class AlacManipulatorCreator implements AlacManipulatorCreatorInterface

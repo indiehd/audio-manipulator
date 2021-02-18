@@ -2,9 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\CliCommand;
 
-use PHPUnit\Framework\TestCase;
-
 use IndieHD\AudioManipulator\CliCommand\SoxCommand;
+use PHPUnit\Framework\TestCase;
 
 class SoxCommandTest extends TestCase
 {

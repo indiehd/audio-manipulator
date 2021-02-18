@@ -8,7 +8,7 @@ class MediaParser implements MediaParserInterface
 {
     public function __construct()
     {
-        $this->parser = new getID3;
+        $this->parser = new getID3();
     }
 
     public function analyze(string $file)

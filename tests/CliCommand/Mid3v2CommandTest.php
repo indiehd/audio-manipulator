@@ -2,9 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\CliCommand;
 
-use PHPUnit\Framework\TestCase;
-
 use IndieHD\AudioManipulator\CliCommand\Mid3v2Command;
+use PHPUnit\Framework\TestCase;
 
 class Mid3dv2CommandTest extends TestCase
 {
@@ -48,7 +47,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->addArgument('infile', 'test.mp3');
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --quiet test.mp3',
+            $this->command->getBinary().' --quiet test.mp3',
             $this->command->asString()
         );
     }
@@ -58,7 +57,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->input('test.mp3');
 
         $this->assertEquals(
-            $this->command->getBinary() . " 'test.mp3'",
+            $this->command->getBinary()." 'test.mp3'",
             $this->command->asString()
         );
     }
@@ -68,7 +67,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->quiet();
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --quiet',
+            $this->command->getBinary().' --quiet',
             $this->command->asString()
         );
     }
@@ -78,7 +77,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->song('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --song='Foo'",
+            $this->command->getBinary()." --song='Foo'",
             $this->command->asString()
         );
     }
@@ -88,7 +87,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->artist('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --artist='Foo'",
+            $this->command->getBinary()." --artist='Foo'",
             $this->command->asString()
         );
     }
@@ -98,7 +97,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->year('1981');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --year='1981'",
+            $this->command->getBinary()." --year='1981'",
             $this->command->asString()
         );
     }
@@ -108,7 +107,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->comment('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --comment=0:'Foo'",
+            $this->command->getBinary()." --comment=0:'Foo'",
             $this->command->asString()
         );
     }
@@ -118,7 +117,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->album('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --album='Foo'",
+            $this->command->getBinary()." --album='Foo'",
             $this->command->asString()
         );
     }
@@ -128,7 +127,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->track('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --track='Foo'",
+            $this->command->getBinary()." --track='Foo'",
             $this->command->asString()
         );
     }
@@ -138,7 +137,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->genre('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --genre='Foo'",
+            $this->command->getBinary()." --genre='Foo'",
             $this->command->asString()
         );
     }
@@ -148,7 +147,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->deleteAll();
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --delete-all',
+            $this->command->getBinary().' --delete-all',
             $this->command->asString()
         );
     }
@@ -158,7 +157,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->picture('test.jpg', 'test.mp3');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --APIC 'test.jpg' 'test.mp3'",
+            $this->command->getBinary()." --APIC 'test.jpg' 'test.mp3'",
             $this->command->asString()
         );
     }
@@ -168,7 +167,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->removeArtwork();
 
         $this->assertEquals(
-            $this->command->getBinary() . " --delete-frames=APIC",
+            $this->command->getBinary().' --delete-frames=APIC',
             $this->command->asString()
         );
     }
@@ -178,7 +177,7 @@ class Mid3dv2CommandTest extends TestCase
         $this->command->removeTags(['Foo', 'Bar']);
 
         $this->assertEquals(
-            $this->command->getBinary() . " --delete-frames='Foo,Bar'",
+            $this->command->getBinary()." --delete-frames='Foo,Bar'",
             $this->command->asString()
         );
     }

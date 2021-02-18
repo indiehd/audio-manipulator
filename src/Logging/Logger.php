@@ -1,9 +1,11 @@
-<?php namespace
+<?php
+
+namespace
 
 IndieHD\AudioManipulator\Logging;
 
-use Psr\Log\LoggerInterface as PsrLoggerInterface;
 use Monolog\Handler\HandlerInterface;
+use Psr\Log\LoggerInterface as PsrLoggerInterface;
 
 class Logger implements LoggerInterface
 {
@@ -28,12 +30,12 @@ class Logger implements LoggerInterface
             $this->enableLogging();
         }
     }
-    
+
     public function enableLogging(): void
     {
         $this->loggingEnabled = true;
     }
-    
+
     public function disableLogging(): void
     {
         $this->loggingEnabled = false;

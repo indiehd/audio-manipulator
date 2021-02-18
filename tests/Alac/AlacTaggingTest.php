@@ -3,7 +3,6 @@
 namespace IndieHD\AudioManipulator\Tests\Alac;
 
 use function IndieHD\AudioManipulator\app;
-
 use IndieHD\AudioManipulator\Tests\Tagging\TaggingTest;
 
 class AlacTaggingTest extends TaggingTest
@@ -25,16 +24,16 @@ class AlacTaggingTest extends TaggingTest
 
         // Define filesystem paths for use in testing.
 
-        $this->testDir = __DIR__ . DIRECTORY_SEPARATOR . '..'
-            . DIRECTORY_SEPARATOR;
+        $this->testDir = __DIR__.DIRECTORY_SEPARATOR.'..'
+            .DIRECTORY_SEPARATOR;
 
-        $this->tmpDir = $this->testDir . 'storage' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+        $this->tmpDir = $this->testDir.'storage'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR;
 
-        $this->sampleDir = $this->testDir . 'samples' . DIRECTORY_SEPARATOR;
+        $this->sampleDir = $this->testDir.'samples'.DIRECTORY_SEPARATOR;
 
-        $this->sampleFile = $this->sampleDir . 'test.flac';
+        $this->sampleFile = $this->sampleDir.'test.flac';
 
-        $this->tmpFile = $this->tmpDir . 'test.flac';
+        $this->tmpFile = $this->tmpDir.'test.flac';
 
         // Duplicate the version-controlled sample so it isn't modified.
 
@@ -43,8 +42,8 @@ class AlacTaggingTest extends TaggingTest
         // Remove any existing tags from the temporary file before converting
         // (some tools preserve the tags when converting).
 
-        $this->{$this->fileType . 'ManipulatorCreator'} = app()->builder
-            ->get($this->fileType . '_manipulator_creator');
+        $this->{$this->fileType.'ManipulatorCreator'} = app()->builder
+            ->get($this->fileType.'_manipulator_creator');
 
         $this->flacManipulatorCreator = app()->builder
             ->get('flac_manipulator_creator');
@@ -59,10 +58,10 @@ class AlacTaggingTest extends TaggingTest
         // Convert the master FLAC audio sample to ALAC.
         // Specify a unique destination file name.
 
-        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
+        $this->{$this->fileType.'Manipulator'} = $this->{$this->fileType.'ManipulatorCreator'}
             ->create($this->tmpFile);
 
-        $sample = $this->tmpDir . uniqid() . '.m4a';
+        $sample = $this->tmpDir.uniqid().'.m4a';
 
         $this->flacManipulator->converter->toAlac(
             $this->flacManipulator->getFile(),
@@ -71,7 +70,7 @@ class AlacTaggingTest extends TaggingTest
 
         // Use the newly-created file for testing.
 
-        $this->{$this->fileType . 'Manipulator'} = $this->{$this->fileType . 'ManipulatorCreator'}
+        $this->{$this->fileType.'Manipulator'} = $this->{$this->fileType.'ManipulatorCreator'}
             ->create($sample);
     }
 
@@ -84,11 +83,11 @@ class AlacTaggingTest extends TaggingTest
     {
         $this->embedArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
-        $testImage = file_get_contents($this->sampleDir . 'flac-logo.png');
+        $testImage = file_get_contents($this->sampleDir.'flac-logo.png');
 
         $this->assertEquals(
             $testImage,
@@ -96,11 +95,11 @@ class AlacTaggingTest extends TaggingTest
         );
 
         // TODO Determine why this fails on Travis-CI, but not locally.
-        
-        #$this->assertEquals(
-        #    $testImage,
-        #    $fileDetails['quicktime']['moov']['subatoms'][2]['subatoms'][0]['subatoms'][1]['subatoms'][1]['data']
-        #);
+
+        //$this->assertEquals(
+        //    $testImage,
+        //    $fileDetails['quicktime']['moov']['subatoms'][2]['subatoms'][0]['subatoms'][1]['subatoms'][1]['data']
+        //);
     }
 
     /**
@@ -111,33 +110,33 @@ class AlacTaggingTest extends TaggingTest
     public function testItCanTagFile()
     {
         $tagData = [
-            'title' => ['Test Song'],
-            'artist' => ['Foobius Barius'],
-            'year' => ['1981'],
-            'comment' => ['All rights reserved.'],
-            'album' => ['Test Title'],
+            'title'    => ['Test Song'],
+            'artist'   => ['Foobius Barius'],
+            'year'     => ['1981'],
+            'comment'  => ['All rights reserved.'],
+            'album'    => ['Test Title'],
             'tracknum' => ['1/1'],
-            'genre' => ['Rock'],
+            'genre'    => ['Rock'],
         ];
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             $tagData
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+        $fileDetails = $this->{$this->fileType.'Manipulator'}
             ->tagger
             ->tagVerifier
             ->getid3
-            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+            ->analyze($this->{$this->fileType.'Manipulator'}->getFile());
 
         $keys = [
-            'title' => $tagData['title'],
-            'artist' => $tagData['artist'],
+            'title'         => $tagData['title'],
+            'artist'        => $tagData['artist'],
             'creation_date' => $tagData['year'],
-            'comment' => $tagData['comment'],
-            'album' => $tagData['album'],
-            'track_number' => [$tagData['tracknum'][0]],
-            'genre' => ['Rock'],
+            'comment'       => $tagData['comment'],
+            'album'         => $tagData['album'],
+            'track_number'  => [$tagData['tracknum'][0]],
+            'genre'         => ['Rock'],
         ];
 
         $this->assertEquals(
@@ -148,8 +147,8 @@ class AlacTaggingTest extends TaggingTest
 
     protected function removeAllTags()
     {
-        $this->{$this->fileType . 'Manipulator'}->tagger->removeAllTags(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $this->{$this->fileType.'Manipulator'}->tagger->removeAllTags(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
     }
 
@@ -161,38 +160,38 @@ class AlacTaggingTest extends TaggingTest
 
         $this->removeArtwork();
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('picture', $fileDetails['comments']);
 
         // TODO Determine why this fails on Travis-CI, but not locally.
 
-        #$this->assertArrayNotHasKey(
-        #    'subatoms',
-        #    $fileDetails['quicktime']['moov']['subatoms'][2]['subatoms'][0]['subatoms'][1]
-        #);
+        //$this->assertArrayNotHasKey(
+        //    'subatoms',
+        //    $fileDetails['quicktime']['moov']['subatoms'][2]['subatoms'][0]['subatoms'][1]
+        //);
     }
 
     public function testItCanRemoveTagsFromFile()
     {
         $this->removeAllTags();
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             [
                 'artist' => ['Foo'],
             ]
         );
 
-        $this->{$this->fileType . 'Manipulator'}->removeTags(
+        $this->{$this->fileType.'Manipulator'}->removeTags(
             [
                 'artist',
             ]
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}->tagger->tagVerifier->getid3->analyze(
-            $this->{$this->fileType . 'Manipulator'}->getFile()
+        $fileDetails = $this->{$this->fileType.'Manipulator'}->tagger->tagVerifier->getid3->analyze(
+            $this->{$this->fileType.'Manipulator'}->getFile()
         );
 
         $this->assertArrayNotHasKey('tags', $fileDetails);
@@ -204,15 +203,15 @@ class AlacTaggingTest extends TaggingTest
             'artist' => ['ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ'],
         ];
 
-        $this->{$this->fileType . 'Manipulator'}->writeTags(
+        $this->{$this->fileType.'Manipulator'}->writeTags(
             $tagData
         );
 
-        $fileDetails = $this->{$this->fileType . 'Manipulator'}
+        $fileDetails = $this->{$this->fileType.'Manipulator'}
             ->tagger
             ->tagVerifier
             ->getid3
-            ->analyze($this->{$this->fileType . 'Manipulator'}->getFile());
+            ->analyze($this->{$this->fileType.'Manipulator'}->getFile());
 
         $this->assertEquals(
             $tagData['artist'],

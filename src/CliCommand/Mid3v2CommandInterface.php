@@ -2,8 +2,6 @@
 
 namespace IndieHD\AudioManipulator\CliCommand;
 
-use IndieHD\AudioManipulator\CliCommand\CliCommandInterface;
-
 interface Mid3v2CommandInterface extends CliCommandInterface
 {
     public function input(string $inputFile): Mid3v2Command;

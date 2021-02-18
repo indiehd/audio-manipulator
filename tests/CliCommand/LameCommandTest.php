@@ -2,9 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\CliCommand;
 
-use PHPUnit\Framework\TestCase;
-
 use IndieHD\AudioManipulator\CliCommand\LameCommand;
+use PHPUnit\Framework\TestCase;
 
 class LameCommandTest extends TestCase
 {
@@ -50,7 +49,7 @@ class LameCommandTest extends TestCase
         $this->command->addArgument('options', '-b 320');
 
         $this->assertEquals(
-            $this->command->getBinary() . ' -b 320 test.flac test.mp3',
+            $this->command->getBinary().' -b 320 test.flac test.mp3',
             $this->command->asString()
         );
     }
@@ -60,7 +59,7 @@ class LameCommandTest extends TestCase
         $this->command->input('test.flac');
 
         $this->assertEquals(
-            $this->command->getBinary() . " 'test.flac'",
+            $this->command->getBinary()." 'test.flac'",
             $this->command->asString()
         );
     }
@@ -70,7 +69,7 @@ class LameCommandTest extends TestCase
         $this->command->output('test.mp3');
 
         $this->assertEquals(
-            $this->command->getBinary() . " 'test.mp3'",
+            $this->command->getBinary()." 'test.mp3'",
             $this->command->asString()
         );
     }
@@ -80,7 +79,7 @@ class LameCommandTest extends TestCase
         $this->command->quiet();
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --quiet',
+            $this->command->getBinary().' --quiet',
             $this->command->asString()
         );
     }
@@ -90,7 +89,7 @@ class LameCommandTest extends TestCase
         $this->command->enableAndForceLameTag();
 
         $this->assertEquals(
-            $this->command->getBinary() . ' -T',
+            $this->command->getBinary().' -T',
             $this->command->asString()
         );
     }
@@ -100,7 +99,7 @@ class LameCommandTest extends TestCase
         $this->command->noReplayGain();
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --noreplaygain',
+            $this->command->getBinary().' --noreplaygain',
             $this->command->asString()
         );
     }
@@ -110,7 +109,7 @@ class LameCommandTest extends TestCase
         $this->command->quality(0);
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --q 0',
+            $this->command->getBinary().' --q 0',
             $this->command->asString()
         );
     }
@@ -120,7 +119,7 @@ class LameCommandTest extends TestCase
         $this->command->resample(44);
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --resample 44',
+            $this->command->getBinary().' --resample 44',
             $this->command->asString()
         );
     }
@@ -130,7 +129,7 @@ class LameCommandTest extends TestCase
         $this->command->bitwidth(16);
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --bitwidth 16',
+            $this->command->getBinary().' --bitwidth 16',
             $this->command->asString()
         );
     }
@@ -140,7 +139,7 @@ class LameCommandTest extends TestCase
         $this->command->cbr();
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --cbr',
+            $this->command->getBinary().' --cbr',
             $this->command->asString()
         );
     }
@@ -150,7 +149,7 @@ class LameCommandTest extends TestCase
         $this->command->bitrate(128);
 
         $this->assertEquals(
-            $this->command->getBinary() . ' -b 128',
+            $this->command->getBinary().' -b 128',
             $this->command->asString()
         );
     }
@@ -160,7 +159,7 @@ class LameCommandTest extends TestCase
         $this->command->abr();
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --abr',
+            $this->command->getBinary().' --abr',
             $this->command->asString()
         );
     }
@@ -170,7 +169,7 @@ class LameCommandTest extends TestCase
         $this->command->vbr(4);
 
         $this->assertEquals(
-            $this->command->getBinary() . ' --vbr-new -V 4',
+            $this->command->getBinary().' --vbr-new -V 4',
             $this->command->asString()
         );
     }
@@ -180,7 +179,7 @@ class LameCommandTest extends TestCase
         $this->command->setTitle('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --tt 'Foo'",
+            $this->command->getBinary()." --tt 'Foo'",
             $this->command->asString()
         );
     }
@@ -190,7 +189,7 @@ class LameCommandTest extends TestCase
         $this->command->setArtist('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --ta 'Foo'",
+            $this->command->getBinary()." --ta 'Foo'",
             $this->command->asString()
         );
     }
@@ -200,7 +199,7 @@ class LameCommandTest extends TestCase
         $this->command->setYear('1981');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --ty '1981'",
+            $this->command->getBinary()." --ty '1981'",
             $this->command->asString()
         );
     }
@@ -210,7 +209,7 @@ class LameCommandTest extends TestCase
         $this->command->setComment('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --tc 'Foo'",
+            $this->command->getBinary()." --tc 'Foo'",
             $this->command->asString()
         );
     }
@@ -220,7 +219,7 @@ class LameCommandTest extends TestCase
         $this->command->setAlbum('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --tl 'Foo'",
+            $this->command->getBinary()." --tl 'Foo'",
             $this->command->asString()
         );
     }
@@ -230,7 +229,7 @@ class LameCommandTest extends TestCase
         $this->command->setTracknumber(1);
 
         $this->assertEquals(
-            $this->command->getBinary() . " --tn '1'",
+            $this->command->getBinary()." --tn '1'",
             $this->command->asString()
         );
     }
@@ -240,7 +239,7 @@ class LameCommandTest extends TestCase
         $this->command->setGenre('Foo');
 
         $this->assertEquals(
-            $this->command->getBinary() . " --tg 'Foo'",
+            $this->command->getBinary()." --tg 'Foo'",
             $this->command->asString()
         );
     }
