@@ -5,7 +5,7 @@ namespace IndieHD\AudioManipulator\Tests\CliCommand;
 use IndieHD\AudioManipulator\CliCommand\Mid3v2Command;
 use PHPUnit\Framework\TestCase;
 
-class Mid3dv2CommandTest extends TestCase
+class Mid3v2CommandTest extends TestCase
 {
     private $command;
 
