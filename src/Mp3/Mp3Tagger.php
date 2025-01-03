@@ -32,7 +32,7 @@ class Mp3Tagger implements TaggerInterface
 
         $this->logger->configureLogger('MP3_TAGGER_LOG');
 
-        $this->env = ['LC_ALL' => 'en_US.utf8'];
+        $this->env = ['LC_ALL' => 'en_US.UTF-8'];
     }
 
     public function writeTags(string $file, array $tagData): void
