@@ -32,10 +32,10 @@ class FlacTagger implements TaggerInterface
 
         $this->logger->configureLogger('FLAC_TAGGER_LOG');
 
-        // If "['LC_ALL' => 'en_US.utf8']" is not passed here, any UTF-8
+        // If "['LC_ALL' => 'en_US.UTF-8']" is not passed here, any UTF-8
         // character will appear as a "#" symbol in the resultant tag value.
 
-        $this->env = ['LC_ALL' => 'en_US.utf8'];
+        $this->env = ['LC_ALL' => 'en_US.UTF-8'];
     }
 
     /**
