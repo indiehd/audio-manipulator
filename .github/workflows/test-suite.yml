@@ -6,6 +6,7 @@ on:
       - main
       - master
       - 3.x
+    types: [opened, synchronize, reopened]
 
 jobs:
   tests:
