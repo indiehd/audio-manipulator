@@ -38,12 +38,3 @@ ENV LC_ALL=en_US.UTF-8 \
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy the application files to the container
-COPY . .
-
-# Install all dependencies, including dev dependencies
-RUN composer install --prefer-dist --no-scripts --no-progress --no-interaction --dev
-
-# Run PHPUnit tests as the default command
-CMD ["vendor/bin/phpunit", "--testdox"]
