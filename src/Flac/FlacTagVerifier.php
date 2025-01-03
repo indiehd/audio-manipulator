@@ -40,15 +40,17 @@ class FlacTagVerifier implements TagVerifierInterface
 
         foreach ($tagData as $fieldName => $fieldDataArray) {
             foreach ($fieldDataArray as $numericIndex => $fieldValue) {
-                if ($vorbiscomment[$fieldName][0] != $fieldValue) {
-                    $failures[] = $fieldName;
+                if (!isset($vorbiscomment[$fieldName][0])) {
+                    $failures[] = $fieldName.' tag does not exist on tagged file';
+                } else if ($vorbiscomment[$fieldName][0] != $fieldValue) {
+                    $failures[] = 'Expected value "'. $fieldValue . '" does not match actual value "' . $vorbiscomment[$fieldName][0] . '" for tag "' . $fieldName . '")';
                 }
             }
         }
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
-                'Expected value does not match actual value for tags: '.implode(', ', $failures)
+                'Tagging failures occurred: '.implode(', ', $failures)
             );
         }
     }

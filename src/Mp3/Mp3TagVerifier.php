@@ -46,15 +46,17 @@ class Mp3TagVerifier implements TagVerifierInterface
                     }
                 }
 
-                if ($tagsOnFile[$fieldName][0] != $fieldValue) {
-                    $failures[] = $fieldName.' ('.$tagsOnFile[$fieldName][0].' != '.$fieldValue.')';
+                if (!isset($tagsOnFile[$fieldName][0])) {
+                    $failures[] = $fieldName.' tag does not exist on tagged file';
+                } else if ($tagsOnFile[$fieldName][0] != $fieldValue) {
+                    $failures[] = 'Expected value "'. $fieldValue . '" does not match actual value "' . $tagsOnFile[$fieldName][0] . '" for tag "' . $fieldName . '")';
                 }
             }
         }
 
         if (count($failures) > 0) {
             throw new AudioTaggerException(
-                'Expected value does not match actual value for tags: '.implode(', ', $failures)
+                'Tagging failures occurred: '.implode(', ', $failures)
             );
         }
     }
