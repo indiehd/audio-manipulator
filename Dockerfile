@@ -27,14 +27,14 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y locales && \
-    echo "es_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen es_US.UTF-8 && \
-    update-locale LANG=es_US.UTF-8
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LANG=en_US.UTF-8
 
 # Set the default locale environment variables explicitly
-ENV LC_ALL=es_US.UTF-8 \
-    LANG=es_US.UTF-8 \
-    LANGUAGE=es_US.UTF-8
+ENV LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
