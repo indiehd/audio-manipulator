@@ -28,18 +28,19 @@ jobs:
 
       # Build and bring up Docker containers
       - name: Build and start services
-        run: |
-          docker compose up --build -d
-          docker compose ps  # Show status of all containers
+        run: docker compose up --build -d
 
-      # Debug: Verify running services
-      - name: List running containers
-        run: docker ps -a
+      # Install Composer dependencies and fix Git ownership in one step
+      - name: Fix Git ownership and install Composer dependencies
+        run: |
+          docker compose run app sh -c "
+            git config --global --add safe.directory /app &&
+            composer install --prefer-dist --no-scripts --no-progress --no-interaction
+          "
 
       # Run tests inside the container
       - name: Run test suite
         run: |
-          docker compose run app composer install --prefer-dist --no-scripts --no-progress --no-interaction --dev
           docker compose run app vendor/bin/phpunit --testdox
 
       # Bring down Docker containers after tests
