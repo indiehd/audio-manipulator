@@ -6,6 +6,7 @@ on:
       - main
       - master
       - 3.x
+    types: [opened, synchronize, reopened]
 
 jobs:
   tests:
@@ -21,10 +22,21 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
+      # Debug: Check Docker version
+      - name: Verify Docker Installation
+        run: docker --version
+
       # Build and bring up Docker containers
       - name: Build and start services
+        run: docker compose up --build -d
+
+      # Install Composer dependencies and fix Git ownership in one step
+      - name: Fix Git ownership and install Composer dependencies
         run: |
-          docker compose up --build -d
+          docker compose run app sh -c "
+            git config --global --add safe.directory /app &&
+            composer install --prefer-dist --no-scripts --no-progress --no-interaction
+          "
 
       # Run tests inside the container
       - name: Run test suite
