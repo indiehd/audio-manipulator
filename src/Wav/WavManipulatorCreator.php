@@ -6,6 +6,8 @@ use IndieHD\AudioManipulator\Converting\ConverterInterface;
 
 class WavManipulatorCreator implements WavManipulatorCreatorInterface
 {
+    public ConverterInterface $converter;
+
     public function __construct(
         ConverterInterface $converter
     ) {

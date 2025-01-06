@@ -7,6 +7,8 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class Validator implements ValidatorInterface
 {
+    public MediaParserInterface $mediaParser;
+
     public function __construct(
         MediaParserInterface $mediaParser
     ) {

@@ -4,11 +4,11 @@ namespace IndieHD\AudioManipulator\CliCommand;
 
 class SoxCommand extends CliCommand implements SoxCommandInterface
 {
-    protected $name = 'sox_command';
+    protected string $name = 'sox_command';
 
-    protected $binary = 'sox';
+    protected string $binary = 'sox';
 
-    protected $parts = [
+    protected array $parts = [
         'gopts'     => [],      // Global options
         'fopts-in'  => [],   // File options (input)
         'infile'    => [],     // Input file

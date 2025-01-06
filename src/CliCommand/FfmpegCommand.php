@@ -4,11 +4,11 @@ namespace IndieHD\AudioManipulator\CliCommand;
 
 class FfmpegCommand extends CliCommand implements FfmpegCommandInterface
 {
-    protected $name = 'ffmpeg_command';
+    protected string $name = 'ffmpeg_command';
 
-    protected $binary = 'ffmpeg';
+    protected string $binary = 'ffmpeg';
 
-    protected $parts = [
+    protected array $parts = [
         'options'         => [],            // Global options
         'infile-options'  => [],     // File options (input)
         'infile'          => [],             // Input file

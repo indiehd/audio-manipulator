@@ -6,6 +6,8 @@ use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 
 class AlacManipulatorCreator implements AlacManipulatorCreatorInterface
 {
+    public TaggerInterface $tagger;
+
     public function __construct(
         TaggerInterface $tagger
     ) {

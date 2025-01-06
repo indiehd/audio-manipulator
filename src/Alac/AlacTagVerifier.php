@@ -8,6 +8,8 @@ use IndieHD\AudioManipulator\Tagging\TagVerifierInterface;
 
 class AlacTagVerifier implements TagVerifierInterface
 {
+    public getID3 $getid3;
+
     public function __construct(
         getID3 $getid3
     ) {

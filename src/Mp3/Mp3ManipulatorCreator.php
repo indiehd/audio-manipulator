@@ -6,6 +6,8 @@ use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 
 class Mp3ManipulatorCreator implements Mp3ManipulatorCreatorInterface
 {
+    public TaggerInterface $tagger;
+
     public function __construct(
         TaggerInterface $tagger
     ) {

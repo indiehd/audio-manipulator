@@ -7,6 +7,10 @@ use IndieHD\AudioManipulator\Tagging\TaggerInterface;
 
 class FlacManipulatorCreator implements FlacManipulatorCreatorInterface
 {
+    public ConverterInterface $converter;
+
+    public TaggerInterface $tagger;
+
     public function __construct(
         ConverterInterface $converter,
         TaggerInterface $tagger

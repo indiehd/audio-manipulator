@@ -2,17 +2,29 @@
 
 namespace IndieHD\AudioManipulator;
 
+use IndieHD\AudioManipulator\Flac\FlacManipulator;
+use IndieHD\AudioManipulator\Flac\FlacManipulatorCreatorInterface;
+use IndieHD\AudioManipulator\Wav\WavManipulator;
+use IndieHD\AudioManipulator\Wav\WavManipulatorCreatorInterface;
 use PHPUnit\Framework\TestCase;
 
 class WavTest extends TestCase
 {
-    private $testDir;
+    private string $testDir;
 
-    private $tmpDir;
+    private string $tmpDir;
 
-    private $sampleFile;
+    private string $sampleFile;
 
-    private $tmpFile;
+    private string $tmpFile;
+
+    public FlacManipulatorCreatorInterface $flacManipulatorCreator;
+
+    public FlacManipulator $flacManipulator;
+
+    public WavManipulatorCreatorInterface $wavManipulatorCreator;
+
+    public WavManipulator $wavManipulator;
 
     /**
      * @inheritdoc

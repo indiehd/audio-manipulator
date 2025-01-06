@@ -21,11 +21,11 @@ class WavConverter implements
     AlacWriterInterface,
     FlacWriterInterface
 {
-    private $validator;
-    private $process;
-    private $logger;
-    private $sox;
-    private $ffmpeg;
+    private ValidatorInterface $validator;
+    private ProcessInterface $process;
+    private LoggerInterface $logger;
+    private SoxCommandInterface $sox;
+    private FfmpegCommandInterface $ffmpeg;
 
     protected $supportedOutputFormats;
 

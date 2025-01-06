@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class MetaflacCommandTest extends TestCase
 {
-    private $metaflacCommand;
+    private MetaflacCommand $metaflacCommand;
 
     /**
      * @inheritdoc

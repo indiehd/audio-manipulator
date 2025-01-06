@@ -2,18 +2,24 @@
 
 namespace IndieHD\AudioManipulator\Tests\Flac;
 
+use IndieHD\AudioManipulator\Flac\FlacManipulator;
+use IndieHD\AudioManipulator\Flac\FlacManipulatorCreatorInterface;
 use function IndieHD\AudioManipulator\app;
 use IndieHD\AudioManipulator\Tests\Tagging\TaggingTest;
 
 class FlacTaggingTest extends TaggingTest
 {
-    private $testDir;
+    private string $testDir;
 
-    private $tmpDir;
+    private string $tmpDir;
 
-    private $sampleFile;
+    private string $sampleFile;
 
-    private $tmpFile;
+    private string $tmpFile;
+
+    public FlacManipulatorCreatorInterface $flacManipulatorCreator;
+
+    public FlacManipulator $flacManipulator;
 
     /**
      * @inheritdoc

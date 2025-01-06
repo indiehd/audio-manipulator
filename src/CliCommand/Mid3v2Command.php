@@ -4,11 +4,11 @@ namespace IndieHD\AudioManipulator\CliCommand;
 
 class Mid3v2Command extends CliCommand implements Mid3v2CommandInterface
 {
-    protected $name = 'mid3v2_command';
+    protected string $name = 'mid3v2_command';
 
-    protected $binary = 'mid3v2';
+    protected string $binary = 'mid3v2';
 
-    protected $parts = [
+    protected array $parts = [
         'options' => [],    // Global options
         'infile'  => [],     // Input file
     ];

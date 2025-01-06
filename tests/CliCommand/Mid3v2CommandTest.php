@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class Mid3v2CommandTest extends TestCase
 {
-    private $command;
+    private Mid3v2Command $command;
 
     /**
      * @inheritdoc

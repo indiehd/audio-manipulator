@@ -9,8 +9,10 @@ use Psr\Log\LoggerInterface as PsrLoggerInterface;
 
 class Logger implements LoggerInterface
 {
-    protected $logger;
-    protected $loggingEnabled = false;
+    protected PsrLoggerInterface $logger;
+    protected bool $loggingEnabled = false;
+
+    protected HandlerInterface $handler;
 
     public function __construct(
         PsrLoggerInterface $logger,

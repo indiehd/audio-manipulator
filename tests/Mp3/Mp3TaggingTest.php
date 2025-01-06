@@ -2,18 +2,30 @@
 
 namespace IndieHD\AudioManipulator\Tests\Mp3;
 
+use IndieHD\AudioManipulator\Flac\FlacManipulator;
+use IndieHD\AudioManipulator\Flac\FlacManipulatorCreatorInterface;
+use IndieHD\AudioManipulator\Mp3\Mp3Manipulator;
+use IndieHD\AudioManipulator\Mp3\Mp3ManipulatorCreatorInterface;
 use function IndieHD\AudioManipulator\app;
 use IndieHD\AudioManipulator\Tests\Tagging\TaggingTest;
 
 class Mp3TaggingTest extends TaggingTest
 {
-    private $testDir;
+    private string $testDir;
 
-    private $tmpDir;
+    private string $tmpDir;
 
-    private $sampleFile;
+    private string $sampleFile;
 
-    private $tmpFile;
+    private string $tmpFile;
+
+    public FlacManipulatorCreatorInterface $flacManipulatorCreator;
+
+    public FlacManipulator $flacManipulator;
+
+    public Mp3ManipulatorCreatorInterface $mp3ManipulatorCreator;
+
+    public Mp3Manipulator $mp3Manipulator;
 
     /**
      * @inheritdoc

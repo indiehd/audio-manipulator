@@ -1,5 +1,5 @@
 # Use an official PHP image as the base
-FROM php:8.1-cli
+FROM php:8.2-cli
 
 # Set working directory inside the container
 WORKDIR /app

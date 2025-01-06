@@ -7,7 +7,7 @@ use IndieHD\AudioManipulator\Manipulator\ManipulatorInterface;
 
 class WavManipulator extends BaseManipulator implements ManipulatorInterface
 {
-    protected $file;
+    protected string $file;
 
     public function __construct(string $file)
     {

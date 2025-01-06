@@ -13,11 +13,11 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class AlacTagger implements TaggerInterface
 {
-    private $env;
-    public $tagVerifier;
-    private $process;
-    private $logger;
-    public $command;
+    private array $env;
+    public TagVerifierInterface $tagVerifier;
+    private ProcessInterface $process;
+    private LoggerInterface $logger;
+    public AtomicParsleyCommandInterface $command;
 
     public function __construct(
         TagVerifierInterface $tagVerifier,

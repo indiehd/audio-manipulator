@@ -4,11 +4,11 @@ namespace IndieHD\AudioManipulator\CliCommand;
 
 class AtomicParsleyCommand extends CliCommand implements AtomicParsleyCommandInterface
 {
-    protected $name = 'atomic_parsley_command';
+    protected string $name = 'atomic_parsley_command';
 
-    protected $binary = 'AtomicParsley';
+    protected string $binary = 'AtomicParsley';
 
-    protected $parts = [
+    protected array $parts = [
         'infile'  => [],     // Input file
         'options' => [],    // Global options
     ];

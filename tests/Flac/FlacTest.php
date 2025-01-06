@@ -2,6 +2,8 @@
 
 namespace IndieHD\AudioManipulator\Tests\Flac;
 
+use IndieHD\AudioManipulator\Flac\FlacManipulator;
+use IndieHD\AudioManipulator\Flac\FlacManipulatorCreatorInterface;
 use IndieHD\AudioManipulator\Processing\ProcessFailedException;
 use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
 use PHPUnit\Framework\TestCase;
@@ -9,13 +11,17 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class FlacTest extends TestCase
 {
-    private $testDir;
+    private string $testDir;
 
-    private $tmpDir;
+    private string $tmpDir;
 
-    private $sampleFile;
+    private string $sampleFile;
 
-    private $tmpFile;
+    private string $tmpFile;
+
+    public FlacManipulatorCreatorInterface $flacManipulatorCreator;
+
+    public FlacManipulator $flacManipulator;
 
     /**
      * @inheritdoc
