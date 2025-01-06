@@ -33,6 +33,8 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class Container
 {
+    public ContainerBuilder $builder;
+
     public function __construct()
     {
         // Configuration.

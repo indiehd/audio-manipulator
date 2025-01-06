@@ -3,14 +3,17 @@
 namespace IndieHD\AudioManipulator\Tests\Validation;
 
 use IndieHD\AudioManipulator\Validation\InvalidAudioFileException;
+use IndieHD\AudioManipulator\Validation\ValidatorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class ValidatorTest extends TestCase
 {
-    private $testDir;
+    private string $testDir;
 
-    private $tmpDir;
+    private string $tmpDir;
+
+    public ValidatorInterface $validator;
 
     /**
      * @inheritdoc

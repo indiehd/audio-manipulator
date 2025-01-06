@@ -6,6 +6,8 @@ use getID3;
 
 class MediaParser implements MediaParserInterface
 {
+    protected getID3 $parser;
+
     public function __construct()
     {
         $this->parser = new getID3();

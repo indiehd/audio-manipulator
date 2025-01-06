@@ -6,10 +6,10 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process implements ProcessInterface
 {
-    protected $process;
-    protected $command;
-    protected $timeout;
-    protected $locale;
+    protected SymfonyProcess $process;
+    protected array $command;
+    protected float $timeout;
+    protected string $locale = 'en_US.UTF-8';
 
     public function setProcess(array $command)
     {

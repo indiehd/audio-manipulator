@@ -9,9 +9,9 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 abstract class TaggingTest extends TestCase
 {
-    protected $fileType;
+    protected string $fileType;
 
-    protected $sampleDir;
+    protected string $sampleDir;
 
     abstract protected function setFileType(string $type): void;
 

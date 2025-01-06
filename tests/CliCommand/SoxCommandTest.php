@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class SoxCommandTest extends TestCase
 {
-    private $soxCommand;
+    private SoxCommand $soxCommand;
 
     /**
      * @inheritdoc

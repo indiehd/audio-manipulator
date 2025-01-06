@@ -13,11 +13,11 @@ abstract class CliCommand implements CliCommandInterface
     //    return $this->instance;
     //}
 
-    protected $name;
+    protected string $name;
 
-    protected $binary;
+    protected string $binary;
 
-    protected $parts;
+    protected array $parts;
 
     public function setBinary(string $binary)
     {

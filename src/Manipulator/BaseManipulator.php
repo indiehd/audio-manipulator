@@ -2,9 +2,16 @@
 
 namespace IndieHD\AudioManipulator\Manipulator;
 
+use IndieHD\AudioManipulator\Converting\ConverterInterface;
+use IndieHD\AudioManipulator\Tagging\TaggerInterface;
+
 class BaseManipulator implements ManipulatorInterface
 {
-    protected $file;
+    protected string $file;
+
+    public ConverterInterface $converter;
+
+    public TaggerInterface $tagger;
 
     public function __construct(string $file)
     {

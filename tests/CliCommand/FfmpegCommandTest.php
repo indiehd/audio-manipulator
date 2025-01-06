@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class FfmpegCommandTest extends TestCase
 {
-    private $ffmpegCommand;
+    private FfmpegCommand $ffmpegCommand;
 
     /**
      * @inheritdoc

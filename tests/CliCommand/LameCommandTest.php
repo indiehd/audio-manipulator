@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class LameCommandTest extends TestCase
 {
-    private $command;
+    private LameCommand $command;
 
     /**
      * @inheritdoc

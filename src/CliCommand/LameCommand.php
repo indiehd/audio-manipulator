@@ -4,11 +4,11 @@ namespace IndieHD\AudioManipulator\CliCommand;
 
 class LameCommand extends CliCommand implements LameCommandInterface
 {
-    protected $name = 'lame_command';
+    protected string $name = 'lame_command';
 
-    protected $binary = 'lame';
+    protected string $binary = 'lame';
 
-    protected $parts = [
+    protected array $parts = [
         'options' => [],    // Global options
         'infile'  => [],     // Input file
         'outfile' => [],    // Output file

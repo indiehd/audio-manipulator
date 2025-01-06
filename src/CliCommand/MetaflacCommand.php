@@ -4,11 +4,11 @@ namespace IndieHD\AudioManipulator\CliCommand;
 
 class MetaflacCommand extends CliCommand implements MetaflacCommandInterface
 {
-    protected $name = 'metaflac_command';
+    protected string $name = 'metaflac_command';
 
-    protected $binary = 'metaflac';
+    protected string $binary = 'metaflac';
 
-    protected $parts = [
+    protected array $parts = [
         'options'      => [],        // Global options
         'operations'   => [],     // Operations to perform
         'flacfile-in'  => [],   // Input file

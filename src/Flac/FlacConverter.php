@@ -21,13 +21,13 @@ class FlacConverter implements
     AlacWriterInterface,
     WavWriterInterface
 {
-    private $validator;
-    private $process;
-    private $logger;
-    private $sox;
-    private $ffmpeg;
+    private ValidatorInterface $validator;
+    private ProcessInterface $process;
+    private LoggerInterface $logger;
+    private SoxCommandInterface $sox;
+    private FfmpegCommandInterface $ffmpeg;
 
-    protected $supportedOutputFormats;
+    protected array $supportedOutputFormats;
 
     public function __construct(
         ValidatorInterface $validator,

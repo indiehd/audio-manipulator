@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class AtomicParsleyCommandTest extends TestCase
 {
-    private $atomicParsleyCommand;
+    private AtomicParsleyCommand $atomicParsleyCommand;
 
     /**
      * @inheritdoc

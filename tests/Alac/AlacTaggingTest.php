@@ -2,18 +2,30 @@
 
 namespace IndieHD\AudioManipulator\Tests\Alac;
 
+use IndieHD\AudioManipulator\Alac\AlacManipulator;
+use IndieHD\AudioManipulator\Alac\AlacManipulatorCreatorInterface;
+use IndieHD\AudioManipulator\Flac\FlacManipulator;
+use IndieHD\AudioManipulator\Flac\FlacManipulatorCreatorInterface;
 use function IndieHD\AudioManipulator\app;
 use IndieHD\AudioManipulator\Tests\Tagging\TaggingTest;
 
 class AlacTaggingTest extends TaggingTest
 {
-    private $testDir;
+    private string $testDir;
 
-    private $tmpDir;
+    private string $tmpDir;
 
-    private $sampleFile;
+    private string $sampleFile;
 
-    private $tmpFile;
+    private string $tmpFile;
+
+    public AlacManipulatorCreatorInterface $alacManipulatorCreator;
+
+    public AlacManipulator $alacManipulator;
+
+    public FlacManipulatorCreatorInterface $flacManipulatorCreator;
+
+    public FlacManipulator $flacManipulator;
 
     /**
      * @inheritdoc
